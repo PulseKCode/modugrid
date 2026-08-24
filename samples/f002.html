@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1-2. Several grids on one page — themes and fonts too — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">1. Basic structure</div>
+  <h1 class="dm-tit">1-2. Several grids on one page — themes and fonts too</h1>
+  <p class="dm-desc">Grids never interfere with each other. Sorting and selection are separate, and so are <b>themes and fonts</b>, which makes it easy to place two very different tables side by side.</p>
+  <ul class="dm-steps">
+    <li>Switch the left grid to the <code>ocean</code> theme with a larger font — the right one stays as it is.</li>
+    <li>Sort the left grid with its sort icons; the order on the right does not move.</li>
+    <li>Press <b>Compare both</b> to see the two independent states.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G1.setTheme('ocean');G1.setFont({body:{size:15}})">Left → ocean · 15px</button>
+  <button type="button" class="db" onclick="G2.setTheme('forest')">Right → forest</button>
+  <button type="button" class="db" onclick="G1.setTheme('light');G1.setFont(null);G2.setTheme('light')">Reset both</button>
+  <button type="button" class="db p" onclick="cmp()">Compare both</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">Grid A</div><div id="gridA"></div></div>
+    <div><div class="dm-cap">Grid B</div><div id="gridB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+const G1 = ModuGrid('#gridA', { cols: COLS.map(c=>({...c})), options:{ pageSize:8 } });
+const G2 = ModuGrid('#gridB', { cols: COLS.map(c=>({...c})), options:{ pageSize:8 } });
+G1.setData(MGDemo.rows(12, 3));
+G2.setData(MGDemo.rows(12, 91));
+window.G1 = G1; window.G2 = G2;
+
+function cmp(){
+  MGDemo.clearLog();
+  [['A',G1],['B',G2]].forEach(function(p){
+    const s = p[1].getState();
+    MGDemo.log(p[0] + ' → theme ' + p[1].getTheme()
+             + ' / sort ' + (s.sorts.map(x=>x.col+' '+x.dir).join(',') || 'none')
+             + ' / selected ' + p[1].getSelected().length
+             + ' / body font ' + (p[1].getFont().body.size || 'default'));
+  });
+}
+cmp();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

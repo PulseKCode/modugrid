@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-6. 삭제해도 바로 지우지 않기 (소프트 삭제) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-6. 삭제해도 바로 지우지 않기 (소프트 삭제)</h1>
+  <p class="dm-desc">기본 설정에서는 삭제해도 <b>화면에서 사라지지 않고 취소선만</b> 그어집니다. 실제 삭제는 <code>submit()</code> 이 서버에서 성공한 뒤에 일어납니다. 실수로 지웠을 때 되돌릴 여지를 주기 위해서입니다.</p>
+  <ul class="dm-steps">
+    <li>행 두 개를 체크하고 <b>삭제</b> — 취소선이 그어집니다.</li>
+    <li><b>삭제 예정 목록</b> 으로 무엇이 지워질지 확인합니다.</li>
+    <li><b>저장</b> 을 누르면 그때 실제로 사라집니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db dr" onclick="del()">고른 행 삭제</button>
+  <button class="db p" onclick="pend()">삭제 예정 목록</button>
+  <button class="db p" onclick="send()">저장 (submit)</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, softDelete:true, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+/* 서버 대신 응답을 흉내내는 목(mock).
+   실제로는 submit.jsp 주소를 그대로 넣으면 됩니다. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-submit') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch 미지원'));
+  }
+  const body = init.body;
+  if (typeof body === 'string'){
+    MGDemo.log('POST ' + url);
+    MGDemo.log(decodeURIComponent(body).slice(0, 600));
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function del(){
+  const ids = new Set([...G.getSelected(), ...G.getChecked()]);
+  if (!ids.size){ MGDemo.log('행을 먼저 체크하세요', 'wn'); return; }
+  G.deleteRows(ids);
+  pend();
+}
+function pend(){
+  MGDemo.log('삭제 예정 = [' + G.getPendingDeletes().join(', ') + ']  /  화면 행 ' + G.getState().data.length + '개', 'ok');
+}
+async function send(){
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    if (out.skipped){ MGDemo.log('바뀐 게 없습니다', 'wn'); return; }
+    MGDemo.log('저장 완료 — 화면 행 ' + G.getState().data.length + '개 (삭제 예정 행이 실제로 빠짐)', 'ok');
+  }catch(e){ MGDemo.log('실패 — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

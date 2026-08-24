@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1-3. Taking a grid off the page — destroy() — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">1. Basic structure</div>
+  <h1 class="dm-tit">1-3. Taking a grid off the page — destroy()</h1>
+  <p class="dm-desc">Call <code>destroy()</code> when you close a tab or swap the screen out. The grid releases its listeners and clears the DOM it created. Skip it and the keyboard handlers stay behind.</p>
+  <ul class="dm-steps">
+    <li>Press <b>destroy()</b> and the grid disappears.</li>
+    <li>With the grid gone, <code>Ctrl+Z</code> does nothing at all.</li>
+    <li>Press <b>Create again</b> to build a fresh instance.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db dr" onclick="kill()">destroy()</button>
+  <button type="button" class="db p" onclick="make()">Create again</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+let G = null;
+
+function make(){
+  if (G) { MGDemo.log('It is already on the page', 'wn'); return; }
+  G = ModuGrid('#grid', { cols: COLS.map(c=>({...c})), options:{ editMode:true, selMode:'cell', pageSize:8 } });
+  G.setData(MGDemo.rows(10));
+  window.G = G;
+  MGDemo.log('Created', 'ok');
+}
+
+function kill(){
+  if (!G) { MGDemo.log('It is already gone', 'wn'); return; }
+  G.destroy(); G = null; window.G = null;
+  MGDemo.log('destroy() — listeners released, DOM cleared', 'ok');
+}
+
+make();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

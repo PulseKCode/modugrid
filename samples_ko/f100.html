@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.3-1. 푸터에서 보여줄 것 고르기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.3 표시 옵션</div>
+  <h1 class="dm-tit">12.3-1. 푸터에서 보여줄 것 고르기</h1>
+  <p class="dm-desc">푸터에는 <b>행 수 정보 · 페이지 목록 · Per page</b> 가 이 순서로 놓입니다. 필요 없는 것은 각각 끌 수 있고, 셋을 다 끄면 푸터 자체가 사라집니다.</p>
+  <ul class="dm-steps">
+    <li><b>행 수 정보</b> · <b>페이지 목록</b> · <b>Per page</b> 를 하나씩 꺼 봅니다.</li>
+    <li><b>푸터 전체</b> 로 한 번에 끌 수도 있습니다.</li>
+    <li>조회 전용 화면에서 페이지 목록만 남기는 식으로 씁니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleRowsInfo();st()">행 수 정보</button>
+  <button class="db p" onclick="G.togglePager();st()">페이지 목록</button>
+  <button class="db p" onclick="G.togglePageSize();st()">Per page</button>
+  <button class="db dr" onclick="G.toggleFoot();st()">푸터 전체</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(60));
+window.G = G;
+
+function st(){
+  const s = G.getState();
+  MGDemo.log('행 수 정보 ' + (s.showRows?'ON':'OFF')
+           + ' / 페이지 목록 ' + (s.showPager?'ON':'OFF')
+           + ' / Per page ' + (s.showPageSize?'ON':'OFF')
+           + ' / 푸터 ' + (s.showFoot?'ON':'OFF'), 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

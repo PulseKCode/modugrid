@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.3-2. 빈 칸에 안내 문구 넣기 (placeholder) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.3 입력 제어</div>
+  <h1 class="dm-tit">5.3-2. 빈 칸에 안내 문구 넣기 (placeholder)</h1>
+  <p class="dm-desc">값이 없는 칸에 <code>이름 입력</code> 같은 안내를 띄웁니다. 표시 범위는 세 가지입니다 — <b>빈 칸 전부 · 첫 행만 · 표시 안 함</b>. 첫 행만 띄우면 화면이 어수선해지지 않으면서도 무엇을 넣는 칸인지 알 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li>처음엔 <b>빈 칸 전부</b> 에 안내가 보입니다.</li>
+    <li><b>첫 행만</b> 으로 바꾸면 맨 윗줄에만 남습니다.</li>
+    <li><b>표시 안 함</b> 이면 전부 사라집니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="set('all')">빈 칸 전부</button>
+  <button class="db p" onclick="set('first')">첫 행만</button>
+  <button class="db p" onclick="set('none')">표시 안 함</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:140, placeholder:'이름 입력'},
+  {key:'memo',  label:'메모', w:220, placeholder:'메모를 입력하세요'},
+  {key:'score', label:'점수', w:120, type:'number', placeholder:'0~100'},
+];
+
+/* 값을 비워 안내 문구가 보이도록 */
+const rows = MGDemo.rows(6).map(function(r){ r.name=''; r.memo=''; r.score=null; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8, placeholderMode:'all' } });
+G.setData(rows);
+window.G = G;
+
+function set(m){
+  G.setPlaceholderMode(m);
+  MGDemo.log('안내 문구 표시 = ' + (m==='all'?'빈 칸 전부':m==='first'?'첫 행만':'표시 안 함'), 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

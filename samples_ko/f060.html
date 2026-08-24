@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-2. Submit 전송 데이터 — 서버로 나가는 JSON 확인 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-2. Submit 전송 데이터 — 서버로 나가는 JSON 확인</h1>
+  <p class="dm-desc">저장할 때 서버로 가는 내용을 눈으로 보는 화면입니다. 형태는 세 묶음입니다 — <code>inserted</code> 는 <b>행 전체</b>, <code>updated</code> 는 <code>{id, changes}</code> 로 <b>바뀐 칸만</b>, <code>deleted</code> 는 <b>id 배열</b>입니다. 목록 컬럼은 이름이 아니라 <b>코드로</b> 나가고, 옵션 객체가 섞여 있어도 코드만 뽑혀 나갑니다.</p>
+  <ul class="dm-steps">
+    <li>셀 몇 개를 고치고 행도 하나 추가합니다.</li>
+    <li><b>전송 내용 보기</b> 로 서버에 갈 JSON 을 확인합니다.</li>
+    <li><code>상태</code> 값이 <code>활성</code> 이 아니라 <code>A</code> 로 나가는지 봅니다.</li>
+    <li><code>updated</code> 안에 <code>changes</code> 가 있고 그 안에 바뀐 칸만 들어 있는지 봅니다.</li>
+    <li><b>실제로 전송</b> 을 누르면 전송 본문이 그대로 찍힙니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="peek()">전송 내용 보기</button>
+  <button class="db p" onclick="send()">실제로 전송</button>
+  <button class="db" onclick="G.addRow(mk())">행 추가</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(5);
+rows[1].status = { code:'P', name:'대기' };       // 객체가 섞여 들어온 경우
+rows[2].status = { value:'I', label:'비활성' };
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, showST:true } });
+G.setData(rows);
+window.G = G;
+
+/* 서버 대신 응답을 흉내내는 목(mock).
+   실제로는 submit.jsp 주소를 그대로 넣으면 됩니다. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-submit') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch 미지원'));
+  }
+  const body = init.body;
+  if (typeof body === 'string'){
+    MGDemo.log('POST ' + url);
+    MGDemo.log(decodeURIComponent(body).slice(0, 600));
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function mk(){
+  return { id: Date.now() % 100000, name:'새 행', status:'A', role:'QA',
+           score:70, progress:0, salary:3000000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.inserted.length && !ch.updated.length && !ch.deleted.length){
+    MGDemo.log('아직 바뀐 게 없습니다 — 셀을 고쳐 보세요', 'wn'); return;
+  }
+  MGDemo.log('inserted = ' + JSON.stringify(ch.inserted));
+  MGDemo.log('updated  = ' + JSON.stringify(ch.updated));
+  MGDemo.log('deleted  = ' + JSON.stringify(ch.deleted));
+  MGDemo.log('inserted = 행 전체 / updated = {id, changes} / deleted = id 배열', 'ok');
+  MGDemo.log('상태 값이 코드(A/P/I)로 나가는지 확인하세요', 'ok');
+}
+
+async function send(){
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    if (out.skipped){ MGDemo.log('바뀐 게 없어 전송하지 않았습니다', 'wn'); return; }
+    MGDemo.log('서버 응답 = ' + JSON.stringify(out), 'ok');
+  }catch(e){ MGDemo.log('전송 실패 — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

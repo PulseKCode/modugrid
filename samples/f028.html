@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-5. Putting a word in the checkbox header (cbHeader) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-5. Putting a word in the checkbox header (cbHeader)</h1>
+  <p class="dm-desc">Replace the select-all checkbox with a <b>label</b> such as <code>Select</code>. It suits screens where an accidental select-all would be expensive.</p>
+  <ul class="dm-steps">
+    <li>The left grid is the default, the middle one says <code>Select</code>, the right one is blank.</li>
+    <li>Clicking the header does nothing on the middle and right grids.</li>
+    <li>The row checkboxes still work in all three.</li>
+  </ul>
+
+  
+  <div class="dm-two">
+    <div><div class="dm-cap">default — a checkbox</div><div id="gA"></div></div>
+    <div><div class="dm-cap">cbHeader:'Select'</div><div id="gB"></div></div>
+    <div><div class="dm-cap">cbHeader:'none'</div><div id="gC"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+function mk(sel, cbHeader){
+  const g = ModuGrid(sel, {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options: Object.assign({ selMode:'row', pageSize:6 },
+                           cbHeader === undefined ? {} : { cbHeader: cbHeader })
+  });
+  g.setData(MGDemo.rows(6, 4));
+  return g;
+}
+
+const G1 = mk('#gA');                   // default = a checkbox
+const G2 = mk('#gB', 'Select');         // a label
+const G3 = mk('#gC', 'none');           // blank
+window.G1 = G1; window.G2 = G2; window.G3 = G3;
+
+MGDemo.log("cbHeader takes 'check' (default), 'none' or false (blank), or any string to show as a label");
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

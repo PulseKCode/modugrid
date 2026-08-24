@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-1. 셀 편집 시작하는 세 가지 방법 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 진입 경로</div>
+  <h1 class="dm-tit">5.1-1. 셀 편집 시작하는 세 가지 방법</h1>
+  <p class="dm-desc"><code>editMode</code> 가 켜져 있으면 <b>더블클릭 · F2 · 그냥 타이핑</b> 셋 중 무엇으로도 편집이 시작됩니다. 어느 쪽으로 들어가든 같은 입력기가 열려 화면이 흔들리지 않습니다.</p>
+  <ul class="dm-steps">
+    <li><code>이름</code> 셀을 <b>더블클릭</b> 합니다.</li>
+    <li><code>Esc</code> 로 나온 뒤 같은 셀에서 <b>F2</b> 를 누릅니다.</li>
+    <li><code>Esc</code> 후 셀만 선택한 채 <b>글자를 바로 칩니다</b> (한글도 됩니다).</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleEditMode();st()">편집 모드 켜기 / 끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수',   w:90,  type:'number'},
+  {key:'joined', label:'입사일', w:120, type:'date'},
+  {key:'memo',   label:'메모',   w:180, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    on:{ cellEdit: function(p){ MGDemo.log(p.key + ' = ' + p.value + ' 로 저장', 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+function st(){ MGDemo.log('편집 모드 = ' + (G.getState().editMode ? 'ON' : 'OFF'), 'ok'); }
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

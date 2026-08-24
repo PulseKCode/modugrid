@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13-2. 조회 중 표시 · 실패 처리 · 다시 조회 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">13. 서버 연동</div>
+  <h1 class="dm-tit">13-2. 조회 중 표시 · 실패 처리 · 다시 조회</h1>
+  <p class="dm-desc">조회하는 동안 <b>로딩 표시</b>가 뜹니다. 실패하면 <code>dataError</code> 로 알려주고 <b>화면은 이전 내용을 그대로 유지</b>하므로, 순간 오류로 표가 비어 버리지 않습니다. <code>reload()</code> 는 지금 조건 그대로 다시 조회합니다.</p>
+  <ul class="dm-steps">
+    <li><b>정상 조회</b> 로 로딩 표시를 봅니다.</li>
+    <li><b>실패 상황</b> 으로 바꾸고 <b>다시 조회</b> 를 누릅니다 — 오류가 나도 표는 남아 있습니다.</li>
+    <li>정렬이나 검색을 걸어 둔 채 <b>다시 조회</b> 하면 조건이 유지됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">검색</span>
+  <input class="dm-in" id="q" placeholder="이름" oninput="G.search(this.value)">
+  <button class="db p" onclick="mode='ok';G.reload()">정상 조회</button>
+  <button class="db dr" onclick="mode='fail';G.reload()">실패 상황</button>
+  <button class="db" onclick="G.reload()">다시 조회</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const ALL = MGDemo.rows(60);
+let mode = 'ok';
+
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:150},
+  {key:'role', label:'직무', w:130},
+  {key:'score',label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize: 10,
+    dataSource: function(req){
+      MGDemo.log('조회 시작 — 로딩 표시 중');
+      let rows = ALL.filter(function(r){ return !req.search || r.name.indexOf(req.search) >= 0; });
+      (req.sorts || []).forEach(function(s){
+        rows.sort(function(a,b){ const c=(a[s.col]>b[s.col])-(a[s.col]<b[s.col]); return s.dir==='asc'?c:-c; });
+      });
+      return new Promise(function(res, rej){
+        setTimeout(function(){
+          if (mode === 'fail'){ rej(new Error('ORA-00942: table or view does not exist')); return; }
+          const st = (req.page - 1) * req.pageSize;
+          res({ rows: rows.slice(st, st + req.pageSize), total: rows.length });
+        }, 700);
+      });
+    },
+    on:{
+      dataError:  function(p){ MGDemo.log('조회 실패 — ' + (p.error && p.error.message), 'er'); },
+      dataChange: function(p){ if (p.type === 'load') MGDemo.log('조회 완료', 'ok'); }
+    }
+  }
+});
+window.G = G;
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

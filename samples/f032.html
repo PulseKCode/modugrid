@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-9. Reading the selection — arrays of ids — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-9. Reading the selection — arrays of ids</h1>
+  <p class="dm-desc"><code>getSelected()</code> and <code>getChecked()</code> hand back <b>arrays of ids</b>. That is what you want to post to a server; when you need the row contents, look them up in <code>getFilteredData()</code>.</p>
+  <ul class="dm-steps">
+    <li>Select a few rows and tick a few others.</li>
+    <li>Press <b>Show the ids</b> to see what comes back.</li>
+    <li><b>Look up the rows</b> shows the usual way to turn ids into row objects.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="ids()">Show the ids</button>
+  <button type="button" class="db" onclick="rows()">Look up the rows</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'row', pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function ids(){
+  MGDemo.clearLog();
+  MGDemo.log('getSelected() = ' + JSON.stringify(G.getSelected()), 'ok');
+  MGDemo.log('getChecked()  = ' + JSON.stringify(G.getChecked()), 'ok');
+}
+
+/* Turning ids into rows — the usual pattern */
+function rows(){
+  MGDemo.clearLog();
+  const all = G.getFilteredData();
+  const picked = G.getSelected().map(function(id){
+    return all.find(function(r){ return r.id === id; });
+  }).filter(Boolean);
+  if (!picked.length) { MGDemo.log('Select a row first', 'wn'); return; }
+  picked.forEach(function(r){ MGDemo.log('id=' + r.id + '  ' + r.name + '  ' + r.role); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-1. 네 가지 전송 방식 고르기 (imageMode) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-1. 네 가지 전송 방식 고르기 (imageMode)</h1>
+  <p class="dm-desc">사진을 <b>언제, 어떤 형태로</b> 서버에 보낼지 정합니다. 화면 미리보기만 하려면 <code>none</code>, 대용량이면 <code>upload</code>, 저장 한 번으로 끝내려면 <code>multipart</code>, 서명처럼 작은 것은 <code>base64</code> 를 씁니다.</p>
+  <ul class="dm-steps">
+    <li>아래 표에서 상황에 맞는 방식을 고르면 됩니다.</li>
+    <li>각 방식은 이어지는 항목에서 하나씩 다룹니다.</li>
+    <li><b>주의</b> — 화면을 띄운 뒤에 방식을 바꾸면 안 됩니다. 이미 담아둔 사진의 보관 형태가 달라 전송이 어긋납니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="guide()">방식 비교표 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:5, rowHeight:70, showST:true,
+    imageMode: 'none',            // none | upload | multipart | base64
+    imageLimit: 5,                // 행당 최대 장수
+    imageMaxSize: 2*1024*1024,    // 장당 최대 용량 (0 = 무제한)
+  }
+});
+G.setData(MGDemo.rows(4));
+window.G = G;
+
+function guide(){
+  MGDemo.clearLog();
+  [['none',      '보내지 않음',        '화면 미리보기만 · 이미지 미사용'],
+   ['upload',    '파일 고르는 즉시',   '대용량 · 장수가 많을 때'],
+   ['multipart', '저장할 때 파일까지', '저장 한 번으로 끝내고 싶을 때'],
+   ['base64',    '저장할 때 문자열로', '서명 · 아이콘 등 작은 것']
+  ].forEach(function(x){
+    MGDemo.log(x[0].padEnd(11) + x[1].padEnd(18) + x[2]);
+  });
+  MGDemo.log('지금 설정 = ' + (G.getState().imageMode || 'none'), 'ok');
+}
+guide();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

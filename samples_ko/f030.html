@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-7. 코드로 전체 선택 — toggleCheckAll() — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-7. 코드로 전체 선택 — toggleCheckAll()</h1>
+  <p class="dm-desc">툴바 버튼 같은 곳에서 <code>toggleCheckAll(true/false)</code> 로 전체 선택을 조작합니다. 헤더 체크박스를 누른 것과 결과가 같고, 대상 범위도 동일하게 <b>화면에 보이는 행</b>입니다.</p>
+  <ul class="dm-steps">
+    <li><b>전부 체크</b> / <b>전부 해제</b> 를 눌러 봅니다.</li>
+    <li>페이지를 넘긴 뒤 다시 눌러 보면 그 페이지만 대상입니다.</li>
+    <li>필터를 걸고 누르면 걸러진 행만 켜집니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleCheckAll(true);cnt()">전부 체크</button>
+  <button class="db" onclick="G.toggleCheckAll(false);cnt()">전부 해제</button>
+  <button class="db" onclick="G.goPage(2);cnt()">2페이지로</button>
+  <button class="db" onclick="cnt()">지금 상태</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'row', pageSize:5 } });
+G.setData(MGDemo.rows(20));
+window.G = G;
+
+function cnt(){
+  MGDemo.log(G.getState().page + '페이지 — 체크 ' + G.getChecked().length + '건 = ['
+           + G.getChecked().join(', ') + ']', 'ok');
+}
+cnt();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

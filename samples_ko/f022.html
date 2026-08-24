@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.4-1. 같은 값끼리 묶어 집계 보기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.4 그룹핑 · 트리</div>
+  <h1 class="dm-tit">3.4-1. 같은 값끼리 묶어 집계 보기</h1>
+  <p class="dm-desc">컬럼 값으로 행을 묶고 머리행에 <b>건수 · 평균 · 합계</b>를 붙입니다. 부서별 인원과 급여 합계 같은 요약을 별도 화면 없이 바로 볼 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li><b>묶어 보기</b> 를 켭니다 — 직무별로 묶입니다.</li>
+    <li>머리행의 Count · Avg · Sum 을 확인합니다.</li>
+    <li>머리행을 클릭하면 그 그룹이 접힙니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleGroup();st()">묶어 보기 켜기 / 끄기</button>
+  <button class="db" onclick="agg()">집계값 확인</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',   label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:130},
+  {key:'score', label:'점수', w:90,  type:'number'},
+  {key:'salary',label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0 } });   // pageSize:0 = 전체 표시
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function st(){ MGDemo.log('묶음 기준 = ' + (G.getState().groupBy || '없음'), 'ok'); }
+
+function agg(){
+  MGDemo.clearLog();
+  const by = {};
+  G.getFilteredData().forEach(function(r){ (by[r.role] = by[r.role] || []).push(r); });
+  Object.keys(by).sort().forEach(function(k){
+    const rows = by[k];
+    const avg = (rows.reduce(function(s,r){ return s + r.score; }, 0) / rows.length).toFixed(1);
+    const sum = rows.reduce(function(s,r){ return s + r.salary; }, 0);
+    MGDemo.log(k.padEnd(11) + '인원 ' + rows.length + '  평균점수 ' + avg + '  급여합계 ' + sum.toLocaleString('ko-KR'));
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

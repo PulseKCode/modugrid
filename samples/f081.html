@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-2. Pasting a block — one undo puts it back — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. Copy and export</div>
+  <h1 class="dm-tit">9-2. Pasting a block — one undo puts it back</h1>
+  <p class="dm-desc">A block copied out of a spreadsheet pastes in with <code>Ctrl+V</code>. However many cells it fills, <b>a single <code>Ctrl+Z</code> undoes the whole thing</b>.</p>
+  <ul class="dm-steps">
+    <li>Click the box below to select it all and copy.</li>
+    <li>Click the first <code>Name</code> cell and press <code>Ctrl+V</code>.</li>
+    <li>Press <code>Ctrl+Z</code> <b>once</b> and check that everything comes back.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db" onclick="G.undo()">Undo (Ctrl+Z)</button>
+  <button type="button" class="db" onclick="G.redo()">Redo (Ctrl+Y)</button>
+  <button type="button" class="db p" onclick="dump()">Show current values</button>
+  </div>
+  <div class="dm-out">
+    <p>Copy this — click to select it all (3 rows × 2 columns)</p>
+    <textarea rows="3" readonly onclick="this.select()">Alan Turing	10
+Grace Hopper	20
+Ada Lovelace	30</textarea>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:170},
+  {key:'score', label:'Score', w:100, type:'number'},
+  {key:'role',  label:'Role',  w:120},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:10 } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+function dump(){
+  MGDemo.clearLog();
+  G.getFilteredData().slice(0,5).forEach(function(r){
+    MGDemo.log('id=' + r.id + '  ' + r.name + '  ' + r.score);
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

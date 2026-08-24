@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-3. Adding and removing photos — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-3. Adding and removing photos</h1>
+  <p class="dm-desc">A <code>type:'images'</code> column holds photos. Pick them with <code>＋ Add</code> or <b>drop the files onto the cell</b>. Hover a file name for a larger preview, and remove one with <code>✕</code>.</p>
+  <ul class="dm-steps">
+    <li>Press <code>＋ Add</code> on a <code>Photos</code> cell and choose an image.</li>
+    <li><b>Drag a file</b> from your file manager onto the cell.</li>
+    <li>Hover a file name to preview it.</li>
+    <li>Remove a single photo with <code>✕</code>.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="cnt()">Photos per row</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+  {key:'role',   label:'Role',   w:120},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:5, rowHeight:70, imageLimit:5, imageMaxSize:2*1024*1024 }
+});
+G.setData(MGDemo.rows(4));
+window.G = G;
+
+MGDemo.log('Drop a file onto a cell, or use ＋ Add');
+
+function cnt(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  ' + (r.images||[]).length + ' photos');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

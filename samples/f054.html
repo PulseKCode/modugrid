@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-8. Reducing to codes before sending — toCode() — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-8. Reducing to codes before sending — toCode()</h1>
+  <p class="dm-desc">Data arriving from another screen sometimes carries the whole option <b>object</b> instead of the code. Send that as it is and the server receives <code>[object Object]</code>. <code>toCode()</code> pulls the code out; <code>toCodeRow()</code> returns a <b>tidied copy</b> and leaves your original untouched.</p>
+  <ul class="dm-steps">
+    <li>Rows 2 and 3 hold objects in <code>Status</code> on purpose.</li>
+    <li>Press <b>Reduce to codes</b> and read the result.</li>
+    <li>Values that are not codes at all, such as dates and arrays, pass straight through.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="conv()">Reduce to codes</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:130, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(4);
+rows[0].status = 'A';                                // as it should be
+rows[1].status = { code:'P', name:'Pending' };       // an object slipped in
+rows[2].status = { value:'I', label:'Inactive' };
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+function conv(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log(JSON.stringify(r.status) + '   →   "' + G.toCode(r.status) + '"');
+  });
+  const one = G.getFilteredData()[1];
+  MGDemo.log('toCodeRow() = ' + JSON.stringify(G.toCodeRow(one, ['id','name','status'])), 'ok');
+  MGDemo.log('the original is untouched = ' + JSON.stringify(one.status));
+  MGDemo.log('not a code, so passed through — toCode([1,2]) = ' + JSON.stringify(G.toCode([1,2])));
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

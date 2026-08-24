@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>7-2. The same check on every route in — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">7. Validation</div>
+  <h1 class="dm-tit">7-2. The same check on every route in</h1>
+  <p class="dm-desc">Whether the value is typed into the cell, chosen from the calendar or saved from the modal, <b>the check runs once and to the same rules</b>. No route quietly skips it.</p>
+  <ul class="dm-steps">
+    <li>Double-click <code>Note</code> and type more than ten characters.</li>
+    <li>Type <code>150</code> into the <code>Score</code> cell.</li>
+    <li>Pick a date before 2000 from the <code>Joined</code> calendar.</li>
+    <li>Right-click → <b>Edit Modal</b> and save something invalid.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.openRowModal('edit', 1)">Open the edit modal</button>
+  <button type="button" class="db" onclick="show()">List the problems</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:130},
+  {key:'score',  label:'Score',  w:100, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || 'must be between 0 and 100'; }},
+  {key:'joined', label:'Joined', w:130, type:'date',
+    validate: function(v){ return (String(v) >= '2000-01-01') || 'must be 2000 or later'; }},
+  {key:'memo',   label:'Note',   w:200, type:'textarea',
+    validate: function(v){ return String(v).length <= 10 || 'keep it under ten characters'; }},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function show(){
+  MGDemo.clearLog();
+  const bad = G.getInvalidCells();
+  if (!bad.length){ MGDemo.log('Nothing is wrong', 'ok'); return; }
+  bad.forEach(function(b){ MGDemo.log('id=' + b.id + '  ' + b.key + ' — ' + b.message, 'er'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

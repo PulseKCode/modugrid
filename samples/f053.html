@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-7. Autocomplete settings — source, size and switching it off — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-7. Autocomplete settings — source, size and switching it off</h1>
+  <p class="dm-desc">Candidates come from <b>the server (<code>acSource</code>)</b> or from <b>a local list (<code>acHints</code>)</b>. If the server does not answer, the local list stands in; a query already asked is not asked again. Columns that do not need it are switched off with <code>ac:false</code>.</p>
+  <ul class="dm-steps">
+    <li>Type <code>M → Ma → Man</code> quickly into <code>Role</code> — only one request leaves.</li>
+    <li>Clear it and type the same thing again — the count does not rise.</li>
+    <li>Turn on <b>Simulate a server outage</b> and type again — the local list appears instead.</li>
+    <li>The <code>Note</code> column has <code>ac:false</code>, so nothing is offered there.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="calls()">Requests sent</button>
+  <button type="button" class="db" onclick="reset_()">Clear the count</button>
+  <button type="button" class="db dr" id="bf" onclick="toggleFail()">Simulate a server outage: off</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const SERVER = ['Developer','Designer','Manager','Analyst','DevOps','QA','Architect','Product Owner'];
+const BACKUP = ['Local — Dev','Local — Design','Local — Admin'];   // stand-in list
+
+let log = [], fail = false;
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:130},
+
+  {key:'role', label:'Role (server + backup list)', w:250,
+    acHints: BACKUP,          // used when the server cannot be reached
+    acLimit: 5,               // how many candidates to offer
+    acSource: function(key, q){
+      log.push(q);
+      MGDemo.log('request ' + log.length + ' for "' + q + '"' + (fail ? ' — will fail' : ''), 'wn');
+      return new Promise(function(res, rej){
+        setTimeout(function(){
+          if (fail){ rej(new Error('no response from the server')); return; }
+          res(SERVER.filter(function(v){ return v.toLowerCase().indexOf(q.toLowerCase()) >= 0; }));
+        }, 180);
+      });
+    }},
+
+  {key:'memo', label:'Note (autocomplete off)', w:200, ac:false},
+];
+
+const rows = MGDemo.rows(6).map(function(r){ r.role=''; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, acDebounce:200 } });
+G.setData(rows);
+window.G = G;
+
+function calls(){
+  MGDemo.clearLog();
+  if (!log.length){ MGDemo.log('Nothing sent yet — type into the Role column', 'wn'); return; }
+  log.forEach(function(q,i){ MGDemo.log((i+1) + '. "' + q + '"'); });
+  MGDemo.log(log.length + ' requests in total', 'ok');
+}
+function reset_(){ log = []; MGDemo.clearLog(); MGDemo.log('Count cleared', 'ok'); }
+function toggleFail(){
+  fail = !fail;
+  document.getElementById('bf').textContent = 'Simulate a server outage: ' + (fail ? 'on' : 'off');
+  MGDemo.log('Outage ' + (fail ? 'on — the backup list will be used' : 'off'), 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

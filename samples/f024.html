@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-1. Clicking a row and ticking it are two different things — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-1. Clicking a row and ticking it are two different things</h1>
+  <p class="dm-desc">Rows you <b>click</b> and rows you <b>tick</b> are kept as separate lists. That lets you treat one as "what I am looking at" and the other as "what I am about to act on" — browse by clicking, tick the few you actually need.</p>
+  <ul class="dm-steps">
+    <li>Click two or three rows to select them; the checkboxes do not move.</li>
+    <li>Tick the checkbox on a different row; the selection does not move.</li>
+    <li>Press <b>Show both lists</b> to see that they differ.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="both()">Show both lists</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    selMode:'row', pageSize:10,
+    on:{ selectionChange: function(p){
+      MGDemo.log('selected [' + p.selected.join(',') + ']  ·  checked [' + p.checked.join(',') + ']');
+    }}
+  }
+});
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function both(){
+  MGDemo.clearLog();
+  MGDemo.log('clicked  = [' + G.getSelected().join(', ') + ']', 'ok');
+  MGDemo.log('ticked   = [' + G.getChecked().join(', ') + ']', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

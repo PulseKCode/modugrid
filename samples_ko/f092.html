@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-10. 화면 설정 저장하고 복원하기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-10. 화면 설정 저장하고 복원하기</h1>
+  <p class="dm-desc">사용자가 맞춰 놓은 <b>컬럼 순서 · 폭 · 감춘 컬럼 · 정렬 · 필터 · 페이지 크기</b>를 통째로 뽑아 저장할 수 있습니다. 다음에 들어왔을 때 그대로 되돌려 주면 됩니다. 그 사이 컬럼 구성이 바뀌어 <b>없어진 컬럼이 저장본에 있어도 그 부분만 건너뛰므로</b> 화면이 깨지지 않습니다.</p>
+  <ul class="dm-steps">
+    <li>컬럼 폭을 바꾸고, 정렬을 걸고, 컬럼 하나를 감춥니다.</li>
+    <li><b>지금 상태 저장</b> → <b>일부러 흐트러뜨리기</b> → <b>저장한 상태로</b> 순으로 눌러 봅니다.</li>
+    <li><b>예전 저장본 적용</b> 은 지금 없는 컬럼이 섞인 경우입니다 — 그래도 정상 동작합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="save()">지금 상태 저장</button>
+  <button class="db p" onclick="load()">저장한 상태로</button>
+  <button class="db" onclick="mess()">일부러 흐트러뜨리기</button>
+  <button class="db dr" onclick="old()">예전 저장본 적용</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, multiSort:true } });
+G.setData(MGDemo.rows(30));
+window.G = G;
+
+let saved = null;
+
+/* 실제로는 이렇게 씁니다
+   저장: localStorage.setItem('gridLayout', JSON.stringify(G.getLayout()));
+   복원: G.setLayout(JSON.parse(localStorage.getItem('gridLayout') || '{}')); */
+function save(){
+  saved = G.getLayout();
+  MGDemo.log('저장했습니다 (' + JSON.stringify(saved).length + ' bytes)', 'ok');
+}
+function load(){
+  if (!saved){ MGDemo.log('먼저 저장하세요', 'wn'); return; }
+  G.setLayout(saved);
+  MGDemo.log('저장해 둔 상태로 되돌렸습니다', 'ok');
+}
+function mess(){
+  G.hideCol('score'); G.clearSorts(); G.changePS(25); G.moveCol('name', 6);
+  MGDemo.log('컬럼 감춤 · 정렬 해제 · 25개씩 · 컬럼 이동', 'wn');
+}
+
+/* 컬럼 구성이 바뀌기 전에 저장해 둔 것 — bonus / dept 는 지금 없다 */
+function old(){
+  G.setLayout({
+    v:2,
+    order:  ['_rn','_cb','name','bonus','status','dept','role','score','salary'],
+    hidden: ['bonus','salary'],
+    widths: { name:200, bonus:120, score:150, dept:90 },
+    sorts:  [{col:'bonus',dir:'asc'},{col:'score',dir:'desc'}],
+    filters:{ dept:{type:'list',values:['IT']}, role:{type:'list',values:['Developer','QA']} },
+    pageSize:15, showRN:true, showCB:true, striped:true,
+    freezeOn:false, multiSort:true, selMode:'row'
+  });
+  MGDemo.log('예전 저장본을 적용했습니다 — 없는 컬럼(bonus, dept)은 건너뛰었습니다', 'ok');
+  MGDemo.log('결과 순서 = ' + G.getLayout().order.join(' , '));
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-2. Deciding how a value reads (optionFormat) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-2. Deciding how a value reads (optionFormat)</h1>
+  <p class="dm-desc">Put placeholders such as <code>{code} {name}</code> into <code>optionFormat</code> to shape what appears. <b>Any other field on the option object can be used too</b>, so a department name or a headcount can travel with the value.</p>
+  <ul class="dm-steps">
+    <li>The same code reads differently in each column.</li>
+    <li><code>Department</code> pulls in the <code>dept</code> and <code>cnt</code> fields as well.</li>
+    <li>Open a cell and the dropdown uses the same wording.</li>
+  </ul>
+
+  
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const DEPT = [
+  {code:'D1', name:'Engineering', dept:'Technology', cnt:42},
+  {code:'D2', name:'Design',      dept:'Technology', cnt:11},
+  {code:'D3', name:'Sales',       dept:'Commercial', cnt:27},
+];
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:130},
+  {key:'d1', label:'code + name',   w:150, options:DEPT, optionFormat:'{code} {name}'},
+  {key:'d2', label:'name (code)',   w:150, options:DEPT, optionFormat:'{name} ({code})'},
+  {key:'d3', label:'with extras',   w:230, options:DEPT, optionFormat:'{dept} · {name} — {cnt} people'},
+];
+
+const rows = MGDemo.rows(6).map(function(r,i){
+  const c = DEPT[i % DEPT.length].code;
+  r.d1 = r.d2 = r.d3 = c;
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('All three columns store D1 / D2 / D3 — only the wording differs');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

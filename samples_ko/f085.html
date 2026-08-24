@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-3. 컬럼 옮기기 · 숨기기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-3. 컬럼 옮기기 · 숨기기</h1>
+  <p class="dm-desc">헤더 <b>글자</b>를 잡고 끌면 순서가 바뀝니다(정렬은 아이콘 전용이라 서로 부딪히지 않습니다). 안 쓰는 컬럼은 컬럼 패널에서 체크를 풀어 감춥니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 헤더 글자를 잡고 <code>이름</code> 앞으로 끌어 놓습니다.</li>
+    <li><b>컬럼 패널 열기</b> 로 체크를 몇 개 풉니다.</li>
+    <li>컬럼을 계속 감추면 마지막 하나는 감출 수 없습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openColPanel(event)">컬럼 패널 열기</button>
+  <button class="db" onclick="G.toggleColHidden('salary');st()">급여 감추기 / 보이기</button>
+  <button class="db" onclick="st()">현재 상태</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function st(){
+  const L = G.getLayout();
+  MGDemo.log('순서 = ' + L.order.join(' , '));
+  MGDemo.log('감춘 컬럼 = ' + (L.hidden.join(', ') || '없음'), 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.3-1. 전체 검색 — 코드로도 표시명으로도 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.3 검색</div>
+  <h1 class="dm-tit">3.3-1. 전체 검색 — 코드로도 표시명으로도</h1>
+  <p class="dm-desc"><code>search(q)</code> 는 여러 컬럼을 한꺼번에 훑습니다. 목록 컬럼은 화면에 보이는 <b>표시명</b>과 데이터에 저장된 <b>코드</b> 양쪽 모두 걸리므로, 사용자가 무엇을 치든 찾아집니다.</p>
+  <ul class="dm-steps">
+    <li>검색칸에 <code>활성</code> 을 칩니다 — 화면에 보이는 글자로 찾습니다.</li>
+    <li><code>A</code> 를 칩니다 — 저장된 코드로도 찾습니다.</li>
+    <li><b>검색 대상 좁히기</b> 로 특정 컬럼만 훑게 할 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">검색</span>
+  <input class="dm-in" id="q" placeholder="활성 / A / 대기" oninput="G.search(this.value);after()">
+  <button class="db" onclick="document.getElementById('q').value='';G.search('');after()">지우기</button>
+  <button class="db p" id="bk" onclick="swap()">검색 대상: 전체 컬럼</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',    label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'memo',   label:'메모', w:160},
+];
+
+let narrow = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  const opt = { pageSize:12 };
+  if (narrow) opt.searchKeys = ['name','memo'];    // 이 두 컬럼만 검색
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(20));
+  window.G = G;
+  MGDemo.log('검색 대상 = ' + (narrow ? "이름 · 메모만" : '전체 컬럼 (자동)'), 'ok');
+}
+
+function swap(){
+  narrow = !narrow;
+  document.getElementById('bk').textContent = '검색 대상: ' + (narrow ? '이름 · 메모' : '전체 컬럼');
+  build();
+  const q = document.getElementById('q');
+  if (q && q.value) { G.search(q.value); after(); }
+}
+
+function after(){ MGDemo.log('보이는 행 ' + G.getFilteredData().length + '개'); }
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

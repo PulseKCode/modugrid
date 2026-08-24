@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-3. Choosing which fields to send — submitFields — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-3. Choosing which fields to send — submitFields</h1>
+  <p class="dm-desc">Leave it unset and the fields are <b>derived from the columns on screen</b>. Name them in <code>submitFields</code> when you want to send less than that.</p>
+  <ul class="dm-steps">
+    <li>It starts unset, so the fields come from the columns.</li>
+    <li>Change a cell and press <b>Preview what will be sent</b>.</li>
+    <li>Switch to the named-fields setting and only those are sent.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  <button type="button" class="db" id="bsf" onclick="swap()">Now: derived from the columns</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+let useSF = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  const opt = { editMode:true, selMode:'cell', pageSize:8, showST:true };
+  if (useSF) opt.submitFields = ['id','name'];      // id and the name only
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(6));
+  window.G = G;
+  MGDemo.log('sending ' + (useSF ? 'id and name only' : 'the fields derived from the columns'), 'ok');
+}
+
+function swap(){
+  useSF = !useSF;
+  document.getElementById('bsf').textContent = 'Now: ' + (useSF ? 'id and name only' : 'derived from the columns');
+  build();
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.updated.length){ MGDemo.log('Change a cell first', 'wn'); return; }
+  const u = ch.updated[0];
+  MGDemo.log('fields sent = id , ' + Object.keys(u.changes).join(' , '), 'ok');
+  MGDemo.log(JSON.stringify(u));
+}
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

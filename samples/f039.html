@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-7. A cleared number is empty, not zero — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 Entry points</div>
+  <h1 class="dm-tit">5.1-7. A cleared number is empty, not zero</h1>
+  <p class="dm-desc">Clearing a numeric cell with <code>Delete</code> stores <b>an empty value (null)</b> rather than <code>0</code>, because a server usually needs to tell "scored nothing" apart from "not filled in yet".</p>
+  <ul class="dm-steps">
+    <li>Clear one <code>Score</code> cell with <code>Delete</code>.</li>
+    <li>Type <code>0</code> into another one by hand.</li>
+    <li>Press <b>Show the stored values</b> and see that the two are different.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="types()">Show the stored values</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',   w:150},
+  {key:'score', label:'Score',  w:110, type:'number'},
+  {key:'salary',label:'Salary', w:130, type:'currency'},
+  {key:'memo',  label:'Note',   w:170},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log('Clear one Score cell with Delete, and type 0 into another');
+
+function types(){
+  MGDemo.clearLog();
+  G.getFilteredData().slice(0,6).forEach(function(r){
+    MGDemo.log('id=' + r.id + '  score = ' + JSON.stringify(r.score)
+             + (r.score === null ? '   ← empty' : r.score === 0 ? '   ← the number zero' : ''));
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

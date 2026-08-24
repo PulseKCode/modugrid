@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-2. Limits on size and number — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-2. Limits on size and number</h1>
+  <p class="dm-desc"><code>imageMaxSize</code> caps each file and <code>imageLimit</code> caps the row. A file over the limit is <b>left out on its own</b> — everything else still goes in, and a message explains what happened.</p>
+  <ul class="dm-steps">
+    <li>Drop <b>more than three</b> photos onto a <code>Photos</code> cell — only three are kept.</li>
+    <li>The <code>＋ Add</code> label changes to <code>3/3</code>.</li>
+    <li>Try a file over 500 KB and only that one is refused.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="cnt()">Photos per row</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'none',
+    imageLimit: 3,                  // three per row
+    imageMaxSize: 500*1024,         // 500 KB each
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+MGDemo.log('Limited to three photos per row and 500 KB per file');
+
+function cnt(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  ' + (r.images||[]).length + ' of 3');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

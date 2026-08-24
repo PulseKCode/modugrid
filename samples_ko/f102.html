@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13-1. 서버에서 페이지 단위로 가져오기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">13. 서버 연동</div>
+  <h1 class="dm-tit">13-1. 서버에서 페이지 단위로 가져오기</h1>
+  <p class="dm-desc">데이터가 많아 한 번에 못 받을 때 씁니다. <code>dataSource</code> 를 주면 정렬·필터·검색·페이지 조건이 <b>한 덩어리로 전달</b>되므로, 그대로 SQL 조건으로 옮기면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>헤더 정렬 아이콘을 누르고, 깔때기로 조건을 걸고, 검색어를 칩니다.</li>
+    <li>요청할 때마다 서버로 가는 조건이 그대로 찍힙니다.</li>
+    <li>페이지를 넘기면 페이지 번호만 바뀝니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">검색</span>
+  <input class="dm-in" id="q" placeholder="이름 / 직무" oninput="G.search(this.value)">
+  <button class="db" onclick="MGDemo.clearLog()">로그 지우기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const ALL = MGDemo.rows(137);   // 서버에 있다고 가정한 데이터
+
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:130},
+  {key:'role', label:'직무', w:130},
+  {key:'score',label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize: 10,
+
+    /* 실제로는 fetch('list.jsp?' + new URLSearchParams(req)) 형태로 서버를 부르고
+       { rows: [...], total: 전체건수 } 를 돌려주면 됩니다. */
+    dataSource: function(req){
+      MGDemo.log('서버 조회 — 페이지 ' + req.page + ' / 정렬 ' + JSON.stringify(req.sorts)
+               + ' / 조건 ' + JSON.stringify(req.filters) + ' / 검색 "' + (req.search||'') + '"', 'ok');
+
+      let rows = ALL.slice();
+      if (req.search) rows = rows.filter(function(r){
+        return (r.name + r.role).toLowerCase().indexOf(req.search) >= 0;
+      });
+      Object.keys(req.filters || {}).forEach(function(k){
+        const f = req.filters[k];
+        if (f.type === 'list') rows = rows.filter(function(r){ return f.values.indexOf(String(r[k])) >= 0; });
+        else rows = rows.filter(function(r){ return +r[k] >= +f.min && +r[k] <= +f.max; });
+      });
+      (req.sorts || []).slice().reverse().forEach(function(s){
+        rows.sort(function(a,b){
+          const c = (a[s.col] > b[s.col]) - (a[s.col] < b[s.col]);
+          return s.dir === 'asc' ? c : -c;
+        });
+      });
+      const st = (req.page - 1) * req.pageSize;
+      return Promise.resolve({ rows: rows.slice(st, st + req.pageSize), total: rows.length });
+    }
+  }
+});
+window.G = G;
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-1. Picking values to show — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 Filtering</div>
+  <h1 class="dm-tit">3.2-1. Picking values to show</h1>
+  <p class="dm-desc">The funnel icon on a header opens the list of values actually present in that column. Tick the ones you want and press <code>Apply</code>.</p>
+  <ul class="dm-steps">
+    <li>Click the funnel icon on the <code>Role</code> header.</li>
+    <li>Tick a few entries and press <code>Apply</code>.</li>
+    <li>Press <code>Clear</code> to drop that column's condition.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="showF()">Active conditions</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:15 } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function showF(){
+  MGDemo.clearLog();
+  const f = G.getState().cfilters;
+  const keys = Object.keys(f);
+  if (!keys.length) { MGDemo.log('No conditions are active', 'wn'); return; }
+  keys.forEach(function(k){
+    const v = f[k];
+    MGDemo.log(k + ' → ' + (v.type==='list' ? [...v.values].join(', ') : v.min + ' to ' + v.max), 'ok');
+  });
+  MGDemo.log(G.getFilteredData().length + ' rows shown');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

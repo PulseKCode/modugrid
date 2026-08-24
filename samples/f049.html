@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-3. Names follow the value everywhere — search, CSV and copy — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-3. Names follow the value everywhere — search, CSV and copy</h1>
+  <p class="dm-desc">The code-and-name split is not applied in one place only. <b>Cells, dropdowns, autocomplete, the filter popup, search, CSV export and the Excel copy</b> all follow the same rule, so a file never comes out full of raw codes.</p>
+  <ul class="dm-steps">
+    <li>Type <code>Active</code> into the search box — it matches the readable name.</li>
+    <li>Open the <code>Status</code> funnel and the list reads the same way.</li>
+    <li>Press <b>Export CSV</b> and open the file — names, not codes.</li>
+    <li>Tick a row, press <b>Copy for Excel</b> and paste it — the same again.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">Search</span>
+  <input type="text" class="dm-in" id="q" placeholder="Active / A" oninput="G.search(this.value)">
+  <button type="button" class="db p" onclick="G.exportCSV('coded_values.csv')">Export CSV</button>
+  <button type="button" class="db" onclick="excel()">Copy for Excel</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:150, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+  {key:'role',   label:'Role',   w:130},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:12 } });
+G.setData(MGDemo.rows(18));
+window.G = G;
+
+MGDemo.log('The data holds A / P / I, but exports read "[A] Active"');
+
+function excel(){
+  if (!G.getSelected().length && !G.getChecked().length){ MGDemo.log('Tick a row first', 'wn'); return; }
+  G.ctxCopyExcel();
+  MGDemo.log('Copied — paste it into Excel to check', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

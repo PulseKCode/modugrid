@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-1. Picking out what actually changed — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-1. Picking out what actually changed</h1>
+  <p class="dm-desc">Whatever the user did and however they did it, the grid compares the current state against <b>the state it started from</b> and reports only the differences. Cell edits, modal saves, insertions, deletions and even undo are all picked up.</p>
+  <ul class="dm-steps">
+    <li>Edit a cell — one update.</li>
+    <li>Right-click → <b>Edit Modal</b> and change something there; it is picked up the same way.</li>
+    <li>Add and delete a row as well.</li>
+    <li>Press <code>Ctrl+Z</code> and the counts come back down.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db" onclick="G.addRow(mk())">Add a row</button>
+  <button type="button" class="db" onclick="G.openRowModal('edit', 1)">Edit in the modal</button>
+  <button type="button" class="db dr" onclick="G.deleteSelected()">Delete selected</button>
+  <button type="button" class="db" onclick="G.undo()">Undo</button>
+  <button type="button" class="db p" onclick="diff()">What has changed</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:12, showST:true,
+    on:{ dirtyChange: function(p){
+      MGDemo.log(p.inserted + ' added · ' + p.updated + ' updated · ' + p.deleted + ' deleted');
+    }}
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function mk(){
+  return { id: Date.now() % 100000, name:'New row', status:'A', role:'QA',
+           score:50, progress:0, salary:3000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function diff(){
+  MGDemo.clearLog();
+  const c = G.getChangeCount();
+  MGDemo.log(c.inserted + ' added · ' + c.updated + ' updated · ' + c.deleted + ' deleted — ' + c.total + ' in all',
+             c.total ? 'wn' : 'ok');
+  MGDemo.log('changed rows = [' + G.getDirtyIds().join(', ') + ']');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

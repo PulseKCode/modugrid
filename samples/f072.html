@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-4. upload — sending each file as it is picked — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-4. upload — sending each file as it is picked</h1>
+  <p class="dm-desc">The file goes to the server <b>the moment it is chosen</b>, and the <code>{id, url}</code> that comes back replaces it. When you save, only <b>the reference</b> travels, so a heavy set of photos does not make the save heavy.</p>
+  <ul class="dm-steps">
+    <li>Add a photo to a <code>Photos</code> cell — the upload starts straight away.</li>
+    <li>Progress is shown while it runs, and the server address replaces it when it finishes.</li>
+    <li>Press <b>Preview what will be sent</b> to see that only the reference goes.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+let no = 0;
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'upload',
+
+    /* Upload one file and return { id, url }. In real code:
+         const fd = new FormData();
+         fd.append('file', file); fd.append('rowId', row.id);
+         const res = await fetch('upload.jsp', { method:'POST', body:fd });
+         return await res.json();                                            */
+    imageUpload: function(file, row){
+      MGDemo.log('uploading ' + file.name + ' for row ' + row.id, 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          const id = 'F' + (++no);
+          MGDemo.log('uploaded as ' + id, 'ok');
+          res({ id: id, url: '/files/' + id + '.jpg' });
+        }, 700);
+      });
+    }
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  const all = ch.updated.concat(ch.inserted);
+  if (!all.length){ MGDemo.log('Add a photo first', 'wn'); return; }
+  all.forEach(function(r){ MGDemo.log(JSON.stringify(r)); });
+  MGDemo.log('The file is already on the server, so only the url travels', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

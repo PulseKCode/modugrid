@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-9. 선택 결과 받기 — id 배열 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-9. 선택 결과 받기 — id 배열</h1>
+  <p class="dm-desc"><code>getSelected()</code> 와 <code>getChecked()</code> 는 <b>id 배열</b>을 돌려줍니다. 서버로 그대로 보내기 좋고, 행 내용이 필요하면 <code>getFilteredData()</code> 에서 찾아 쓰면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>행을 몇 개 선택하고 몇 개 체크합니다.</li>
+    <li><b>id 목록</b> 으로 반환값을 봅니다.</li>
+    <li><b>행 내용으로 보기</b> 는 id를 행 객체로 바꾸는 실제 사용 방법입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="ids()">id 목록</button>
+  <button class="db" onclick="rows()">행 내용으로 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'row', pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function ids(){
+  MGDemo.clearLog();
+  MGDemo.log('getSelected() = ' + JSON.stringify(G.getSelected()), 'ok');
+  MGDemo.log('getChecked()  = ' + JSON.stringify(G.getChecked()), 'ok');
+}
+
+/* id → 행 객체로 바꾸는 실사용 패턴 */
+function rows(){
+  MGDemo.clearLog();
+  const all = G.getFilteredData();
+  const picked = G.getSelected().map(function(id){
+    return all.find(function(r){ return r.id === id; });
+  }).filter(Boolean);
+  if (!picked.length) { MGDemo.log('먼저 행을 선택하세요', 'wn'); return; }
+  picked.forEach(function(r){ MGDemo.log('id=' + r.id + '  ' + r.name + '  ' + r.role); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

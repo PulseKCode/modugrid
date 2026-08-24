@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-9. Wiring up your own buttons (controls) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-9. Wiring up your own buttons (controls)</h1>
+  <p class="dm-desc">Point <code>options.controls</code> at buttons and labels of your own and the grid <b>keeps their pressed state and their text up to date</b> as things change. Use it when you would rather build your own toolbar than use the grid's.</p>
+  <ul class="dm-steps">
+    <li>The buttons in the grey area belong to <b>this page</b>, not the grid.</li>
+    <li>Press them to switch the grid features on and off.</li>
+    <li>Watch their <b>pressed state</b> and the labels beside them follow along.</li>
+  </ul>
+
+  
+  <div class="dm-out">
+    <p>These buttons and labels belong to the page — wired up with controls</p>
+    <div class="dm-tb" style="margin:0">
+      <button type="button" class="db" id="btnEdit" onclick="G.toggleEditMode()">Edit mode</button>
+      <button type="button" class="db" id="btnFreeze" onclick="G.toggleFreeze()">Freeze columns</button>
+      <button type="button" class="db" id="btnTree" onclick="G.toggleTree()">Tree view</button>
+      <span class="dm-lab" id="stEdit">—</span>
+      <span class="dm-lab" id="stTree">—</span>
+    </div>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1, freeze:1},
+  {key:'name', label:'Organisation', w:220, freeze:1},
+  {key:'role', label:'Type',  w:130},
+  {key:'score',label:'Score', w:100, type:'number'},
+  {key:'memo', label:'Note',  w:240},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:0, selMode:'cell',
+    /* tell the grid the ids of the elements the page made */
+    controls:{ btnEdit:'btnEdit', btnFreeze:'btnFreeze', btnTree:'btnTree',
+               stEdit:'stEdit',   stTree:'stTree' }
+  }
+});
+G.setData(MGDemo.tree());
+window.G = G;
+
+MGDemo.log('Press the buttons above — their state and the labels update themselves');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

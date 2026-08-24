@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-6. 빈 헤더로 두기 (cbHeader:false) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-6. 빈 헤더로 두기 (cbHeader:false)</h1>
+  <p class="dm-desc"><code>cbHeader</code> 에 <code>'none'</code> 이나 <code>false</code> 를 주면 헤더 칸을 비웁니다. 전체 선택을 아예 막고 싶을 때 가장 확실한 방법입니다.</p>
+  <ul class="dm-steps">
+    <li>헤더의 체크박스 자리가 비어 있는지 봅니다.</li>
+    <li>헤더를 눌러도 아무 일이 없습니다.</li>
+    <li><b>코드로 전체 선택</b> 은 여전히 동작합니다 — 화면에서만 막는 것입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleCheckAll(true);cnt()">코드로 전체 체크</button>
+  <button class="db" onclick="G.toggleCheckAll(false);cnt()">코드로 전체 해제</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ selMode:'row', pageSize:8, cbHeader:false }   // 'none' 도 동일
+});
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+MGDemo.log('헤더는 비어 있지만 API 로는 전체 선택이 가능합니다');
+
+function cnt(){ MGDemo.log('체크 ' + G.getChecked().length + '건 = [' + G.getChecked().join(', ') + ']', 'ok'); }
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

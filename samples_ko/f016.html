@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-3. 값이 많을 때 팝업에서 찾기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-3. 값이 많을 때 팝업에서 찾기</h1>
+  <p class="dm-desc">고유값이 많은 컬럼은 팝업 위 입력칸으로 목록을 좁힙니다. 검색 중에 <b>전체 선택</b>을 누르면 <b>지금 보이는 항목만</b> 바뀌므로, 숨은 항목의 선택 상태는 그대로 남습니다.</p>
+  <ul class="dm-steps">
+    <li><code>도시</code> 깔때기를 엽니다 (값 20개).</li>
+    <li>검색칸에 <code>산</code> 을 칩니다 — 목록이 좁혀집니다.</li>
+    <li>이 상태에서 <b>전체 선택</b>을 눌러 보이는 항목만 끕니다.</li>
+    <li>검색어를 지우면 나머지 항목은 그대로입니다.</li>
+  </ul>
+
+  
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const CITY = ['서울','부산','대구','인천','광주','대전','울산','세종','수원','성남',
+               '고양','용인','창원','진주','청주','천안','전주','포항','김해','제주'];
+
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:130},
+  {key:'city', label:'도시', w:120},
+  {key:'role', label:'직무', w:120},
+  {key:'score',label:'점수', w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(40).map(function(r,i){ r.city = CITY[i % CITY.length]; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:12 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('도시 값 ' + CITY.length + '개 — 팝업 검색으로 좁혀 보세요');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

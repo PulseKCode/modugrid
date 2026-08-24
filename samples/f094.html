@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-2. The right editor for each field — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. Modals</div>
+  <h1 class="dm-tit">11-2. The right editor for each field</h1>
+  <p class="dm-desc">Each field gets an editor to suit its column type — a <b>select</b> for coded values, a <b>multi-line box</b> for long text, a <b>date picker</b> for dates and a <b>number box</b> for figures.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Open the edit window</b>.</li>
+    <li><code>Status</code> is a select, <code>Note</code> is multi-line and <code>Joined</code> is a date field.</li>
+    <li>Change each of them and save.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.openRowModal('edit', 1)">Open the edit window</button>
+  <button type="button" class="db p" onclick="G.openRowModal('add')">Open the add window</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name (text)',        w:140},
+  {key:'status', label:'Status (select)',    w:130, options:MGDemo.STATUS},
+  {key:'score',  label:'Score (number)',     w:120, type:'number'},
+  {key:'joined', label:'Joined (date)',      w:130, type:'date'},
+  {key:'memo',   label:'Note (multi-line)',  w:190, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

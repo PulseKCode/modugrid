@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-1. 되돌리기 · 다시 실행 (Ctrl+Z · Ctrl+Y) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-1. 되돌리기 · 다시 실행 (Ctrl+Z · Ctrl+Y)</h1>
+  <p class="dm-desc">값을 바꿀 때마다 그 시점이 기록됩니다. <code>Ctrl+Z</code> 로 한 단계씩 되돌리고 <code>Ctrl+Y</code> 로 다시 적용합니다. 되돌릴 때 <b>어떤 작업이 취소되는지 알림으로</b> 알려줍니다.</p>
+  <ul class="dm-steps">
+    <li>셀 편집 · 행 추가 · 삭제를 섞어 몇 번 해 봅니다.</li>
+    <li><code>Ctrl+Z</code> 를 누르며 알림 문구를 확인합니다.</li>
+    <li><code>Ctrl+Y</code> 로 다시 적용합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="G.addRow(mk())">행 추가</button>
+  <button class="db dr" onclick="G.deleteSelected()">고른 행 삭제</button>
+  <button class="db p" onclick="G.undo()">되돌리기</button>
+  <button class="db p" onclick="G.redo()">다시 실행</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:140},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:12, showST:true,
+    on:{ dataChange: function(p){
+      if (p.type === 'undo' || p.type === 'redo')
+        MGDemo.log((p.type === 'undo' ? '되돌림' : '다시 실행') + (p.label ? ' — ' + p.label : ''), 'ok');
+    }}
+  }
+});
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+let seq = 900;
+function mk(){
+  return { id: ++seq, name:'새 행 ' + seq, status:'A', role:'QA',
+           score:50, progress:0, salary:0, joined:'2026-01-01', memo:'', images:[] };
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

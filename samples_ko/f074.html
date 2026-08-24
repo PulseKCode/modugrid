@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-6. upload — 저장 전에 업로드 끝났는지 확인 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-6. upload — 저장 전에 업로드 끝났는지 확인</h1>
+  <p class="dm-desc">업로드가 아직 끝나지 않았는데 저장하면 주소가 비어 있는 채로 나갑니다. <code>hasPendingUploads()</code> 로 <b>저장 버튼에서 한 번 막아 주세요</b>.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 이미지를 넣고 <b>업로드가 끝나기 전에</b> 저장을 눌러 봅니다.</li>
+    <li>아직 진행 중이라며 막힙니다.</li>
+    <li>완료된 뒤 다시 누르면 정상 저장됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="save()">저장</button>
+  <button class="db" onclick="chk()">업로드 상태 확인</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+let no = 0;
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode:'upload',
+    imageUpload: function(file, row){
+      MGDemo.log('업로드 시작 — ' + file.name + ' (3초 걸립니다)', 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          const id = 'F' + (++no);
+          MGDemo.log('업로드 완료 — ' + id, 'ok');
+          res({ id:id, url:'/files/' + id + '.jpg' });
+        }, 3000);
+      });
+    }
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+/* 서버 대신 응답을 흉내내는 목(mock). 실제로는 submit.jsp 주소를 넣으면 됩니다. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch 미지원'));
+  }
+  const b = init && init.body;
+  if (typeof b === 'string'){
+    MGDemo.log('POST ' + url + '   (Content-Type: ' + ((init.headers||{})['Content-Type'] || '자동') + ')');
+    MGDemo.log(decodeURIComponent(b).slice(0, 700));
+  } else if (b && typeof b.forEach === 'function'){
+    MGDemo.log('POST ' + url + '   (Content-Type: 브라우저가 자동 지정)');
+    b.forEach(function(v, k){
+      MGDemo.log('  ' + k + ' = ' + (typeof v === 'string' ? v.slice(0, 400) : '(파일 ' + v.size + ' bytes)'));
+    });
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function chk(){
+  MGDemo.log('진행 중인 업로드 = ' + (G.hasPendingUploads() ? '있음' : '없음'),
+             G.hasPendingUploads() ? 'wn' : 'ok');
+}
+
+/* 저장 버튼의 표준 형태 */
+async function save(){
+  if (G.hasPendingUploads()){
+    MGDemo.log('사진 업로드가 아직 끝나지 않았습니다. 잠시 후 다시 저장해 주세요.', 'er');
+    return;
+  }
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    MGDemo.log(out.skipped ? '바뀐 게 없습니다' : '저장 완료', 'ok');
+  }catch(e){ MGDemo.log('실패 — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

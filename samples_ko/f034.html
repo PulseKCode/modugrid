@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-2. 클릭 한 번 후 바로 타이핑 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 진입 경로</div>
+  <h1 class="dm-tit">5.1-2. 클릭 한 번 후 바로 타이핑</h1>
+  <p class="dm-desc">셀을 한 번 클릭하고 곧바로 글자를 치면 입력이 시작됩니다. 엑셀과 같은 느낌이라 별도로 편집 버튼을 누를 필요가 없습니다. 행 선택 모드든 셀 선택 모드든 동일합니다.</p>
+  <ul class="dm-steps">
+    <li><code>이름</code> 셀을 <b>한 번만</b> 클릭하고 바로 글자를 칩니다.</li>
+    <li><b>행 모드로 바꾸기</b> 후 같은 방법으로 해 봅니다 — 동일하게 됩니다.</li>
+    <li>한글도 첫 글자부터 정상 입력됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" id="bm" onclick="swap()">행 모드로 바꾸기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수',   w:90,  type:'number'},
+  {key:'joined', label:'입사일', w:120, type:'date'},
+  {key:'memo',   label:'메모',   w:180, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:8,
+    on:{ cellEdit: function(p){ MGDemo.log(p.key + ' = ' + p.value, 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function swap(){
+  const next = G.getState().selMode === 'cell' ? 'row' : 'cell';
+  G.setSelMode(next);
+  document.getElementById('bm').textContent = (next==='cell' ? '행 모드로 바꾸기' : '셀 모드로 바꾸기');
+  MGDemo.log('선택 모드 = ' + next + ' — 클릭 후 타이핑을 다시 해보세요', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ModuGrid — 기능별 샘플 113종</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<style>
+  html,body{height:100%}
+  body{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+  .ix-top{display:flex;align-items:center;gap:12px;height:52px;flex:0 0 52px;
+    padding:0 16px;background:var(--bg-tb);color:#fff;border-bottom:1px solid rgba(255,255,255,.06)}
+  .ix-logo{font-size:16px;font-weight:800;letter-spacing:-.4px;cursor:pointer;user-select:none}
+  .ix-logo:hover span{color:#a8bcff}
+  .ix-logo span{color:#7f9cff}
+  .ix-sub{font-size:11px;color:rgba(255,255,255,.5)}
+  .ix-sp{flex:1}
+  .ix-q{padding:5px 10px;border-radius:var(--r1);border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.08);color:#fff;font-family:var(--F);font-size:12px;width:230px}
+  .ix-q::placeholder{color:rgba(255,255,255,.4)}
+  .ix-bt{padding:5px 11px;border-radius:var(--r1);border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);font-family:var(--F);
+    font-size:11px;font-weight:700;cursor:pointer}
+  .ix-bt:hover{background:rgba(255,255,255,.16);color:#fff}
+
+  .ix-main{flex:1;display:flex;min-height:0}
+
+  .ix-side{width:344px;flex:0 0 344px;overflow-y:auto;border-right:1px solid var(--bd);
+    background:var(--bg-fl)}
+  .ix-side::-webkit-scrollbar{width:8px}
+  .ix-side::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+  .ix-gh{position:sticky;top:0;z-index:2;padding:7px 14px;background:var(--bg-grp);
+    border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);
+    font-size:10.5px;font-weight:800;letter-spacing:.4px;color:var(--txh);text-transform:uppercase}
+  .ix-it{display:flex;gap:9px;padding:8px 14px;cursor:pointer;border-bottom:1px solid var(--bd);
+    transition:background var(--tr)}
+  .ix-it:hover{background:var(--bg-hv)}
+  .ix-it.on{background:var(--acl);box-shadow:inset 3px 0 0 var(--ac)}
+  .ix-n{flex:0 0 52px;font-family:var(--FM);font-size:10.5px;color:var(--tx2);padding-top:1px;
+    white-space:nowrap;letter-spacing:-.2px}
+  .ix-it.on .ix-n{color:var(--ac);font-weight:700}
+  .ix-t{font-size:12.2px;line-height:1.45;color:var(--tx)}
+  .ix-it.on .ix-t{color:var(--ac);font-weight:700}
+  .ix-none{padding:20px 14px;font-size:12px;color:var(--tx2)}
+
+  .ix-view{flex:1;min-width:0;display:flex;flex-direction:column}
+  .ix-bar{display:flex;align-items:center;gap:10px;height:38px;flex:0 0 38px;padding:0 14px;
+    border-bottom:1px solid var(--bd);background:var(--bg-hd)}
+  .ix-crumb{font-size:11.5px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ix-crumb b{color:var(--tx)}
+  .ix-bar .ix-bt{border-color:var(--bd2);background:var(--bg);color:var(--tx2)}
+  .ix-bar .ix-bt:hover{border-color:var(--ac);color:var(--ac);background:var(--bg)}
+  #frame{flex:1;width:100%;border:0;background:var(--bg)}
+
+  @media (max-width:860px){
+    .ix-side{width:230px;flex:0 0 230px}
+    .ix-q{width:140px}
+  }
+</style>
+</head>
+<body>
+
+<div class="ix-top">
+  <div>
+    <div class="ix-logo" id="brand" role="button" tabindex="0" title="처음 화면으로">Modu<span>Grid</span></div>
+    <div class="ix-sub">기능별 샘플 113종 · 각 페이지에 소스 보기 포함</div>
+  </div>
+  <span class="ix-sp"></span>
+  <input type="text" class="ix-q" id="q" placeholder="기능 검색 (8.1 처럼 절 번호도 가능)">
+  <a class="ix-bt" href="../samples/index.html" style="text-decoration:none;display:inline-flex;align-items:center">English</a>
+  <button type="button" class="ix-bt" id="theme">다크 모드</button>
+</div>
+
+<div class="ix-main">
+  <div class="ix-side" id="side"></div>
+  <div class="ix-view">
+    <div class="ix-bar">
+      <div class="ix-crumb" id="crumb">왼쪽 목록에서 항목을 고르세요</div>
+      <span class="ix-sp"></span>
+      <button type="button" class="ix-bt" id="open">새 창</button>
+      <button type="button" class="ix-bt" id="prev">← 이전</button>
+      <button type="button" class="ix-bt" id="next">다음 →</button>
+    </div>
+    <iframe id="frame" title="sample"></iframe>
+  </div>
+</div>
+
+<script src="_items.js"></script>
+<script>
+(function(){
+  var ITEMS = window.MG_ITEMS || [];
+  var side  = document.getElementById('side');
+  var frame = document.getElementById('frame');
+  var crumb = document.getElementById('crumb');
+  var cur   = null;
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function render(q){
+    q = (q || '').trim().toLowerCase();
+    var list = ITEMS.filter(function(it){
+      return !q || (it.no + ' ' + it.t + ' ' + it.g + ' ' + it.d).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!list.length){ side.innerHTML = '<div class="ix-none">일치하는 항목이 없습니다.</div>'; return; }
+
+    var html = '', lastG = null;
+    list.forEach(function(it){
+      if (it.g !== lastG){ lastG = it.g; html += '<div class="ix-gh">' + esc(lastG) + '</div>'; }
+      html += '<div class="ix-it' + (cur === it.n ? ' on' : '') + '" data-n="' + it.n + '">' +
+                '<div class="ix-n">' + esc(it.no) + '</div>' +
+                '<div class="ix-t">' + esc(it.t) + '</div>' +
+              '</div>';
+    });
+    side.innerHTML = html;
+  }
+
+  function open(n){
+    var it = ITEMS.filter(function(x){ return x.n === n; })[0];
+    if (!it) return;
+    cur = n;
+    frame.src = themed(it.file);
+    crumb.innerHTML = esc(it.g) + ' &nbsp;›&nbsp; <b>' + esc(it.no) + '. ' + esc(it.t) + '</b>' +
+                      ' &nbsp;<span style="opacity:.6">(' + it.file + ')</span>';
+    location.hash = '#' + n;
+    side.querySelectorAll('.ix-it').forEach(function(el){
+      el.classList.toggle('on', +el.dataset.n === n);
+    });
+    var on = side.querySelector('.ix-it.on');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest' });
+  }
+
+  side.addEventListener('click', function(e){
+    var it = e.target.closest('.ix-it');
+    if (it) open(+it.dataset.n);
+  });
+
+  document.getElementById('q').addEventListener('input', function(){ render(this.value); });
+  document.getElementById('prev').onclick = function(){ if (cur === null) return; if (cur > 1) open(cur - 1); else openHome(); };
+  document.getElementById('next').onclick = function(){ if (cur === null) { open(1); return; } if (cur < ITEMS.length) open(cur + 1); };
+  document.getElementById('open').onclick = function(){ if (frame.getAttribute('src')) window.open(frame.getAttribute('src'), '_blank'); };
+
+  /* Theme. contentDocument is blocked between file:// frames, so the state is
+     pushed three ways: straight in when same-origin, by message otherwise, and
+     on the URL so a freshly loaded page starts in the right colours. */
+  var dark = false;
+
+  function paintTheme(){
+    var d = document.documentElement;
+    if (dark) d.setAttribute('data-theme','dark'); else d.removeAttribute('data-theme');
+    document.getElementById('theme').textContent = dark ? '라이트 모드' : '다크 모드';
+  }
+  function pushTheme(){
+    try{
+      var fd = frame.contentDocument && frame.contentDocument.documentElement;
+      if (fd){ if (dark) fd.setAttribute('data-theme','dark'); else fd.removeAttribute('data-theme'); }
+    }catch(_){}
+    try{ frame.contentWindow.postMessage({ mgTheme: dark ? 'dark' : 'light' }, '*'); }catch(_){}
+  }
+  function themed(file){ return dark ? file + '?theme=dark' : file; }
+
+  document.getElementById('theme').onclick = function(){
+    dark = !dark; paintTheme(); pushTheme();
+  };
+  frame.addEventListener('load', pushTheme);
+
+  /* The overview sits in the frame until a topic is chosen. */
+  var HOME = 'main.html';
+  function openHome(){
+    cur = null;
+    frame.src = themed(HOME);
+    crumb.innerHTML = '<b>ModuGrid</b> &nbsp;›&nbsp; 개요';
+    location.hash = 'home';
+    side.querySelectorAll('.ix-it').forEach(function(el){ el.classList.remove('on'); });
+  }
+  document.getElementById('brand').onclick = openHome;
+  document.getElementById('brand').onkeydown = function(e){
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openHome(); }
+  };
+
+  render('');
+  var start = +(location.hash || '').slice(1);
+  if (start >= 1 && start <= ITEMS.length) open(start); else openHome();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-4. Filtering a numeric range — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 Filtering</div>
+  <h1 class="dm-tit">3.2-4. Filtering a numeric range</h1>
+  <p class="dm-desc">Number, currency and progress columns offer <b>min and max boxes</b> instead of a value list. The actual range found in the data is printed underneath as a hint.</p>
+  <ul class="dm-steps">
+    <li>Open the <code>Score</code> funnel.</li>
+    <li>Enter 70 and 100, then press <code>Apply</code>.</li>
+    <li><code>Salary</code> and <code>Progress</code> behave the same way.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="showF()">Active conditions</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',     label:'Name',     w:150},
+  {key:'score',    label:'Score',    w:90,  type:'number'},
+  {key:'progress', label:'Progress', w:130, type:'progress'},
+  {key:'salary',   label:'Salary',   w:120, type:'currency'},
+  {key:'role',     label:'Role',     w:120},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:15 } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function showF(){
+  MGDemo.clearLog();
+  const f = G.getState().cfilters;
+  Object.keys(f).forEach(function(k){
+    const v = f[k];
+    MGDemo.log(k + ' → ' + (v.type==='range' ? v.min + ' to ' + v.max : [...v.values].join(', ')), 'ok');
+  });
+  if (!Object.keys(f).length) MGDemo.log('No conditions are active', 'wn');
+  MGDemo.log(G.getFilteredData().length + ' rows shown');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

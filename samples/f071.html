@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-3. none — not sending photos at all — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-3. none — not sending photos at all</h1>
+  <p class="dm-desc">Photos are shown on screen and never sent anywhere. This is the default, and in this mode <b>the <code>images</code> field is left out of the payload entirely</b>.</p>
+  <ul class="dm-steps">
+    <li>Put a couple of photos into a <code>Photos</code> cell.</li>
+    <li>Change a <code>Name</code> as well.</li>
+    <li>Press <b>Preview what will be sent</b> — the name is there, <code>images</code> is not.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:4, rowHeight:70, showST:true, imageMode:'none' }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+MGDemo.log('Add a photo, change a name, then look at what would be sent');
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.updated.length && !ch.inserted.length){ MGDemo.log('Change something first', 'wn'); return; }
+  ch.updated.forEach(function(r){
+    MGDemo.log('updated ' + JSON.stringify(r));
+    const has = ('images' in r.changes);
+    MGDemo.log('   images field — ' + (has ? 'present' : 'absent, as it should be for none'), has ? 'er' : 'ok');
+  });
+  ch.inserted.forEach(function(r){
+    MGDemo.log('inserted ' + JSON.stringify(r));
+    const has = ('images' in r);
+    MGDemo.log('   images field — ' + (has ? 'present' : 'absent, as it should be for none'), has ? 'er' : 'ok');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

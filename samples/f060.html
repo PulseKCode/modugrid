@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-2. What submit sends — checking the JSON — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-2. What submit sends — checking the JSON</h1>
+  <p class="dm-desc">This page shows exactly what leaves for the server. It arrives in three parts — <code>inserted</code> carries <b>whole rows</b>, <code>updated</code> is <code>{id, changes}</code> with <b>only the fields that moved</b>, and <code>deleted</code> is <b>an array of ids</b>. Coded columns go out as <b>codes</b>, and stray option objects are reduced on the way.</p>
+  <ul class="dm-steps">
+    <li>Change a few cells and add a row.</li>
+    <li>Press <b>Preview what will be sent</b>.</li>
+    <li>Check that <code>Status</code> leaves as <code>A</code> rather than <code>Active</code>.</li>
+    <li>Look inside <code>updated</code> for the <code>changes</code> object holding just the edited fields.</li>
+    <li><b>Send it</b> prints the actual request body.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  <button type="button" class="db p" onclick="send()">Send it</button>
+  <button type="button" class="db" onclick="G.addRow(mk())">Add a row</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(5);
+rows[1].status = { code:'P', name:'Pending' };        // an option object slipped in
+rows[2].status = { value:'I', label:'Inactive' };
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, showST:true } });
+G.setData(rows);
+window.G = G;
+
+/* A stand-in for the server. In real code you would pass the submit.jsp URL instead. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-submit') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch is unavailable'));
+  }
+  const body = init.body;
+  if (typeof body === 'string'){
+    MGDemo.log('POST ' + url);
+    MGDemo.log(decodeURIComponent(body).slice(0, 600));
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function mk(){
+  return { id: Date.now() % 100000, name:'New row', status:'A', role:'QA',
+           score:70, progress:0, salary:3000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.inserted.length && !ch.updated.length && !ch.deleted.length){
+    MGDemo.log('Nothing has changed yet — edit a cell', 'wn'); return;
+  }
+  MGDemo.log('inserted = ' + JSON.stringify(ch.inserted));
+  MGDemo.log('updated  = ' + JSON.stringify(ch.updated));
+  MGDemo.log('deleted  = ' + JSON.stringify(ch.deleted));
+  MGDemo.log('inserted = whole rows · updated = {id, changes} · deleted = ids', 'ok');
+}
+
+async function send(){
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    if (out.skipped){ MGDemo.log('Nothing had changed, so nothing was sent', 'wn'); return; }
+    MGDemo.log('server replied ' + JSON.stringify(out), 'ok');
+  }catch(e){ MGDemo.log('failed — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

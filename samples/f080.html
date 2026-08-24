@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-1. Copying to Excel and exporting CSV — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. Copy and export</div>
+  <h1 class="dm-tit">9-1. Copying to Excel and exporting CSV</h1>
+  <p class="dm-desc">Select a range and press <code>Ctrl+C</code>, or use <b>Copy Row(Excel)</b> from the right-click menu, and paste straight into a spreadsheet. <code>exportCSV()</code> writes a file instead. Both follow the same rule: <b>coded columns give their display names, numbers and money go out unformatted</b>, so the figures are ready to calculate with.</p>
+  <ul class="dm-steps">
+    <li>On screen a salary reads <code>45,000</code> with a separator.</li>
+    <li>Tick a row, press <b>Copy for Excel</b> and paste it into a text editor — no separator.</li>
+    <li><b>Export CSV</b> produces a file under the same rules.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="excel()">Copy for Excel</button>
+  <button type="button" class="db p" onclick="G.exportCSV('export.csv')">Export CSV</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:140, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'salary', label:'Salary', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function excel(){
+  if (!G.getSelected().length && !G.getChecked().length){ MGDemo.log('Tick a row first', 'wn'); return; }
+  G.ctxCopyExcel();
+  const r = G.getFilteredData()[0];
+  MGDemo.log('Copied — shown as ' + r.salary.toLocaleString('en-US') + ', copied as ' + r.salary, 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

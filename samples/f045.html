@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.3-3. Adding, inserting and deleting rows — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.3 Input control</div>
+  <h1 class="dm-tit">5.3-3. Adding, inserting and deleting rows</h1>
+  <p class="dm-desc"><code>addRow()</code> appends at the end; <code>insertAt()</code> puts a row <b>above or below</b> the selected one. The Insert Above and Insert Below entries in the right-click menu call exactly the same thing.</p>
+  <ul class="dm-steps">
+    <li>Select a row and press <b>Insert above</b> or <b>Insert below</b>.</li>
+    <li><b>Right-click</b> a row for the same menu.</li>
+    <li>A new row is marked with <code>+</code> in the <code>_st</code> column.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db" onclick="G.addRow(mk())">Append at the end</button>
+  <button type="button" class="db p" onclick="G.insertAt('above', mk)">Insert above</button>
+  <button type="button" class="db p" onclick="G.insertAt('below', mk)">Insert below</button>
+  <button type="button" class="db dr" onclick="G.deleteSelected()">Delete selected</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:160},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0, showST:true, editMode:true } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+/* insertAt(where, makeRow) — the function receives a fresh id and returns the row */
+function mk(id){
+  return { id:id, name:'New row', status:'A', role:'QA',
+           score:0, progress:0, salary:0, joined:'2026-01-01', memo:'', images:[] };
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

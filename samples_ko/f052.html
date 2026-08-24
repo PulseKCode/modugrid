@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-6. Autocomplete — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-6. Autocomplete</h1>
+  <p class="dm-desc">목록이 너무 많아 드롭다운으로 감당이 안 될 때 씁니다. 글자를 치면 서버에서 후보를 받아 보여주고, 고르면 <b>데이터에는 코드가, 화면에는 이름이</b> 남습니다. 서버에서 받은 값이라 <code>options</code> 에 없어도 이름이 유지됩니다.</p>
+  <ul class="dm-steps">
+    <li><code>부서</code> 셀을 편집 상태로 만들고 <code>개</code> 또는 <code>영</code> 을 칩니다.</li>
+    <li>잠시 뒤 후보 목록이 뜨면 하나를 고릅니다.</li>
+    <li>셀에 <b>부서 이름</b>이 남는지 확인합니다 (코드 D1 이 아니라).</li>
+    <li><b>저장값 확인</b> 으로 데이터에는 코드가 들어갔는지 봅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="cmp()">저장값 확인</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+/* 서버가 {code, name} 목록을 내려준다고 가정 */
+const SERVER_DEPT = [
+  {code:'D1', name:'개발본부'},
+  {code:'D2', name:'개발지원팀'},
+  {code:'D3', name:'영업본부'},
+  {code:'D4', name:'영업기획팀'},
+  {code:'D5', name:'경영지원실'},
+];
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:130},
+
+  /* options 를 주지 않는다 — 후보는 오직 서버에서 온다 */
+  {key:'dept', label:'부서', w:200,
+    acSource: function(key, q){
+      MGDemo.log('서버 조회 — "' + q + '"', 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          res(SERVER_DEPT.filter(function(o){ return o.name.indexOf(q) >= 0; }));
+        }, 200);
+      });
+    }},
+];
+
+const rows = MGDemo.rows(6).map(function(r){ r.dept = ''; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, acDebounce:200 } });
+G.setData(rows);
+window.G = G;
+
+function cmp(){
+  MGDemo.clearLog();
+  let any = false;
+  G.getFilteredData().forEach(function(r){
+    if (!r.dept) return;
+    any = true;
+    const td = document.querySelector('#grid td[data-c="dept"][data-id="' + r.id + '"]');
+    MGDemo.log('저장값 "' + r.dept + '"   화면 표시 "' + (td ? td.textContent.trim() : '') + '"', 'ok');
+  });
+  if (!any) MGDemo.log('먼저 부서 셀에서 값을 골라 보세요', 'wn');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-1. 컬럼 값으로 골라 보기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-1. 컬럼 값으로 골라 보기</h1>
+  <p class="dm-desc">헤더의 깔때기 아이콘을 누르면 그 컬럼에 실제로 들어 있는 값 목록이 뜹니다. 보고 싶은 값만 체크하고 <code>Apply</code> 를 누르면 됩니다.</p>
+  <ul class="dm-steps">
+    <li><code>직무</code> 헤더의 깔때기 아이콘을 클릭합니다.</li>
+    <li>몇 개만 체크하고 <code>Apply</code> 를 누릅니다.</li>
+    <li><code>Clear</code> 로 그 컬럼 조건을 풉니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="showF()">걸린 조건 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:15 } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function showF(){
+  MGDemo.clearLog();
+  const f = G.getState().cfilters;
+  const keys = Object.keys(f);
+  if (!keys.length) { MGDemo.log('걸린 조건이 없습니다', 'wn'); return; }
+  keys.forEach(function(k){
+    const v = f[k];
+    MGDemo.log(k + ' → ' + (v.type==='list' ? [...v.values].join(', ') : v.min + ' ~ ' + v.max), 'ok');
+  });
+  MGDemo.log('보이는 행 ' + G.getFilteredData().length + '개');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

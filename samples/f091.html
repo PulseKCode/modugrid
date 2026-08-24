@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-9. Scrolling through a large set quickly — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-9. Scrolling through a large set quickly</h1>
+  <p class="dm-desc">Turn this on when you would rather scroll through thousands of rows than page through them. Only <b>the part you can see</b> is drawn, so five thousand rows scroll without stuttering.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Virtual scrolling on</b> and scroll quickly.</li>
+    <li>The page buttons disappear and the whole set runs as one list.</li>
+    <li>Turn it off to go back to paging.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleVS();setTimeout(st,60)">Virtual scrolling on / off</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'salary', label:'Salary', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:50, rowHeight:25 } });
+G.setData(MGDemo.rows(5000));
+window.G = G;
+
+MGDemo.log('5,000 rows loaded');
+
+function st(){
+  MGDemo.log('virtual scrolling ' + (G.getState().vs ? 'ON' : 'OFF') + ' · ' + G.getState().filtered.length + ' rows', 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-3. 고칠 수 없는 항목도 값은 보여줍니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. 모달</div>
+  <h1 class="dm-tit">11-3. 고칠 수 없는 항목도 값은 보여줍니다</h1>
+  <p class="dm-desc"><code>editor:false</code> 인 컬럼은 창에서 <b>읽기 전용</b>으로 나옵니다. 값을 감추는 게 아니라 <b>보여주되 못 고치게</b> 하는 것이라, 사번·등록일 같은 참고 정보를 함께 확인할 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li><b>편집 창 열기</b> 를 누릅니다.</li>
+    <li><code>사번</code> 과 <code>등록일</code> 은 값은 보이는데 입력칸이 아닙니다.</li>
+    <li>나머지 항목은 정상적으로 고칠 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', 1)">편집 창 열기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'empno',  label:'사번',   w:100, editor:false},      // 읽기 전용
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'joined', label:'등록일', w:120, type:'date', editor:false},   // 읽기 전용
+  {key:'score',  label:'점수',   w:90,  type:'number'},
+];
+
+const rows = MGDemo.rows(8).map(function(r,i){ r.empno = 'E' + (100+i); return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('사번 · 등록일은 값만 보이고 고칠 수 없습니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

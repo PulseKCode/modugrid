@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.4-2. 조직도처럼 계층으로 보기 (트리) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.4 그룹핑 · 트리</div>
+  <h1 class="dm-tit">3.4-2. 조직도처럼 계층으로 보기 (트리)</h1>
+  <p class="dm-desc">데이터에 <code>parentId</code> 로 부모를 적고, 자식이 있는 행에 <code>_hc:true</code> 를 주면 계층으로 펼쳐집니다. 조직도·분류체계·BOM 처럼 상하 관계가 있는 데이터에 씁니다.</p>
+  <ul class="dm-steps">
+    <li><b>계층으로 보기</b> 를 켭니다 — 최상위만 남습니다.</li>
+    <li><code>▸</code> 를 눌러 하위 조직을 펼칩니다.</li>
+    <li>행에서 우클릭해도 펼치고 접을 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleTree();st()">계층으로 보기 켜기 / 끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'조직', w:230},
+  {key:'role', label:'구분', w:130},
+  {key:'score',label:'점수', w:90, type:'number'},
+];
+
+/* 데이터 형태:
+   { id:2, parentId:1, _hc:true, name:'개발본부' }   ← parentId = 부모 id, _hc = 자식 있음 */
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0 } });
+G.setData(MGDemo.tree());
+window.G = G;
+
+MGDemo.log('본사 → 개발본부 · 디자인본부 → 각 팀 / 부산지사 → 영업팀');
+
+function st(){ MGDemo.log('계층 보기 = ' + (G.getState().treeOn ? 'ON' : 'OFF'), 'ok'); }
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

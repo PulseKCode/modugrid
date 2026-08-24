@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-1. The detail and edit windows build themselves — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. Modals</div>
+  <h1 class="dm-tit">11-1. The detail and edit windows build themselves</h1>
+  <p class="dm-desc">These are the windows for viewing a row in full or editing it. There is no form to write — <b>the fields come from the column definitions</b>, so adding a column adds a field to the window as well.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Open the edit window</b> and note the fields.</li>
+    <li>Close it and press <b>Add a Phone column</b>.</li>
+    <li>Open it again and the phone field is <b>already there</b>.</li>
+    <li>Right-click → <b>Row Detail</b> and <b>Edit Modal</b> open the same windows.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.openRowModal('edit', 1)">Open the edit window</button>
+  <button type="button" class="db p" onclick="G.openDetail(1)">Open the detail window</button>
+  <button type="button" class="db" onclick="G.addCol({key:'phone',label:'Phone',w:150});MGDemo.log('Phone column added — open the window again','ok')">Add a Phone column</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log('There is not one line of window markup on this page — see View source → Whole HTML');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

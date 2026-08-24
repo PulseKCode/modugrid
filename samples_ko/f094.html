@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-2. 항목마다 알맞은 입력기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. 모달</div>
+  <h1 class="dm-tit">11-2. 항목마다 알맞은 입력기</h1>
+  <p class="dm-desc">컬럼 타입에 맞는 입력기가 자동으로 붙습니다. 목록 컬럼은 <b>선택 상자</b>, 긴 글은 <b>여러 줄 입력</b>, 날짜는 <b>날짜 입력</b>, 숫자는 <b>숫자 입력</b>입니다.</p>
+  <ul class="dm-steps">
+    <li><b>편집 창 열기</b> 를 누릅니다.</li>
+    <li><code>상태</code> 는 선택 상자, <code>메모</code> 는 여러 줄, <code>입사일</code> 은 날짜 입력입니다.</li>
+    <li>각각 값을 바꾸고 저장해 봅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', 1)">편집 창 열기</button>
+  <button class="db p" onclick="G.openRowModal('add')">추가 창 열기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름 (글자)',     w:120},
+  {key:'status', label:'상태 (목록)',     w:120, options:MGDemo.STATUS},
+  {key:'score',  label:'점수 (숫자)',     w:110, type:'number'},
+  {key:'joined', label:'입사일 (날짜)',   w:130, type:'date'},
+  {key:'memo',   label:'메모 (여러 줄)',  w:190, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

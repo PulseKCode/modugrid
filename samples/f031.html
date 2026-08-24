@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-8. Extending a range with Shift and the arrow keys — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-8. Extending a range with Shift and the arrow keys</h1>
+  <p class="dm-desc">In cell mode this grows a rectangular block the way a spreadsheet does; in row mode it grows a run of rows. A range you started with the mouse can be extended from the keyboard.</p>
+  <ul class="dm-steps">
+    <li>Click a cell, then hold <code>Shift</code> and press <code>↓</code> and <code>→</code>.</li>
+    <li>Pressing an arrow on its own drops the range and moves one cell.</li>
+    <li>Press <b>Switch to row mode</b> and try <code>Shift</code>+<code>↓</code> again.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" id="bmode" onclick="swap()">Switch to row mode</button>
+  <button type="button" class="db" onclick="rng()">Show the range</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',   w:150},
+  {key:'role',  label:'Role',   w:120},
+  {key:'score', label:'Score',  w:90,  type:'number'},
+  {key:'salary',label:'Salary', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'cell', pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function swap(){
+  const next = G.getState().selMode === 'cell' ? 'row' : 'cell';
+  G.setSelMode(next);
+  document.getElementById('bmode').textContent = (next === 'cell' ? 'Switch to row mode' : 'Switch to cell mode');
+  MGDemo.log('selMode is now ' + next, 'ok');
+}
+
+function rng(){
+  const s = G.getState();
+  if (s.selMode === 'cell'){
+    if (s.rangeR1 < 0) { MGDemo.log('No range is selected', 'wn'); return; }
+    const rows = Math.abs(s.rangeR2 - s.rangeR1) + 1;
+    const cols = Math.abs(s.rangeC2 - s.rangeC1) + 1;
+    MGDemo.log('range ' + rows + ' × ' + cols + ' = ' + (rows*cols) + ' cells', 'ok');
+  } else {
+    MGDemo.log('rows selected = [' + G.getSelected().join(', ') + ']', 'ok');
+  }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

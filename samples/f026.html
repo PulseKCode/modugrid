@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-3. The header follows the rows immediately — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-3. The header follows the rows immediately</h1>
+  <p class="dm-desc">Every time you tick or untick a row the header mark is brought up to date. Tick the last outstanding row and the header fills in; untick any one and it drops back to the in-between state.</p>
+  <ul class="dm-steps">
+    <li>Tick the rows one by one — the header fills in as you tick the last one.</li>
+    <li>Untick any single row and the header goes back to in-between.</li>
+    <li>Clear them all and the header clears too.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="cnt()">Current state</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    selMode:'row', pageSize:8,
+    on:{ selectionChange: function(){ cnt(); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function cnt(){
+  const c = G.getChecked().length;
+  const all = G.getFilteredData().length;
+  MGDemo.log(c + ' of ' + all + ' ticked  →  header shows: '
+           + (c === 0 ? 'empty' : c === all ? 'all ticked' : 'in-between'),
+             c === all ? 'ok' : '');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

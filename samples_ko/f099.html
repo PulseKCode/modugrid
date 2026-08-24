@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.2-2. 폰트 크기 변경 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.2 폰트</div>
+  <h1 class="dm-tit">12.2-2. 폰트 크기 변경</h1>
+  <p class="dm-desc">본문 글꼴을 키우면 <b>행번호와 숫자 칸도 함께</b> 커집니다. 고정된 크기가 아니라 본문에 비례하도록 되어 있어, 어떤 크기로 바꿔도 표의 균형이 유지됩니다. 돋보기 기능이나 사용자별 글꼴 설정을 붙이기 좋습니다.</p>
+  <ul class="dm-steps">
+    <li><b>12px → 15px → 18px</b> 을 차례로 눌러 봅니다.</li>
+    <li>행번호(<code>#</code>)와 점수·급여 칸도 같이 커지는지 봅니다.</li>
+    <li><code>setFont(숫자)</code> 만 주면 본문 크기만 바뀝니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.setFont(12)">12px</button>
+  <button class="db p" onclick="G.setFont(15)">15px</button>
+  <button class="db p" onclick="G.setFont(18)">18px</button>
+  <button class="db" onclick="G.setFont(null)">기본으로</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('본문 크기를 바꾸면 행번호 · 숫자 칸도 비례해서 조절됩니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

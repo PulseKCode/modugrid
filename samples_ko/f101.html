@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.3-2. 알림은 그리드 안에 뜹니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.3 표시 옵션</div>
+  <h1 class="dm-tit">12.3-2. 알림은 그리드 안에 뜹니다</h1>
+  <p class="dm-desc">복사 완료, 되돌릴 작업 없음 같은 알림은 화면 구석이 아니라 <b>해당 그리드 한가운데</b>에 뜹니다. 그리드가 여러 개여도 어느 표에서 난 알림인지 헷갈리지 않습니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽 <b>알림 띄우기</b> 를 누릅니다 — 왼쪽 표 가운데에 뜹니다.</li>
+    <li>오른쪽 버튼을 누르면 오른쪽에 뜹니다.</li>
+    <li>셀 범위를 잡고 <code>Ctrl+C</code> 를 해도 그 표에 알림이 뜹니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G1.undo()">왼쪽에 알림</button>
+  <button class="db p" onclick="G2.undo()">오른쪽에 알림</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">왼쪽</div><div id="gridA"></div></div>
+    <div><div class="dm-cap">오른쪽</div><div id="gridB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G1 = ModuGrid('#gridA', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:6, selMode:'cell' } });
+const G2 = ModuGrid('#gridB', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:6, selMode:'cell' } });
+G1.setData(MGDemo.rows(8, 3));
+G2.setData(MGDemo.rows(8, 9));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('되돌릴 작업이 없을 때 뜨는 알림으로 확인해 보세요');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

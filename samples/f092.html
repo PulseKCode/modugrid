@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-10. Saving and restoring the layout — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-10. Saving and restoring the layout</h1>
+  <p class="dm-desc">Everything the user arranged — <b>column order, widths, hidden columns, sorting, filters and page size</b> — can be lifted out in one object and put back next time. If the column set has changed in the meantime, <b>anything that no longer exists is quietly skipped</b> rather than breaking the screen.</p>
+  <ul class="dm-steps">
+    <li>Resize a column, apply a sort and hide one column.</li>
+    <li>Press <b>Save</b>, then <b>Shuffle it</b>, then <b>Restore</b>.</li>
+    <li><b>Apply an old saved layout</b> uses a snapshot that mentions columns you no longer have.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="save()">Save</button>
+  <button type="button" class="db p" onclick="load()">Restore</button>
+  <button type="button" class="db" onclick="mess()">Shuffle it</button>
+  <button type="button" class="db dr" onclick="old()">Apply an old saved layout</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'salary', label:'Salary', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, multiSort:true } });
+G.setData(MGDemo.rows(30));
+window.G = G;
+
+let saved = null;
+
+/* In practice:
+     save:    localStorage.setItem('gridLayout', JSON.stringify(G.getLayout()));
+     restore: G.setLayout(JSON.parse(localStorage.getItem('gridLayout') || '{}')); */
+function save(){
+  saved = G.getLayout();
+  MGDemo.log('Saved (' + JSON.stringify(saved).length + ' bytes)', 'ok');
+}
+function load(){
+  if (!saved){ MGDemo.log('Save something first', 'wn'); return; }
+  G.setLayout(saved);
+  MGDemo.log('Put back the way you saved it', 'ok');
+}
+function mess(){
+  G.hideCol('score'); G.clearSorts(); G.changePS(25); G.moveCol('name', 6);
+  MGDemo.log('Column hidden · sorting cleared · 25 per page · column moved', 'wn');
+}
+
+/* Saved before the column set changed — bonus and dept are gone now */
+function old(){
+  G.setLayout({
+    v:2,
+    order:  ['_rn','_cb','name','bonus','status','dept','role','score','salary'],
+    hidden: ['bonus','salary'],
+    widths: { name:200, bonus:120, score:150, dept:90 },
+    sorts:  [{col:'bonus',dir:'asc'},{col:'score',dir:'desc'}],
+    filters:{ dept:{type:'list',values:['IT']}, role:{type:'list',values:['Developer','QA']} },
+    pageSize:15, showRN:true, showCB:true, striped:true,
+    freezeOn:false, multiSort:true, selMode:'row'
+  });
+  MGDemo.log('Applied — the columns that no longer exist (bonus, dept) were skipped', 'ok');
+  MGDemo.log('resulting order — ' + G.getLayout().order.join(' , '));
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

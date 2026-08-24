@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-7. Autocomplete 설정 — 후보 목록 · 개수 · 끄기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-7. Autocomplete 설정 — 후보 목록 · 개수 · 끄기</h1>
+  <p class="dm-desc">후보는 <b>서버(<code>acSource</code>)</b> 또는 <b>미리 넣어둔 목록(<code>acHints</code>)</b> 에서 옵니다. 서버가 응답하지 않으면 미리 넣어둔 목록으로 자동 대체되고, 같은 검색어는 다시 묻지 않습니다. 필요 없는 컬럼은 <code>ac:false</code> 로 끕니다.</p>
+  <ul class="dm-steps">
+    <li><code>직무</code> 칸에 <code>M → Ma → Man</code> 을 빠르게 칩니다 — 서버 조회는 한 번만 나갑니다.</li>
+    <li>지웠다 같은 글자를 다시 치면 조회가 늘지 않습니다.</li>
+    <li><b>서버 장애 상황</b> 으로 바꾸고 다시 쳐 보세요 — 미리 넣어둔 목록이 대신 뜹니다.</li>
+    <li><code>메모</code> 칸은 <code>ac:false</code> 라 아무것도 뜨지 않습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="calls()">서버 조회 내역</button>
+  <button class="db" onclick="reset_()">내역 지우기</button>
+  <button class="db dr" id="bf" onclick="toggleFail()">서버 장애 상황: OFF</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const SERVER = ['Developer','Designer','Manager','Analyst','DevOps','QA','Architect','Product Owner'];
+const BACKUP = ['개발','디자인','관리'];      // 서버가 안 될 때 대신 쓸 목록
+
+let log = [], fail = false;
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:120},
+
+  {key:'role', label:'직무 (서버 + 예비목록)', w:220,
+    acHints: BACKUP,          // 서버 실패 시 대신 쓸 목록
+    acLimit: 5,               // 한 번에 보여줄 후보 수
+    acSource: function(key, q){
+      log.push(q);
+      MGDemo.log('서버 조회 ' + log.length + '회 — "' + q + '"' + (fail ? ' → 실패 예정' : ''), 'wn');
+      return new Promise(function(res, rej){
+        setTimeout(function(){
+          if (fail){ rej(new Error('서버 응답 없음')); return; }
+          res(SERVER.filter(function(v){ return v.toLowerCase().indexOf(q.toLowerCase()) >= 0; }));
+        }, 180);
+      });
+    }},
+
+  {key:'memo', label:'메모 (자동완성 끔)', w:180, ac:false},
+];
+
+const rows = MGDemo.rows(6).map(function(r){ r.role=''; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, acDebounce:200 } });
+G.setData(rows);
+window.G = G;
+
+function calls(){
+  MGDemo.clearLog();
+  if (!log.length){ MGDemo.log('아직 조회 없음 — 직무 칸에 글자를 쳐 보세요', 'wn'); return; }
+  log.forEach(function(q,i){ MGDemo.log((i+1) + '. "' + q + '"'); });
+  MGDemo.log('총 ' + log.length + '회', 'ok');
+}
+function reset_(){ log = []; MGDemo.clearLog(); MGDemo.log('내역 지움', 'ok'); }
+function toggleFail(){
+  fail = !fail;
+  document.getElementById('bf').textContent = '서버 장애 상황: ' + (fail ? 'ON' : 'OFF');
+  MGDemo.log('서버 장애 = ' + fail + (fail ? ' — 이제 예비 목록이 뜹니다' : ''), 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

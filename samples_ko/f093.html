@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-1. 행 상세 · 편집 창은 자동으로 만들어집니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. 모달</div>
+  <h1 class="dm-tit">11-1. 행 상세 · 편집 창은 자동으로 만들어집니다</h1>
+  <p class="dm-desc">행을 크게 보거나 고칠 때 쓰는 창입니다. 입력 폼을 따로 만들 필요 없이 <b>컬럼 정의에서 알아서 생성</b>되므로, 컬럼을 추가하면 창에도 그 항목이 저절로 생깁니다.</p>
+  <ul class="dm-steps">
+    <li><b>편집 창 열기</b> 로 지금 항목을 봅니다.</li>
+    <li>창을 닫고 <b>연락처 컬럼 추가</b> 를 누릅니다.</li>
+    <li>다시 열면 연락처 항목이 <b>저절로</b> 들어와 있습니다.</li>
+    <li>우클릭 메뉴의 <b>Row Detail</b> · <b>Edit Row</b> 로도 열립니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', 1)">편집 창 열기</button>
+  <button class="db p" onclick="G.openDetail(1)">상세 창 열기</button>
+  <button class="db" onclick="G.addCol({key:'phone',label:'연락처',w:140});MGDemo.log('연락처 컬럼 추가 — 창을 다시 열어보세요','ok')">연락처 컬럼 추가</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log('이 페이지 HTML 에는 창에 대한 코드가 한 줄도 없습니다 (소스 보기 → HTML 전체 참고)');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

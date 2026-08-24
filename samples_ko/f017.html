@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-4. 숫자 범위로 골라 보기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-4. 숫자 범위로 골라 보기</h1>
+  <p class="dm-desc">숫자·통화·진행률 컬럼은 값 목록 대신 <b>최소/최대 입력칸</b>이 뜹니다. 팝업 아래에 데이터의 실제 범위가 안내되니 참고해서 넣으면 됩니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 깔때기를 엽니다.</li>
+    <li>min 70, max 100 을 넣고 <code>Apply</code>.</li>
+    <li><code>급여</code> · <code>진행률</code> 도 같은 방식입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="showF()">걸린 조건 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',     label:'이름',   w:130},
+  {key:'score',    label:'점수',   w:90,  type:'number'},
+  {key:'progress', label:'진행률', w:130, type:'progress'},
+  {key:'salary',   label:'급여',   w:130, type:'currency'},
+  {key:'role',     label:'직무',   w:120},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:15 } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function showF(){
+  MGDemo.clearLog();
+  const f = G.getState().cfilters;
+  Object.keys(f).forEach(function(k){
+    const v = f[k];
+    MGDemo.log(k + ' → ' + (v.type==='range' ? v.min + ' ~ ' + v.max : [...v.values].join(', ')), 'ok');
+  });
+  if (!Object.keys(f).length) MGDemo.log('걸린 조건이 없습니다', 'wn');
+  MGDemo.log('보이는 행 ' + G.getFilteredData().length + '개');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

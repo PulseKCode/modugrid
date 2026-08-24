@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-2. 여러 칸 붙여넣기 — 되돌리기는 한 번에 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. 복사 · 내보내기</div>
+  <h1 class="dm-tit">9-2. 여러 칸 붙여넣기 — 되돌리기는 한 번에</h1>
+  <p class="dm-desc">엑셀에서 복사한 여러 칸을 <code>Ctrl+V</code> 로 한꺼번에 붙여넣을 수 있습니다. 여러 칸이 바뀌어도 <b><code>Ctrl+Z</code> 한 번이면 전부</b> 되돌아갑니다.</p>
+  <ul class="dm-steps">
+    <li>아래 상자를 클릭해 전체 선택하고 복사합니다.</li>
+    <li><code>이름</code> 열 첫 칸을 클릭하고 <code>Ctrl+V</code>.</li>
+    <li><code>Ctrl+Z</code> <b>한 번</b>으로 전부 되돌아가는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="G.undo()">되돌리기 (Ctrl+Z)</button>
+  <button class="db" onclick="G.redo()">다시 실행 (Ctrl+Y)</button>
+  <button class="db p" onclick="dump()">현재 값 보기</button>
+  </div>
+  <div class="dm-out">
+    <p>붙여넣기용 — 클릭해서 전체 선택 후 복사하세요 (3행 × 2열)</p>
+    <textarea rows="3" readonly onclick="this.select()">홍길동	10
+임꺽정	20
+장길산	30</textarea>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:150},
+  {key:'score', label:'점수', w:100, type:'number'},
+  {key:'role',  label:'직무', w:120},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:10 } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+function dump(){
+  MGDemo.clearLog();
+  G.getFilteredData().slice(0,5).forEach(function(r){
+    MGDemo.log('id=' + r.id + '  ' + r.name + '  ' + r.score);
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

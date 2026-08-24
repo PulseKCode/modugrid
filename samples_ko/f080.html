@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-1. 엑셀로 복사 · CSV 내보내기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. 복사 · 내보내기</div>
+  <h1 class="dm-tit">9-1. 엑셀로 복사 · CSV 내보내기</h1>
+  <p class="dm-desc">범위를 잡고 <code>Ctrl+C</code>, 또는 우클릭 <b>Copy Row(Excel)</b> 로 엑셀에 바로 붙여넣을 수 있습니다. <code>exportCSV()</code> 는 파일로 받습니다. 두 경로 모두 <b>목록은 이름으로, 숫자·통화는 콤마 없는 원본</b>으로 나가 엑셀에서 바로 계산됩니다.</p>
+  <ul class="dm-steps">
+    <li>화면에서 급여는 <code>4,500,000</code> 처럼 콤마가 보입니다.</li>
+    <li>행을 체크하고 <b>엑셀로 복사</b> 후 메모장에 붙여넣어 보세요 — 콤마가 없습니다.</li>
+    <li><b>CSV 내보내기</b> 로 받은 파일도 같은 규칙입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="excel()">엑셀로 복사</button>
+  <button class="db p" onclick="G.exportCSV('내보내기.csv')">CSV 내보내기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:130, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:140, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function excel(){
+  if (!G.getSelected().length && !G.getChecked().length){ MGDemo.log('먼저 행을 체크하세요', 'wn'); return; }
+  G.ctxCopyExcel();
+  const r = G.getFilteredData()[0];
+  MGDemo.log('복사했습니다 — 화면 표시 ' + r.salary.toLocaleString('ko-KR') + ' / 복사값 ' + r.salary, 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

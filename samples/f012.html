@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-4. Sorting on several columns — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 Sorting</div>
+  <h1 class="dm-tit">3.1-4. Sorting on several columns</h1>
+  <p class="dm-desc">Pass <code>multiSort:true</code> and sorts stack up. Each column gets a <b>1, 2, 3 order badge</b> in the order you clicked, and each one cycles through ascending, descending and off on its own.</p>
+  <ul class="dm-steps">
+    <li>Click the <code>Role</code> sort icon — badge 1.</li>
+    <li>Then click <code>Score</code> — badge 2. Rows group by role and sort by score inside each group.</li>
+    <li>Click <code>Role</code> twice more to switch it off; the score sort stays.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleMultiSort();ms()">Multi-sort on / off</button>
+  <button type="button" class="db" onclick="G.clearSorts();ms()">Clear all</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ multiSort:true, pageSize:12 } });
+G.setData(MGDemo.rows(16));
+window.G = G;
+
+document.querySelector('#grid').addEventListener('click', function(e){
+  if (!e.target.closest('th')) return;
+  setTimeout(function(){
+    const s = G.getState().sorts;
+    MGDemo.log(s.length ? s.map(function(x,i){ return '#' + (i+1) + ' ' + x.col + ' ' + x.dir; }).join('  →  ')
+                        : 'No sorting');
+  }, 0);
+});
+
+function ms(){ MGDemo.log('Multi-sort ' + (G.getState().multiSort ? 'ON' : 'OFF'), 'ok'); }
+ms();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

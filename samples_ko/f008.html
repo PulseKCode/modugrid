@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4-3. 컬럼이 바뀌면 알림 받기 — dataChange {type:'cols'} — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.4 동적 조작</div>
+  <h1 class="dm-tit">2.4-3. 컬럼이 바뀌면 알림 받기 — dataChange {type:'cols'}</h1>
+  <p class="dm-desc">컬럼 구성이 바뀔 때마다 <code>dataChange</code> 이벤트가 <code>type:'cols'</code> 로 옵니다. 이 신호를 받아 화면에 저장해 둔 레이아웃을 갱신하면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>아래 버튼으로 컬럼을 넣고 빼 봅니다.</li>
+    <li>조작할 때마다 알림이 한 번씩 옵니다.</li>
+    <li><code>addCols()</code> 로 여러 개를 넣어도 알림은 <b>한 번</b>만 옵니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.addCol({key:'memo',label:'메모',w:150})">addCol</button>
+  <button class="db p" onclick="G.addCols([{key:'x1',label:'X1',w:70},{key:'x2',label:'X2',w:70},{key:'x3',label:'X3',w:70}])">addCols 3개</button>
+  <button class="db dr" onclick="G.removeCol('memo')">removeCol</button>
+  <button class="db" onclick="G.updateCol('name',{label:'성명'})">updateCol</button>
+  <button class="db" onclick="reset()">setCols 전체 교체</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+let n = 0;
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:8,
+    on:{ dataChange: function(p){
+      if (p.type !== 'cols') return;
+      n++;
+      MGDemo.log('알림 ' + n + '회 — 현재 ' + G.getCols().length + '컬럼', 'ok');
+    }}
+  }
+});
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+/* 실제 사용 예: 컬럼이 바뀔 때마다 레이아웃을 저장해 둔다
+   on:{ dataChange: p => { if(p.type==='cols') localStorage.setItem('layout', JSON.stringify(G.getLayout())); } } */
+
+function reset(){
+  G.setCols([
+    {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+    {key:'name',  label:'이름', w:150},
+    {key:'score', label:'점수', w:110, type:'number'},
+  ]);
+  MGDemo.log('setCols() — 3컬럼으로 교체', 'wn');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

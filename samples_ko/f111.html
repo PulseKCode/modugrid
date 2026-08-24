@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-7. 우클릭 메뉴 아예 끄기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-7. 우클릭 메뉴 아예 끄기</h1>
+  <p class="dm-desc"><code>contextMenu:false</code> 로 두면 그리드 메뉴가 나오지 않고 <b>브라우저 기본 메뉴</b>가 정상적으로 뜹니다. 페이지 전체에서 브라우저 기능을 쓰게 해야 할 때 유용합니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽에서 우클릭 — 그리드 메뉴가 뜹니다.</li>
+    <li>오른쪽에서 우클릭 — 브라우저 기본 메뉴(검사, 다시 불러오기 등)가 뜹니다.</li>
+    <li>표시할 항목이 하나도 없을 때는 빈 메뉴를 띄우지 않습니다.</li>
+  </ul>
+
+  
+  <div class="dm-two">
+    <div><div class="dm-cap">기본 — 그리드 메뉴</div><div id="gA"></div></div>
+    <div><div class="dm-cap">contextMenu:false — 브라우저 메뉴</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G1 = ModuGrid('#gA', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, pageSize:6 }
+});
+const G2 = ModuGrid('#gB', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, pageSize:6, contextMenu:false }
+});
+G1.setData(MGDemo.rows(6, 3));
+G2.setData(MGDemo.rows(6, 3));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('양쪽에서 각각 우클릭해 비교해 보세요');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

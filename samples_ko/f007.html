@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4-2. 컬럼 key는 바꿀 수 없습니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.4 동적 조작</div>
+  <h1 class="dm-tit">2.4-2. 컬럼 key는 바꿀 수 없습니다</h1>
+  <p class="dm-desc"><code>updateCol()</code> 로 라벨·폭·타입은 바꿀 수 있지만 <code>key</code> 만은 바뀌지 않습니다. key는 데이터와 컬럼을 잇는 이름이라, 바뀌면 값이 끊어지기 때문입니다. 이름을 정말 바꿔야 한다면 <code>removeCol()</code> 후 <code>addCol()</code> 하세요.</p>
+  <ul class="dm-steps">
+    <li><b>라벨·폭 변경</b> 은 그대로 반영됩니다.</li>
+    <li><b>key 변경 시도</b> 를 누르면 라벨·폭만 적용되고 key는 그대로입니다.</li>
+    <li>데이터가 끊기지 않아 값이 계속 보입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="ok_()">라벨 · 폭 변경</button>
+  <button class="db dr" onclick="bad()">key 변경 시도</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:8 } });
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+function ok_(){
+  G.updateCol('role', { label:'담당 업무', w:180 });
+  MGDemo.log("updateCol('role', {label:'담당 업무', w:180}) 적용", 'ok');
+  show();
+}
+
+function bad(){
+  G.updateCol('role', { key:'job', label:'키를 바꿔볼까', w:160 });
+  MGDemo.log("updateCol('role', {key:'job', ...}) 실행 — key 는 반영되지 않습니다", 'wn');
+  show();
+}
+
+function show(){
+  const c = G.getCols().find(function(x){ return x.key === 'role'; });
+  MGDemo.log('현재 key = "' + c.key + '" / label = "' + c.label + '" / w = ' + c.w);
+  MGDemo.log('첫 행 값 = "' + G.getFilteredData()[0].role + '" (데이터 연결 유지)', 'ok');
+}
+show();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

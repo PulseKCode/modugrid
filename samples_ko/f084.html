@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-2. 경계 더블클릭으로 폭 자동 맞춤 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-2. 경계 더블클릭으로 폭 자동 맞춤</h1>
+  <p class="dm-desc">헤더 <b>경계선</b>을 더블클릭하면 그 컬럼 내용에 딱 맞게 폭이 조절됩니다. 엑셀과 같은 방식이며, 원본 값이 아니라 <b>화면에 보이는 글자</b> 기준이라 콤마가 붙은 금액이나 목록 이름도 잘리지 않습니다.</p>
+  <ul class="dm-steps">
+    <li><code>메모</code> 헤더의 <b>오른쪽 경계선</b>을 더블클릭합니다.</li>
+    <li><code>급여</code>(콤마 포함) 와 <code>상태</code>(목록 이름) 경계도 해 봅니다.</li>
+    <li>버튼으로도 같은 일을 할 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="fit('memo')">메모 맞춤</button>
+  <button class="db p" onclick="fit('salary')">급여 맞춤</button>
+  <button class="db p" onclick="fit('status')">상태 맞춤</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:90},
+  {key:'status', label:'상태', w:70, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+  {key:'salary', label:'급여', w:70, type:'currency'},
+  {key:'memo',   label:'메모', w:80},
+];
+
+const rows = MGDemo.rows(10).map(function(r,i){
+  r.memo = '아주 긴 메모 내용이 들어가는 칸입니다 ' + (i+1);
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(rows);
+window.G = G;
+
+function fit(key){
+  const before = G.getLayout().widths[key];
+  G.autoFit(key);
+  MGDemo.log(key + '  ' + before + 'px → ' + G.getLayout().widths[key] + 'px', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

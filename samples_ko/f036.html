@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-4. Tab · Shift+Tab — 옆 칸으로 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 진입 경로</div>
+  <h1 class="dm-tit">5.1-4. Tab · Shift+Tab — 옆 칸으로</h1>
+  <p class="dm-desc">편집 중 <code>Tab</code> 은 값을 저장하고 오른쪽 칸으로, <code>Shift+Tab</code> 은 왼쪽으로 넘어갑니다. 행 끝에 닿으면 다음 행 첫 칸으로 이어져 한 줄씩 채워 넣기 좋습니다.</p>
+  <ul class="dm-steps">
+    <li><code>이름</code> 셀을 편집하고 <code>Tab</code> 을 누릅니다.</li>
+    <li>계속 <code>Tab</code> 을 눌러 행 끝까지 가 봅니다 — 다음 행으로 넘어갑니다.</li>
+    <li><code>Shift+Tab</code> 으로 되돌아갑니다.</li>
+  </ul>
+
+  
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수',   w:90,  type:'number'},
+  {key:'joined', label:'입사일', w:120, type:'date'},
+  {key:'memo',   label:'메모',   w:180, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:8,
+    on:{ cellEdit: function(p){ MGDemo.log(p.key + ' = ' + p.value + ' 저장', 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log('Tab 으로 옆 칸, 행 끝에서는 다음 행으로 이어집니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

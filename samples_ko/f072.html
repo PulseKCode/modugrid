@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-4. upload — 고르는 즉시 하나씩 올리기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-4. upload — 고르는 즉시 하나씩 올리기</h1>
+  <p class="dm-desc">파일을 고르는 <b>순간 바로</b> 서버로 올리고, 서버가 돌려준 <code>{id, url}</code> 로 바꿔 둡니다. 저장할 때는 파일이 아니라 <b>주소만</b> 나가므로 큰 파일이 많아도 저장이 무겁지 않습니다.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 이미지를 넣습니다 — 바로 업로드가 시작됩니다.</li>
+    <li>올리는 동안 진행 표시가 보이고, 끝나면 서버 주소로 바뀝니다.</li>
+    <li><b>전송 내용 보기</b> 로 주소만 나가는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="peek()">전송 내용 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+let no = 0;
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'upload',
+
+    /* 파일 하나를 올리고 { id, url } 을 돌려주면 됩니다.
+       실제로는 아래처럼 씁니다.
+         const fd = new FormData();
+         fd.append('file', file); fd.append('rowId', row.id);
+         const res = await fetch('upload.jsp', { method:'POST', body:fd });
+         return await res.json();                                            */
+    imageUpload: function(file, row){
+      MGDemo.log('업로드 시작 — ' + file.name + ' (행 ' + row.id + ')', 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          const id = 'F' + (++no);
+          MGDemo.log('업로드 완료 — ' + id, 'ok');
+          res({ id: id, url: '/files/' + id + '.jpg' });
+        }, 700);
+      });
+    }
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  const all = ch.updated.concat(ch.inserted);
+  if (!all.length){ MGDemo.log('먼저 사진을 넣어 보세요', 'wn'); return; }
+  all.forEach(function(r){ MGDemo.log(JSON.stringify(r)); });
+  MGDemo.log('파일은 이미 서버에 있으므로 주소(url)만 나갑니다', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

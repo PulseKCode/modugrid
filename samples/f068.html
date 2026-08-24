@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-10. Turning the change colours off (dirtyMark) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-10. Turning the change colours off (dirtyMark)</h1>
+  <p class="dm-desc">New rows are shaded green, edited ones amber and deleted ones red. If that is too much, <code>dirtyMark</code> turns the shading off — but <b>the deletion strikethrough stays</b>, because a row on its way out has to be visible.</p>
+  <ul class="dm-steps">
+    <li>Add a row, edit another and delete a third to get all three colours.</li>
+    <li>Press <b>Change colours on / off</b> — the shading goes.</li>
+    <li>Check that the deleted row <b>keeps its strikethrough</b>.</li>
+    <li>The <code>+ * -</code> markers in <code>_st</code> stay as well.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db" onclick="G.addRow(mk())">Add a row</button>
+  <button type="button" class="db dr" onclick="del()">Delete selected</button>
+  <button type="button" class="db p" onclick="G.toggleDirtyMark();st()">Change colours on / off</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:12, dirtyMark:true, showST:true } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+let seq = 800;
+function mk(){
+  return { id: ++seq, name:'New row ' + seq, status:'A', role:'QA',
+           score:60, progress:0, salary:3000, joined:'2026-01-01', memo:'', images:[] };
+}
+function del(){
+  const i = new Set([...G.getSelected(), ...G.getChecked()]);
+  if (!i.size){ MGDemo.log('Tick a row first', 'wn'); return; }
+  G.deleteRows(i);
+}
+function st(){
+  MGDemo.log('change colours ' + (G.getState().dirtyMark ? 'ON' : 'OFF')
+           + ' / pending = [' + G.getPendingDeletes().join(', ') + '] (strikethrough kept)', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

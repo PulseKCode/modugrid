@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.3-3. 행 추가 · 삽입 · 삭제 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.3 입력 제어</div>
+  <h1 class="dm-tit">5.3-3. 행 추가 · 삽입 · 삭제</h1>
+  <p class="dm-desc">맨 뒤에 붙이려면 <code>addRow()</code>, 고른 행의 <b>위나 아래</b>에 끼워 넣으려면 <code>insertAt()</code> 를 씁니다. 우클릭 메뉴의 Insert Above/Below 도 같은 기능입니다.</p>
+  <ul class="dm-steps">
+    <li>행 하나를 고르고 <b>위에 삽입</b> / <b>아래 삽입</b> 을 눌러 봅니다.</li>
+    <li>행에서 <b>우클릭</b> 해도 같은 메뉴가 있습니다.</li>
+    <li>새로 넣은 행은 <code>_st</code> 칸에 <code>+</code> 로 표시됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="G.addRow(mk())">맨 뒤에 추가</button>
+  <button class="db p" onclick="G.insertAt('above', mk)">위에 삽입</button>
+  <button class="db p" onclick="G.insertAt('below', mk)">아래 삽입</button>
+  <button class="db dr" onclick="G.deleteSelected()">고른 행 삭제</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:140},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0, showST:true, editMode:true } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+/* insertAt(위치, 행만들기함수) — 함수가 새 id 를 받아 행을 돌려준다 */
+function mk(id){
+  return { id:id, name:'새 행', status:'A', role:'QA',
+           score:0, progress:0, salary:0, joined:'2026-01-01', memo:'', images:[] };
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

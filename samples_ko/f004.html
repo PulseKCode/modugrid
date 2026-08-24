@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.3-1. 행번호 · 상태 · 체크박스 컬럼 (_rn · _st · _cb) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.3 시스템 컬럼</div>
+  <h1 class="dm-tit">2.3-1. 행번호 · 상태 · 체크박스 컬럼 (_rn · _st · _cb)</h1>
+  <p class="dm-desc"><code>_rn</code>(행번호), <code>_st</code>(변경 상태), <code>_cb</code>(체크박스)는 <code>cols</code> 에 넣기만 하면 됩니다. 어디에 적든 <b>항상 맨 왼쪽</b>에 모이고, 가로 스크롤에도 고정으로 남습니다.</p>
+  <ul class="dm-steps">
+    <li>컬럼 정의에서 <code>_cb</code> 를 일부러 맨 뒤에 적었는데도 화면에서는 맨 왼쪽에 있습니다.</li>
+    <li>그리드를 좌우로 스크롤해 보세요 — 왼쪽 세 칸은 그대로 남습니다.</li>
+    <li>아래 버튼으로 각각을 켜고 끌 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleRowNum()">행번호 켜기/끄기</button>
+  <button class="db p" onclick="G.toggleStatusCol()">상태 컬럼 켜기/끄기</button>
+  <button class="db p" onclick="G.toggleCheckbox()">체크박스 켜기/끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+/* _cb 를 맨 뒤에 적어도 화면에서는 맨 왼쪽으로 간다 */
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:140},
+  {key:'role',   label:'직무',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수',   w:100, type:'number'},
+  {key:'salary', label:'급여',   w:140, type:'currency'},
+  {key:'joined', label:'입사일', w:130, type:'date'},
+  {key:'memo',   label:'메모',   w:220},
+  {key:'_st', label:'', w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'', w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, showST:true, editMode:true } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('셀을 고쳐 보면 _st 칸에 * 표시가 붙습니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

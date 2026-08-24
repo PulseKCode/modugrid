@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-1. Choosing how photos reach the server (imageMode) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-1. Choosing how photos reach the server (imageMode)</h1>
+  <p class="dm-desc">This setting decides <b>when</b> a photo is uploaded and <b>in what shape</b> it travels. Preview only? <code>none</code>. Large files? <code>upload</code>. One save for everything? <code>multipart</code>. Something small like a signature? <code>base64</code>.</p>
+  <ul class="dm-steps">
+    <li>Use the table below to pick the mode that matches your case.</li>
+    <li>Each mode is covered one at a time in the pages that follow.</li>
+    <li><b>A word of warning</b> — do not change the mode after the screen is up. Photos already held are stored differently per mode, so the transfer would not line up.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="guide()">Show the comparison</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:5, rowHeight:70, showST:true,
+    imageMode: 'none',            // none | upload | multipart | base64
+    imageLimit: 5,                // photos per row
+    imageMaxSize: 2*1024*1024,    // bytes per photo (0 = no limit)
+  }
+});
+G.setData(MGDemo.rows(4));
+window.G = G;
+
+function guide(){
+  MGDemo.clearLog();
+  [['none',      'never uploaded',        'preview only · no images stored'],
+   ['upload',    'as soon as it is picked','large files, or a lot of them'],
+   ['multipart', 'with the save',          'one save for data and files together'],
+   ['base64',    'embedded in the save',   'small things — signatures, icons']
+  ].forEach(function(x){
+    MGDemo.log(x[0].padEnd(11) + x[1].padEnd(25) + x[2]);
+  });
+  MGDemo.log('currently set to ' + (G.getState().imageMode || 'none'), 'ok');
+}
+guide();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

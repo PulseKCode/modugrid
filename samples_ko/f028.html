@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-5. 체크박스 헤더에 글자 넣기 (cbHeader) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-5. 체크박스 헤더에 글자 넣기 (cbHeader)</h1>
+  <p class="dm-desc">헤더의 전체선택 체크박스 대신 <code>선택</code> 같은 <b>글자</b>를 넣을 수 있습니다. 실수로 전체 선택이 눌리면 곤란한 화면에서 씁니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽은 기본(체크박스), 가운데는 <code>선택</code> 글자, 오른쪽은 빈 헤더입니다.</li>
+    <li>가운데·오른쪽은 헤더를 눌러도 전체 선택이 되지 않습니다.</li>
+    <li>행 체크박스는 세 경우 모두 정상 동작합니다.</li>
+  </ul>
+
+  
+  <div class="dm-two">
+    <div><div class="dm-cap">기본 — 체크박스</div><div id="gA"></div></div>
+    <div><div class="dm-cap">cbHeader:'선택'</div><div id="gB"></div></div>
+    <div><div class="dm-cap">cbHeader:'none'</div><div id="gC"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+function mk(sel, cbHeader){
+  const g = ModuGrid(sel, {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options: Object.assign({ selMode:'row', pageSize:6 },
+                           cbHeader === undefined ? {} : { cbHeader: cbHeader })
+  });
+  g.setData(MGDemo.rows(6, 4));
+  return g;
+}
+
+const G1 = mk('#gA');                  // 기본 = 체크박스
+const G2 = mk('#gB', '선택');           // 글자
+const G3 = mk('#gC', 'none');          // 빈 헤더
+window.G1 = G1; window.G2 = G2; window.G3 = G3;
+
+MGDemo.log("cbHeader 는 'check'(기본) / 'none' · false(빈칸) / 그 밖의 문자열(그대로 표시)");
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

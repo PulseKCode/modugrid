@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.2-2. 행 · 셀 단위로 수정 잠그기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.2 편집 권한</div>
+  <h1 class="dm-tit">5.2-2. 행 · 셀 단위로 수정 잠그기</h1>
+  <p class="dm-desc">상태가 <code>CLOSED</code> 인 행은 통째로, 담당자가 다른 급여 칸은 그 칸만 잠그는 식으로 <b>조건부 잠금</b>을 걸 수 있습니다. 둘 다 쓰면 <b>행 잠금이 먼저</b> 적용됩니다.</p>
+  <ul class="dm-steps">
+    <li><code>상태</code> 가 <b>비활성</b> 인 행은 전부 잠겨 있습니다 — 셀을 더블클릭해도 열리지 않습니다.</li>
+    <li><code>급여</code> 칸은 <b>점수 80 이상</b>인 행만 고칠 수 있습니다.</li>
+    <li>잠긴 칸은 마우스를 올려도 강조되지 않아 눈으로 구분됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="lock()">잠긴 행 · 칸 확인</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+
+  /* 이 칸만 조건부 잠금 — 점수 80 미만이면 못 고침 */
+  {key:'salary', label:'급여', w:140, type:'currency',
+    editable: function(row, col){ return row.score >= 80; }},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    /* 행 전체 잠금 — 비활성(I) 인 행은 아무 칸도 못 고침 */
+    rowEditable: function(row){ return row.status !== 'I'; }
+  }
+});
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log("행 잠금: 상태가 '비활성'이면 그 행 전체 / 칸 잠금: 점수 80 미만이면 급여 칸");
+
+function lock(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    const rowLock = (r.status === 'I');
+    const cellLock = !rowLock && r.score < 80;
+    if (rowLock)       MGDemo.log('id=' + r.id + '  행 전체 잠김 (상태 비활성)', 'wn');
+    else if (cellLock) MGDemo.log('id=' + r.id + '  급여 칸만 잠김 (점수 ' + r.score + ')', 'wn');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

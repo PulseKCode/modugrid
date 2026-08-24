@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>7-2. 어느 경로로 넣어도 똑같이 검사 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">7. 유효성 검사</div>
+  <h1 class="dm-tit">7-2. 어느 경로로 넣어도 똑같이 검사</h1>
+  <p class="dm-desc">셀에 직접 치든, 달력에서 고르든, 모달에서 저장하든 <b>검사는 한 번만, 같은 기준으로</b> 돕니다. 어느 화면에서 넣었느냐에 따라 검사가 빠지는 일이 없습니다.</p>
+  <ul class="dm-steps">
+    <li><code>메모</code> 를 더블클릭해 11자 이상 넣어 봅니다.</li>
+    <li><code>점수</code> 칸에 <code>150</code> 을 칩니다.</li>
+    <li><code>입사일</code> 의 달력으로 2000년 이전 날짜를 고릅니다.</li>
+    <li>우클릭 → <b>Edit Row</b> 모달에서 잘못된 값으로 저장해 봅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', 1)">편집 모달 열기</button>
+  <button class="db" onclick="show()">잘못된 칸 목록</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:120},
+  {key:'score',  label:'점수', w:100, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || '0~100 사이여야 합니다'; }},
+  {key:'joined', label:'입사일', w:130, type:'date',
+    validate: function(v){ return (String(v) >= '2000-01-01') || '2000년 이후만 넣을 수 있습니다'; }},
+  {key:'memo',   label:'메모', w:190, type:'textarea',
+    validate: function(v){ return String(v).length <= 10 || '10자 이내로 적어주세요'; }},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function show(){
+  MGDemo.clearLog();
+  const bad = G.getInvalidCells();
+  if (!bad.length){ MGDemo.log('잘못된 칸이 없습니다', 'ok'); return; }
+  bad.forEach(function(b){ MGDemo.log('id=' + b.id + '  ' + b.key + ' — ' + b.message, 'er'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

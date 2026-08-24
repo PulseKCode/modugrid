@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.3-2. Recolouring the row gutter (--bg-gut) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.3 System columns</div>
+  <h1 class="dm-tit">2.3-2. Recolouring the row gutter (--bg-gut)</h1>
+  <p class="dm-desc">The system columns use a different background in the body, the way Excel shades its row gutter. If the shade does not suit your screen, change the single <code>--bg-gut</code> variable.</p>
+  <ul class="dm-steps">
+    <li>Notice the far-left cells are shaded differently from the data cells.</li>
+    <li>Press <b>Like normal cells</b> and the distinction disappears.</li>
+    <li>Press <b>Accent shade</b> to use a colour of your own.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="set('transparent')">Like normal cells</button>
+  <button type="button" class="db p" onclick="set('#e8f0fe')">Accent shade</button>
+  <button type="button" class="db" onclick="set(null)">Back to default</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'', w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'', w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:130},
+  {key:'score', label:'Score', w:100, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, showST:true } });
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+const root = document.querySelector('#grid');
+
+function set(v){
+  if (v === null) { root.style.removeProperty('--bg-gut'); MGDemo.log('Back to the default shade', 'ok'); }
+  else { root.style.setProperty('--bg-gut', v); MGDemo.log('--bg-gut = ' + v, 'ok'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

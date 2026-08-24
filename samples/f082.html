@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-3. Cells that cannot take a value are skipped — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. Copy and export</div>
+  <h1 class="dm-tit">9-3. Cells that cannot take a value are skipped</h1>
+  <p class="dm-desc">A paste <b>steps over what it cannot write</b> and tells you how many cells it filled. Values failing validation, <code>editor:false</code> columns, rows pending deletion and anything past the last column are all skipped, and the rest of the paste carries on.</p>
+  <ul class="dm-steps">
+    <li>Click the first <code>Name</code> cell.</li>
+    <li>Press <b>Run the paste</b> and read the counts.</li>
+    <li><code>Employee no.</code> is read-only, one score is out of range, and there is a spare column.</li>
+    <li>Mark row 3 for deletion and run it again — that row is skipped too.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="run()">Run the paste</button>
+  <button type="button" class="db dr" onclick="G.deleteRows(new Set([3]));MGDemo.log('row 3 marked for deletion','wn')">Mark row 3 for deletion</button>
+  <button type="button" class="db" onclick="dump()">Show current values</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name', w:150},
+  {key:'empno', label:'Employee no. (read-only)', w:200, editor:false},
+  {key:'score', label:'Score', w:100, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || 'must be 0 to 100'; }},
+];
+
+const rows = MGDemo.rows(3).map(function(r,i){ r.empno = 'E' + (100+i); return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:10 } });
+G.setData(rows);
+window.G = G;
+
+/* three rows by four columns — one column too many, and one score out of range */
+const TSV = ['Alan Turing\tE999\t80\tspare',
+             'Grace Hopper\tE998\t500\tspare',
+             'Ada Lovelace\tE997\t70\tspare'].join('\n');
+
+function run(){
+  MGDemo.clearLog();
+  if (G.getState().focusRI < 0){ MGDemo.log('Click the first Name cell first', 'wn'); return; }
+  const out = G.pasteText(TSV);
+  MGDemo.log(out.cells + ' cells written, ' + out.skipped + ' skipped', 'ok');
+  MGDemo.log('skipped because: the employee number is read-only · 500 is out of range · there is no fourth column');
+  dump();
+}
+
+function dump(){
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  name ' + r.name + '  no. ' + r.empno + '  score ' + r.score);
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

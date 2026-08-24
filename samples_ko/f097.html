@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.1-1. 테마 바꾸기 (11종) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.1 테마</div>
+  <h1 class="dm-tit">12.1-1. 테마 바꾸기 (11종)</h1>
+  <p class="dm-desc"><code>setTheme()</code> 한 줄로 색을 통째로 바꿉니다. 테마는 <b>그리드마다 따로</b> 적용되므로 한 화면에서 표마다 다른 색을 쓸 수 있고, 페이지의 다른 부분에는 영향을 주지 않습니다.</p>
+  <ul class="dm-steps">
+    <li>위 선택 상자로 왼쪽·오른쪽 테마를 각각 바꿔 봅니다.</li>
+    <li>두 그리드가 서로 다른 색으로 동시에 보입니다.</li>
+    <li>기본 색만 바꾸고 싶으면 <code>setTheme('ocean', {ac:'#ff6600'})</code> 처럼 변수를 함께 줍니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">왼쪽</span><select class="dm-in" id="s1"></select>
+  <span class="dm-lab">오른쪽</span><select class="dm-in" id="s2"></select>
+  <button class="db p" onclick="G1.setTheme('ocean',{ac:'#ff6600'})">왼쪽 강조색 주황</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">왼쪽</div><div id="gridA"></div></div>
+    <div><div class="dm-cap">오른쪽</div><div id="gridB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G1 = ModuGrid('#gridA', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:8 } });
+const G2 = ModuGrid('#gridB', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:8, theme:'dark' } });
+G1.setData(MGDemo.rows(10, 3));
+G2.setData(MGDemo.rows(10, 3));
+window.G1 = G1; window.G2 = G2;
+
+const THEMES = G1.getThemes();
+[['s1',G1],['s2',G2]].forEach(function(p){
+  const sel = document.getElementById(p[0]);
+  sel.innerHTML = THEMES.map(function(t){ return '<option>' + t + '</option>'; }).join('');
+  sel.value = p[1].getTheme();
+  sel.onchange = function(){ p[1].setTheme(this.value); MGDemo.log(p[0] + ' → ' + this.value, 'ok'); };
+});
+
+MGDemo.log('쓸 수 있는 테마 ' + THEMES.length + '종 — ' + THEMES.join(', '));
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

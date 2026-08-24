@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-4. Freezing columns — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-4. Freezing columns</h1>
+  <p class="dm-desc">Pin the first few columns so they <b>do not scroll away sideways</b>. On a wide table it keeps you from losing track of which row you are reading. Mark the columns with <code>freeze:1</code> and switch <code>freezeOn</code> on.</p>
+  <ul class="dm-steps">
+    <li><b>Scroll the grid sideways</b> — <code>#</code> and <code>Name</code> stay where they are.</li>
+    <li>Press <b>Freezing on / off</b> and everything scrolls together.</li>
+    <li>Add <code>freeze:1</code> to more columns to pin more of them.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleFreeze();st()">Freezing on / off</button>
+  <button type="button" class="db" onclick="add()">Freeze Role as well</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#',  w:42,  type:'rn', noSort:1, noResize:1, noFilter:1, freeze:1},
+  {key:'name', label:'Name', w:150, freeze:1},
+  {key:'role',    label:'Role',     w:130},
+  {key:'status',  label:'Status',   w:110, options:MGDemo.STATUS},
+  {key:'score',   label:'Score',    w:100, type:'number'},
+  {key:'progress',label:'Progress', w:140, type:'progress'},
+  {key:'salary',  label:'Salary',   w:130, type:'currency'},
+  {key:'joined',  label:'Joined',   w:130, type:'date'},
+  {key:'memo',    label:'Note',     w:220},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ freezeOn:true, pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function st(){ MGDemo.log('Freezing ' + (G.getState().freezeOn ? 'ON' : 'OFF'), 'ok'); }
+
+function add(){
+  G.updateCol('role', { freeze:1 });
+  MGDemo.log('Role is pinned as well — scroll sideways to see it', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

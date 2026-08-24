@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.3-2. 행 머리글 칸 색 바꾸기 (--bg-gut) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.3 시스템 컬럼</div>
+  <h1 class="dm-tit">2.3-2. 행 머리글 칸 색 바꾸기 (--bg-gut)</h1>
+  <p class="dm-desc">왼쪽 시스템 컬럼은 엑셀의 행 머리글처럼 본문과 다른 배경을 씁니다. 색이 마음에 들지 않으면 <code>--bg-gut</code> 변수 하나만 바꾸면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>맨 왼쪽 칸의 배경이 데이터 칸과 다른지 봅니다.</li>
+    <li><b>일반 셀처럼</b> 을 누르면 구분이 사라집니다.</li>
+    <li><b>강조색으로</b> 를 눌러 원하는 색을 줄 수도 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="set('transparent')">일반 셀처럼</button>
+  <button class="db p" onclick="set('#e8f0fe')">강조색으로</button>
+  <button class="db" onclick="set(null)">기본값으로</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'', w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'', w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:140},
+  {key:'role',  label:'직무', w:130},
+  {key:'score', label:'점수', w:100, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, showST:true } });
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+const root = document.querySelector('#grid');
+
+function set(v){
+  if (v === null) { root.style.removeProperty('--bg-gut'); MGDemo.log('기본값으로 되돌림', 'ok'); }
+  else { root.style.setProperty('--bg-gut', v); MGDemo.log('--bg-gut = ' + v, 'ok'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

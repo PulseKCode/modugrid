@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-5. Building group headers (two rows) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-5. Building group headers (two rows)</h1>
+  <p class="dm-desc">Gather related columns under a shared caption and <b>the header becomes two rows</b>. Give the columns the same <code>group</code> name and that is all. On a wide table it tells you at a glance what kind of value each column holds.</p>
+  <ul class="dm-steps">
+    <li>The header is split into <b>Personal</b> and <b>Performance</b>.</li>
+    <li><code>#</code> and <code>Name</code> have no group, so they span both rows.</li>
+    <li>Resize a column and the group caption follows.</li>
+    <li>Scroll down and the two-row header stays in place.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.autoFit('salary')">Fit the Salary column</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:150},
+
+  /* columns sharing a group name are gathered under one caption */
+  {key:'status', label:'Status', w:110, group:'Personal', options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120, group:'Personal'},
+  {key:'joined', label:'Joined', w:120, group:'Personal', type:'date'},
+
+  {key:'score',    label:'Score',    w:90,  group:'Performance', type:'number'},
+  {key:'progress', label:'Progress', w:130, group:'Performance', type:'progress'},
+  {key:'salary',   label:'Salary',   w:120, group:'Performance', type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0 } });
+G.setData(MGDemo.rows(30));
+window.G = G;
+
+MGDemo.log('Scroll down — the two-row header stays put');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

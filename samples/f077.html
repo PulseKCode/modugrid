@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-9. multipart — finding the file by ref, and leaving Content-Type alone — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-9. multipart — finding the file by ref, and leaving Content-Type alone</h1>
+  <p class="dm-desc">The <code>ref</code> on an image entry in the JSON <b>is</b> the file part name, so the server reads <code>ref</code> and asks for that part. One caution: <b>do not set <code>Content-Type</code> yourself</b> — the browser has to add the boundary along with it.</p>
+  <ul class="dm-steps">
+    <li>Add a photo and press <b>Save</b>.</li>
+    <li>Compare the <code>ref</code> in the JSON with the file part name.</li>
+    <li>Check that <code>Content-Type</code> is reported as set by the browser.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="save()">Save (submit)</button>
+  <button type="button" class="db" onclick="jsp()">Server-side example</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:4, rowHeight:80, showST:true, imageMode:'multipart' }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+/* A stand-in for the server. In real code you would pass the submit.jsp URL instead. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch is unavailable'));
+  }
+  const b = init && init.body;
+  if (typeof b === 'string'){
+    MGDemo.log('POST ' + url + '   (Content-Type: ' + ((init.headers||{})['Content-Type'] || 'set automatically') + ')');
+    MGDemo.log(decodeURIComponent(b).slice(0, 700));
+  } else if (b && typeof b.forEach === 'function'){
+    MGDemo.log('POST ' + url + '   (Content-Type: set by the browser)');
+    b.forEach(function(v, k){
+      MGDemo.log('  ' + k + ' = ' + (typeof v === 'string' ? v.slice(0, 400) : '(file, ' + v.size + ' bytes)'));
+    });
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+async function save(){
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    MGDemo.log(out.skipped ? 'Nothing had changed' : 'Sent — compare the ref with the part name', 'ok');
+  }catch(e){ MGDemo.log('failed — ' + e.message, 'er'); }
+}
+
+function jsp(){
+  MGDemo.clearLog();
+  MGDemo.log('// reading the file back out by its ref');
+  MGDemo.log('String ref  = img.getString("ref");        // "img_3_images_0"');
+  MGDemo.log('Part   part = request.getPart(ref);');
+  MGDemo.log('try (InputStream in = part.getInputStream()) { ... }');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

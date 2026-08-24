@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-1. 데이터는 코드, 화면은 이름 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-1. 데이터는 코드, 화면은 이름</h1>
+  <p class="dm-desc">Oracle 공통코드처럼 <b>데이터에는 코드가 들어가고 화면에는 이름이 보이게</b> 합니다. 옵션 목록의 형태는 자유롭게 쓰면 됩니다 — <code>{code,name}</code> <code>{value,label}</code> <code>{id,text}</code> <code>{v,t}</code>, 그냥 문자열 배열까지 알아서 알아봅니다.</p>
+  <ul class="dm-steps">
+    <li>컬럼마다 옵션 형태가 다른데 화면에는 전부 한글 이름으로 나옵니다.</li>
+    <li>셀을 열어 목록에서 값을 고쳐 봅니다.</li>
+    <li><b>저장된 값 보기</b> 로 데이터에는 코드가 들어 있는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="raw()">저장된 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:110},
+  {key:'f1', label:'{code,name}',   w:115, options:[{code:'A',name:'활성'},{code:'P',name:'대기'}]},
+  {key:'f2', label:'{value,label}', w:120, options:[{value:'A',label:'활성'},{value:'P',label:'대기'}]},
+  {key:'f3', label:'{id,text}',     w:115, options:[{id:'A',text:'활성'},{id:'P',text:'대기'}]},
+  {key:'f4', label:'{v,t}',         w:105, options:[{v:'A',t:'활성'},{v:'P',t:'대기'}]},
+  {key:'f5', label:'문자열 배열',    w:120, options:['active','pending']},
+];
+
+const rows = MGDemo.rows(6).map(function(r,i){
+  const c = i % 2 ? 'P' : 'A';
+  r.f1 = r.f2 = r.f3 = r.f4 = c;
+  r.f5 = i % 2 ? 'pending' : 'active';
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+function raw(){
+  MGDemo.clearLog();
+  const r = G.getFilteredData()[0];
+  ['f1','f2','f3','f4','f5'].forEach(function(k){ MGDemo.log(k + ' 저장값 = "' + r[k] + '"'); });
+  MGDemo.log('어떤 형태로 적든 저장되는 건 코드 하나입니다', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

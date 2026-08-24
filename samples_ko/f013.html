@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-5. 정렬바에서 조건 빼기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 정렬</div>
+  <h1 class="dm-tit">3.1-5. 정렬바에서 조건 빼기</h1>
+  <p class="dm-desc">정렬이 걸리면 그리드 위에 정렬바가 나타납니다. 조건 칩의 <code>✕</code> 로 하나씩 빼고, <code>Clear</code> 로 전부 지웁니다.</p>
+  <ul class="dm-steps">
+    <li><b>직무↑ 점수↓ 걸기</b> 로 조건 두 개를 만듭니다.</li>
+    <li>정렬바에서 칩의 <code>✕</code> 를 눌러 하나만 뺍니다.</li>
+    <li><code>Clear</code> 로 전부 지웁니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="preset()">직무↑ 점수↓ 걸기</button>
+  <button class="db" onclick="G.rmSort(0);after()">첫 조건 빼기</button>
+  <button class="db dr" onclick="G.clearSorts();after()">전부 지우기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ multiSort:true, pageSize:12 } });
+G.setData(MGDemo.rows(16));
+window.G = G;
+
+function ev(){ return { target: document.body }; }
+
+function preset(){
+  G.clearSorts();
+  G.doSort('role',  ev());
+  G.doSort('score', ev());
+  G.doSort('score', ev());   // 한 번 더 → 내림차순
+  after();
+}
+
+function after(){
+  const s = G.getState().sorts;
+  MGDemo.log('정렬 = ' + (s.map(x=>x.col+' '+x.dir).join(' , ') || '없음'), 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

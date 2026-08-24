@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-3. none — 보내지 않기 (기본값) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-3. none — 보내지 않기 (기본값)</h1>
+  <p class="dm-desc">사진을 화면에서 보기만 하고 서버에는 보내지 않습니다. 기본값이며, 이 상태에서는 <b>전송 내용에 <code>images</code> 항목이 아예 들어가지 않습니다</b>.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 이미지를 몇 장 넣습니다.</li>
+    <li><code>이름</code> 칸도 아무거나 고칩니다.</li>
+    <li><b>전송 내용 보기</b> — 이름만 있고 <code>images</code> 는 없습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="peek()">전송 내용 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:4, rowHeight:70, showST:true, imageMode:'none' }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+MGDemo.log('사진을 넣고 이름도 고친 뒤 전송 내용을 확인해 보세요');
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.updated.length && !ch.inserted.length){ MGDemo.log('먼저 값을 고쳐 보세요', 'wn'); return; }
+  ch.updated.forEach(function(r){
+    MGDemo.log('수정 ' + JSON.stringify(r));
+    const has = ('images' in r.changes);
+    MGDemo.log('   images 항목 = ' + (has ? '있음' : '없음 (none 이므로 정상)'), has ? 'er' : 'ok');
+  });
+  ch.inserted.forEach(function(r){
+    MGDemo.log('추가 ' + JSON.stringify(r));
+    const has = ('images' in r);
+    MGDemo.log('   images 항목 = ' + (has ? '있음' : '없음 (none 이므로 정상)'), has ? 'er' : 'ok');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

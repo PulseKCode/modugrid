@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-11. base64 — carrying the photo inside the JSON — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-11. base64 — carrying the photo inside the JSON</h1>
+  <p class="dm-desc">The photo is turned into text and travels inside the JSON. There is no file upload to build on the server, but <b>the payload grows by roughly a third</b>. Keep it for small, few items such as signatures and icons, and always set <code>imageMaxSize</code> alongside it.</p>
+  <ul class="dm-steps">
+    <li>Put one <b>small</b> photo into a <code>Photos</code> cell.</li>
+    <li>Press <b>Preview the JSON</b> and look for the <code>data:image/...;base64,</code> string.</li>
+    <li>Press <b>Compare the sizes</b> to see the growth.</li>
+    <li>This page caps each file at 200 KB.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="peek()">Preview the JSON</button>
+  <button type="button" class="db" onclick="size()">Compare the sizes</button>
+  <button type="button" class="db" onclick="jsp()">Server-side example</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'base64',
+    imageMaxSize: 200*1024,      // always pair base64 with a size cap
+    imageLimit: 2,
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  const all = ch.updated.concat(ch.inserted);
+  if (!all.length){ MGDemo.log('Add a photo first', 'wn'); return; }
+  const s = JSON.stringify(all);
+  MGDemo.log(s.length > 500 ? s.slice(0, 500) + ' … (truncated)' : s);
+}
+
+function size(){
+  MGDemo.clearLog();
+  let any = false;
+  G.getFilteredData().forEach(function(r){
+    (r.images || []).forEach(function(im){
+      any = true;
+      const raw = im.size || 0;
+      const enc = (im.data || '').length;
+      MGDemo.log(im.name + '  original ' + Math.round(raw/1024) + ' KB  →  text ' + Math.round(enc/1024) + ' KB'
+               + (raw ? '  (' + Math.round(enc/raw*100) + '%)' : ''), 'wn');
+    });
+  });
+  if (!any) MGDemo.log('Add a photo first', 'wn');
+}
+
+function jsp(){
+  MGDemo.clearLog();
+  MGDemo.log('// turning the base64 string back into bytes');
+  MGDemo.log('String dataUrl = img.getString("data");');
+  MGDemo.log('byte[] bytes   = Base64.getDecoder()');
+  MGDemo.log('                 .decode(dataUrl.substring(dataUrl.indexOf(\',\') + 1));');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

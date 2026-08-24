@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-7. 특정 컬럼만 필터 빼기 (noFilter) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-7. 특정 컬럼만 필터 빼기 (noFilter)</h1>
+  <p class="dm-desc">컬럼 정의에 <code>noFilter:1</code> 을 주면 그 컬럼만 깔때기가 나오지 않습니다. 메모처럼 값이 전부 달라 목록이 의미 없는 컬럼에 씁니다.</p>
+  <ul class="dm-steps">
+    <li><code>이름</code> 과 <code>메모</code> 헤더에는 깔때기가 없습니다.</li>
+    <li><code>직무</code> · <code>점수</code> 에는 있습니다.</li>
+    <li>필터가 없어도 전역 검색으로는 찾을 수 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">검색</span>
+  <input class="dm-in" id="q" placeholder="메모도 검색됩니다" oninput="G.search(this.value)">
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:150, noFilter:1},
+  {key:'role', label:'직무', w:130},
+  {key:'score',label:'점수', w:100, type:'number'},
+  {key:'memo', label:'메모', w:200, noFilter:1},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+MGDemo.log('이름 · 메모 = noFilter:1 (깔때기 없음) / 직무 · 점수 = 깔때기 있음');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

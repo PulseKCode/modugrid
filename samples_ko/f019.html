@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-6. 필터 기능 전체 끄기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-6. 필터 기능 전체 끄기</h1>
+  <p class="dm-desc">조회 전용 화면처럼 필터가 필요 없을 때 <code>showFilter:false</code> 로 아예 끕니다. 끄는 순간 <b>걸려 있던 조건도 함께 풀려서</b> 전체 행이 다시 보입니다.</p>
+  <ul class="dm-steps">
+    <li><code>직무</code> 에 조건을 걸어 행을 줄입니다.</li>
+    <li><b>필터 끄기</b> 를 누릅니다 — 깔때기가 사라지고 행이 전부 돌아옵니다.</li>
+    <li>다시 켜면 깔때기는 돌아오지만 조건은 비어 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleFilter();st()">필터 켜기 / 끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:15, showFilter:true } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function st(){
+  const s = G.getState();
+  MGDemo.log('필터 기능 = ' + (s.showFilter ? 'ON' : 'OFF')
+           + ' / 걸린 조건 ' + (Object.keys(s.cfilters).join(', ') || '없음')
+           + ' / 보이는 행 ' + G.getFilteredData().length + '개', 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

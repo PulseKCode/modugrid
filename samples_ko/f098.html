@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.2-1. 헤더와 본문 글꼴 따로 정하기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.2 폰트</div>
+  <h1 class="dm-tit">12.2-1. 헤더와 본문 글꼴 따로 정하기</h1>
+  <p class="dm-desc">헤더와 본문의 <b>크기 · 글꼴 · 굵기 · 기울임</b>을 따로 정합니다. 일부만 적어도 되고, 나머지는 그대로 유지됩니다. 특정 항목만 원래대로 돌리려면 그 값에 <code>null</code> 을 주면 됩니다.</p>
+  <ul class="dm-steps">
+    <li><b>헤더만 굵게</b> — 본문은 그대로입니다.</li>
+    <li><b>본문만 15px</b> — 헤더 설정이 유지됩니다.</li>
+    <li><b>헤더 굵기만 해제</b> — 크기는 남고 굵기만 풀립니다.</li>
+    <li><b>전부 되돌리기</b> 는 <code>setFont(null)</code> 입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.setFont({header:{size:13,bold:true}});f()">헤더만 굵게 13px</button>
+  <button class="db p" onclick="G.setFont({body:{size:15}});f()">본문만 15px</button>
+  <button class="db" onclick="G.setFont({header:{bold:null}});f()">헤더 굵기만 해제</button>
+  <button class="db dr" onclick="G.setFont(null);f()">전부 되돌리기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function f(){
+  MGDemo.clearLog();
+  const cur = G.getFont();
+  MGDemo.log('헤더 = ' + JSON.stringify(cur.header), 'ok');
+  MGDemo.log('본문 = ' + JSON.stringify(cur.body), 'ok');
+}
+f();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-8. 삭제 예정 행은 고칠 수 없습니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-8. 삭제 예정 행은 고칠 수 없습니다</h1>
+  <p class="dm-desc">지우기로 표시한 행은 값을 고칠 수 없습니다. 어차피 사라질 행을 편집하는 건 의미가 없기 때문입니다. 다만 되살리려면 골라야 하므로 <b>체크와 선택은 그대로</b> 됩니다.</p>
+  <ul class="dm-steps">
+    <li>행 하나를 체크하고 <b>삭제</b> 합니다.</li>
+    <li>그 행의 셀을 더블클릭해 봅니다 — 열리지 않습니다.</li>
+    <li>체크박스는 눌립니다 → 그 상태로 <b>되살리기</b> 를 누릅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db dr" onclick="del()">고른 행 삭제</button>
+  <button class="db p" onclick="restore()">되살리기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:10, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function ids(){ return new Set([...G.getSelected(), ...G.getChecked()]); }
+
+function del(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('행을 먼저 체크하세요', 'wn'); return; }
+  G.deleteRows(i);
+  MGDemo.log('삭제 예정 = [' + G.getPendingDeletes().join(', ') + '] — 이제 이 행은 편집되지 않습니다', 'wn');
+}
+function restore(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('되살릴 행을 체크하세요', 'wn'); return; }
+  G.restoreRows(i);
+  MGDemo.log('되살렸습니다 — 다시 편집할 수 있습니다', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

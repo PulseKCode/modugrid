@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.3-1. Row number, status and checkbox columns (_rn · _st · _cb) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.3 System columns</div>
+  <h1 class="dm-tit">2.3-1. Row number, status and checkbox columns (_rn · _st · _cb)</h1>
+  <p class="dm-desc"><code>_rn</code> (row number), <code>_st</code> (change status) and <code>_cb</code> (checkbox) only need to appear in <code>cols</code>. Wherever you declare them they end up <b>on the far left</b> and stay put when you scroll sideways.</p>
+  <ul class="dm-steps">
+    <li><code>_cb</code> is deliberately declared last, yet it shows up first on screen.</li>
+    <li>Scroll the grid sideways — the three left-hand columns stay where they are.</li>
+    <li>Use the buttons to turn each of them on and off.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleRowNum()">Row numbers</button>
+  <button type="button" class="db p" onclick="G.toggleStatusCol()">Status column</button>
+  <button type="button" class="db p" onclick="G.toggleCheckbox()">Checkboxes</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+/* _cb is declared last, but the grid moves it to the far left */
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'role',   label:'Role',   w:130},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:100, type:'number'},
+  {key:'salary', label:'Salary', w:120, type:'currency'},
+  {key:'joined', label:'Joined', w:130, type:'date'},
+  {key:'memo',   label:'Note',   w:220},
+  {key:'_st', label:'', w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'', w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, showST:true, editMode:true } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('Edit a cell and a * marker appears in the _st column');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

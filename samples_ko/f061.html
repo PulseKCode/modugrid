@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-3. 보낼 항목 고르기 — submitFields — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-3. 보낼 항목 고르기 — submitFields</h1>
+  <p class="dm-desc">전송할 필드를 따로 정하지 않으면 <b>화면에 정의된 컬럼에서 자동으로</b> 뽑습니다. 필요한 것만 보내고 싶으면 <code>submitFields</code> 에 적어 주면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>처음엔 지정하지 않은 상태입니다 — 컬럼에서 자동으로 뽑습니다.</li>
+    <li>셀을 고쳐 변경을 만들고 <b>전송 내용 보기</b> 를 누릅니다.</li>
+    <li><b>필드 지정</b> 으로 바꾸면 적어 준 것만 나갑니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="peek()">전송 내용 보기</button>
+  <button class="db" id="bsf" onclick="swap()">지금: 자동 (컬럼에서 뽑기)</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+let useSF = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  const opt = { editMode:true, selMode:'cell', pageSize:8, showST:true };
+  if (useSF) opt.submitFields = ['id','name'];      // id 와 이름만 전송
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(6));
+  window.G = G;
+  MGDemo.log('전송 필드 = ' + (useSF ? "id, name 만" : '컬럼에서 자동'), 'ok');
+}
+
+function swap(){
+  useSF = !useSF;
+  document.getElementById('bsf').textContent = '지금: ' + (useSF ? "id · name 만" : '자동 (컬럼에서 뽑기)');
+  build();
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  if (!ch.updated.length){ MGDemo.log('먼저 셀을 고쳐 보세요', 'wn'); return; }
+  const u = ch.updated[0];
+  MGDemo.log('나가는 항목 = id , ' + Object.keys(u.changes).join(' , '), 'ok');
+  MGDemo.log(JSON.stringify(u));
+}
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

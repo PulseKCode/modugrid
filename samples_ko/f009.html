@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-1. 정렬은 ▲▼ 아이콘으로 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 정렬</div>
+  <h1 class="dm-tit">3.1-1. 정렬은 ▲▼ 아이콘으로</h1>
+  <p class="dm-desc">헤더 오른쪽의 <b>▲▼ 아이콘</b>을 눌러 정렬합니다. 헤더 <b>글자</b>는 정렬이 아니라 <b>컬럼 이동</b>용이라, 글자를 잡고 끌면 컬럼 순서를 바꿀 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 헤더의 <b>글자</b>를 클릭해 봅니다 — 정렬되지 않습니다.</li>
+    <li>같은 헤더의 <b>▲▼ 아이콘</b>을 클릭합니다 — 이때 정렬됩니다.</li>
+    <li>헤더 글자를 잡고 좌우로 끌면 컬럼이 이동합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="MGDemo.clearLog()">로그 지우기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+MGDemo.log('헤더 글자 = 컬럼 이동 / ▲▼ 아이콘 = 정렬');
+
+document.querySelector('#grid').addEventListener('click', function(e){
+  const th = e.target.closest('th[data-c]');
+  if (!th) return;
+  setTimeout(function(){
+    const s = G.getState().sorts;
+    MGDemo.log('[' + th.dataset.c + '] 클릭 → 정렬 ' + (s.map(x=>x.col+' '+x.dir).join(', ') || '없음'));
+  }, 0);
+});
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

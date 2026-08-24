@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-4. Saving from the window is checked too — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. Modals</div>
+  <h1 class="dm-tit">11-4. Saving from the window is checked too</h1>
+  <p class="dm-desc"><b>Save</b> in the window runs <b>the same validation</b> as typing into the cell. A value that fails is not saved and the problem is pointed out.</p>
+  <ul class="dm-steps">
+    <li>In the <b>edit window</b> set <code>Score</code> to <code>500</code> and press <b>Save</b>.</li>
+    <li>The save is refused.</li>
+    <li>Clearing the name in the <b>add window</b> behaves the same way.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.openRowModal('edit', 1)">Edit window</button>
+  <button type="button" class="db p" onclick="G.openRowModal('add')">Add window</button>
+  <button type="button" class="db" onclick="show()">List the problems</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name', w:150,
+    validate: function(v){ return !!String(v).trim() || 'a name is required'; }},
+  {key:'score', label:'Score', w:110, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || 'must be between 0 and 100'; }},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:8, showST:true,
+    on:{ cellEdit: function(p){ MGDemo.log('saved ' + p.key + ' = ' + p.value, 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function show(){
+  MGDemo.clearLog();
+  const bad = G.getInvalidCells();
+  if (!bad.length){ MGDemo.log('Nothing is wrong', 'ok'); return; }
+  bad.forEach(function(b){ MGDemo.log('id=' + b.id + '  ' + b.key + ' — ' + b.message, 'er'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

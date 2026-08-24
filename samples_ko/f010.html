@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-2. 오름차순 → 내림차순 → 해제 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 정렬</div>
+  <h1 class="dm-tit">3.1-2. 오름차순 → 내림차순 → 해제</h1>
+  <p class="dm-desc">정렬 아이콘을 누를 때마다 오름차순 → 내림차순 → 해제 순으로 돕니다. 해제하면 데이터를 넣은 원래 순서로 돌아옵니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 정렬 아이콘을 <b>세 번 연속</b> 눌러 봅니다.</li>
+    <li>누를 때마다 아래에 현재 상태가 찍힙니다.</li>
+    <li><code>#</code> 헤더는 정렬 대상이 아니라 눌러도 변화가 없습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="cycle()">코드로 3단계 돌려보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+document.querySelector('#grid').addEventListener('click', function(e){
+  if (!e.target.closest('th')) return;
+  setTimeout(function(){
+    const s = G.getState().sorts;
+    MGDemo.log(s.length ? '정렬 = ' + s.map(x=>x.col+' '+x.dir).join(', ') : '정렬 해제 (원래 순서)', s.length?'ok':'wn');
+  }, 0);
+});
+
+/* 프로그램에서 부를 때는 doSort(key, 이벤트) 형태 */
+function cycle(){
+  MGDemo.clearLog();
+  ['1회','2회','3회'].forEach(function(lab){
+    G.doSort('score', { target: document.body });
+    const s = G.getState().sorts;
+    MGDemo.log(lab + ' → ' + (s.map(x=>x.col+' '+x.dir).join(', ') || '해제'));
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

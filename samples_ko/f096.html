@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>11-4. 창에서 저장할 때도 값 검사 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">11. 모달</div>
+  <h1 class="dm-tit">11-4. 창에서 저장할 때도 값 검사</h1>
+  <p class="dm-desc">창의 <b>Save</b> 도 셀에 직접 입력할 때와 <b>같은 검사</b>를 거칩니다. 조건에 안 맞으면 저장되지 않고 어디가 문제인지 표시됩니다.</p>
+  <ul class="dm-steps">
+    <li><b>편집 창</b> 에서 <code>점수</code> 를 <code>500</code> 으로 바꾸고 <b>Save</b>.</li>
+    <li>검사에 걸려 저장이 막힙니다.</li>
+    <li><b>추가 창</b> 에서 이름을 비우고 저장해도 마찬가지입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', 1)">편집 창</button>
+  <button class="db p" onclick="G.openRowModal('add')">추가 창</button>
+  <button class="db" onclick="show()">잘못된 칸 목록</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130,
+    validate: function(v){ return !!String(v).trim() || '이름은 반드시 입력해야 합니다'; }},
+  {key:'score', label:'점수', w:110, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || '0~100 사이여야 합니다'; }},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:8, showST:true,
+    on:{ cellEdit: function(p){ MGDemo.log(p.key + ' = ' + p.value + ' 저장', 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function show(){
+  MGDemo.clearLog();
+  const bad = G.getInvalidCells();
+  if (!bad.length){ MGDemo.log('잘못된 칸이 없습니다', 'ok'); return; }
+  bad.forEach(function(b){ MGDemo.log('id=' + b.id + '  ' + b.key + ' — ' + b.message, 'er'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

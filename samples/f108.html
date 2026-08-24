@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-4. Choosing how photos are sent — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-4. Choosing how photos are sent</h1>
+  <p class="dm-desc"><code>imageMode</code> decides <b>when</b> a photo goes to the server and <b>in what shape</b>. The four modes and their server-side code are covered one by one under <b>8.1 Image transfer</b>.</p>
+  <ul class="dm-steps">
+    <li>Switch modes with the picker and watch the payload change.</li>
+    <li>Add a photo and press <b>Preview what will be sent</b>.</li>
+    <li>See section 8.1 for the detail and the server code.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">Mode</span>
+  <select class="dm-in" id="m" onchange="build(this.value)">
+    <option value="none">none — never sent</option>
+    <option value="multipart">multipart — with the save</option>
+    <option value="base64">base64 — inside the JSON</option>
+  </select>
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+let G = null;
+
+function build(mode){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options:{ editMode:true, pageSize:4, rowHeight:80, showST:true,
+              imageMode: mode, imageLimit:3, imageMaxSize:200*1024 }
+  });
+  G.setData(MGDemo.rows(3));
+  window.G = G;
+  MGDemo.log('mode = ' + mode + ' — add a photo and preview the payload', 'ok');
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  const all = ch.updated.concat(ch.inserted);
+  if (!all.length){ MGDemo.log('Add a photo first', 'wn'); return; }
+  const s = JSON.stringify(all);
+  MGDemo.log(s.length > 500 ? s.slice(0,500) + ' … (truncated)' : s);
+}
+
+build('none');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

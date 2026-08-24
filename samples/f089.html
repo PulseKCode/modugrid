@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-7. Long headers end in an ellipsis — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-7. Long headers end in an ellipsis</h1>
+  <p class="dm-desc">A label wider than its column is trimmed with <code>...</code>. Room is <b>always kept for the sort arrows and the filter funnel</b>, so a long caption can never push the controls out of reach.</p>
+  <ul class="dm-steps">
+    <li>The <code>Department and reporting line</code> header is trimmed with <code>...</code>.</li>
+    <li>Check that the sort icons and the funnel are still clickable.</li>
+    <li>Widen the column and the full text returns.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.updateCol('dept',{w:280})">Widen it</button>
+  <button type="button" class="db" onclick="G.updateCol('dept',{w:120})">Narrow it again</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:130},
+  {key:'dept', label:'Department and reporting line', w:120},
+  {key:'role', label:'Role', w:110},
+  {key:'score',label:'Score', w:90, type:'number'},
+];
+
+const DEPT = ['Engineering — Frontend','Engineering — Backend','Design — UI','Commercial — Sales A'];
+const rows = MGDemo.rows(10).map(function(r,i){ r.dept = DEPT[i % DEPT.length]; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('Try the sort icons and the funnel on that narrow header');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

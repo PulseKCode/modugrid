@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-9. 대량 데이터 빠르게 보기 (가상 스크롤) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-9. 대량 데이터 빠르게 보기 (가상 스크롤)</h1>
+  <p class="dm-desc">수천 행을 페이지 없이 한 화면에서 스크롤로 훑고 싶을 때 켭니다. <b>지금 보이는 부분만</b> 그리기 때문에 5,000행이어도 스크롤이 끊기지 않습니다.</p>
+  <ul class="dm-steps">
+    <li><b>가상 스크롤 켜기</b> 를 누르고 빠르게 스크롤해 봅니다.</li>
+    <li>페이지 버튼이 사라지고 전체가 하나로 이어집니다.</li>
+    <li>끄면 다시 페이지 방식으로 돌아옵니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleVS();setTimeout(st,60)">가상 스크롤 켜기 / 끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'role',   label:'직무', w:120},
+  {key:'score',  label:'점수', w:90,  type:'number'},
+  {key:'salary', label:'급여', w:130, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:50, rowHeight:25 } });
+G.setData(MGDemo.rows(5000));
+window.G = G;
+
+MGDemo.log('데이터 5,000행을 넣었습니다');
+
+function st(){
+  MGDemo.log('가상 스크롤 = ' + (G.getState().vs ? 'ON' : 'OFF') + ' / 전체 ' + G.getState().filtered.length + '행', 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

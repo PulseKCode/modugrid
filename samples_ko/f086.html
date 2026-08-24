@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-4. 컬럼 고정 (Freeze) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-4. 컬럼 고정 (Freeze)</h1>
+  <p class="dm-desc">왼쪽 몇 개 컬럼을 <b>가로 스크롤에도 따라오지 않게</b> 붙박이로 둡니다. 컬럼이 많아 오른쪽으로 스크롤할 때 어느 행을 보고 있는지 놓치지 않게 해 줍니다. 컬럼에 <code>freeze:1</code> 을 주고 <code>freezeOn</code> 을 켜면 됩니다.</p>
+  <ul class="dm-steps">
+    <li>그리드를 <b>좌우로 스크롤</b> 해 봅니다 — <code>#</code>·<code>이름</code>은 제자리에 남습니다.</li>
+    <li><b>고정 끄기</b> 를 누르면 전부 같이 흘러갑니다.</li>
+    <li>고정할 컬럼을 늘리려면 <code>freeze:1</code> 을 더 주면 됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleFreeze();st()">고정 켜기 / 끄기</button>
+  <button class="db" onclick="add()">직무도 고정에 추가</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#',  w:42,  type:'rn', noSort:1, noResize:1, noFilter:1, freeze:1},
+  {key:'name', label:'이름', w:130, freeze:1},
+  {key:'role',    label:'직무',   w:130},
+  {key:'status',  label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',   label:'점수',   w:100, type:'number'},
+  {key:'progress',label:'진행률', w:140, type:'progress'},
+  {key:'salary',  label:'급여',   w:140, type:'currency'},
+  {key:'joined',  label:'입사일', w:130, type:'date'},
+  {key:'memo',    label:'메모',   w:220},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ freezeOn:true, pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function st(){ MGDemo.log('컬럼 고정 = ' + (G.getState().freezeOn ? 'ON' : 'OFF'), 'ok'); }
+
+function add(){
+  G.updateCol('role', { freeze:1 });
+  MGDemo.log('직무 컬럼도 고정에 추가했습니다 — 좌우로 스크롤해 보세요', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

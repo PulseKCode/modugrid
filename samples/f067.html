@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-9. Undoing a deletion — Ctrl+Z works too — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-9. Undoing a deletion — Ctrl+Z works too</h1>
+  <p class="dm-desc">Delete something by mistake and <code>Ctrl+Z</code> puts it back. To recover several rows at once, tick them and call <code>restoreRows()</code>.</p>
+  <ul class="dm-steps">
+    <li>Tick a row and press <b>Delete</b>.</li>
+    <li>Press <code>Ctrl+Z</code> — the strikethrough goes.</li>
+    <li>Press <code>Ctrl+Y</code> to mark it again.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db dr" onclick="del()">Delete selected</button>
+  <button type="button" class="db" onclick="G.undo()">Undo (Ctrl+Z)</button>
+  <button type="button" class="db" onclick="G.redo()">Redo (Ctrl+Y)</button>
+  <button type="button" class="db p" onclick="restore()">Restore the ticked rows</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:10, editMode:true, selMode:'cell', showST:true,
+    on:{ dataChange: function(){ MGDemo.log('pending = [' + G.getPendingDeletes().join(', ') + ']'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function ids(){ return new Set([...G.getSelected(), ...G.getChecked()]); }
+function del(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('Tick a row first', 'wn'); return; }
+  G.deleteRows(i);
+}
+function restore(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('Tick the rows you want back', 'wn'); return; }
+  G.restoreRows(i);
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

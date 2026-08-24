@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.2-2. Locking individual rows and cells — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.2 Edit permissions</div>
+  <h1 class="dm-tit">5.2-2. Locking individual rows and cells</h1>
+  <p class="dm-desc">Lock a whole row when its status is closed, or lock one cell when the figure belongs to somebody else. Use both together and <b>the row lock is applied first</b>.</p>
+  <ul class="dm-steps">
+    <li>Rows whose <code>Status</code> is <b>Inactive</b> are locked outright — double-clicking does nothing.</li>
+    <li>The <code>Salary</code> cell only opens on rows scoring <b>80 or more</b>.</li>
+    <li>A locked cell gives no hover highlight, so it reads as locked before you try it.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="lock()">List what is locked</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+
+  /* just this cell — locked below a score of 80 */
+  {key:'salary', label:'Salary', w:130, type:'currency',
+    editable: function(row, col){ return row.score >= 80; }},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    /* the whole row — nothing is editable while the status is Inactive */
+    rowEditable: function(row){ return row.status !== 'I'; }
+  }
+});
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('Row lock: status Inactive. Cell lock: Salary when the score is under 80.');
+
+function lock(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    const rowLock = (r.status === 'I');
+    const cellLock = !rowLock && r.score < 80;
+    if (rowLock)       MGDemo.log('id=' + r.id + '  whole row locked (Inactive)', 'wn');
+    else if (cellLock) MGDemo.log('id=' + r.id + '  Salary locked (score ' + r.score + ')', 'wn');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

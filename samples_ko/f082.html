@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9-3. 붙여넣을 수 없는 칸은 건너뜁니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">9. 복사 · 내보내기</div>
+  <h1 class="dm-tit">9-3. 붙여넣을 수 없는 칸은 건너뜁니다</h1>
+  <p class="dm-desc">붙여넣기는 <b>넣을 수 없는 칸을 조용히 건너뛰고</b> 몇 칸을 넣었는지 알려줍니다. 검사에 걸리는 값, 편집 불가 컬럼, 삭제 예정 행, 범위를 넘는 칸이 대상입니다. 중간에 멈추지 않으니 나머지는 정상 입력됩니다.</p>
+  <ul class="dm-steps">
+    <li><code>이름</code> 열 첫 칸을 클릭합니다.</li>
+    <li><b>붙여넣기 실행</b> 을 누릅니다 — 결과 건수가 나옵니다.</li>
+    <li><code>사번</code>(편집 불가), 잘못된 점수, 남는 열이 건너뛰어집니다.</li>
+    <li><b>3행을 삭제 예정으로</b> 만든 뒤 다시 해 보면 그 행도 건너뜁니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="run()">붙여넣기 실행</button>
+  <button class="db dr" onclick="G.deleteRows(new Set([3]));MGDemo.log('3번 행을 삭제 예정으로 표시','wn')">3행 삭제 예정으로</button>
+  <button class="db" onclick="dump()">현재 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'empno', label:'사번 (편집 불가)', w:150, editor:false},
+  {key:'score', label:'점수', w:100, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || '0~100'; }},
+];
+
+const rows = MGDemo.rows(3).map(function(r,i){ r.empno = 'E' + (100+i); return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:10 } });
+G.setData(rows);
+window.G = G;
+
+/* 3행 × 4열 — 열이 하나 남고, 값 하나는 검사에 걸린다 */
+const TSV = ['홍길동\tE999\t80\t남는열',
+             '임꺽정\tE998\t500\t남는열',
+             '장길산\tE997\t70\t남는열'].join('\n');
+
+function run(){
+  MGDemo.clearLog();
+  if (G.getState().focusRI < 0){ MGDemo.log('먼저 이름 열의 첫 칸을 클릭하세요', 'wn'); return; }
+  const out = G.pasteText(TSV);
+  MGDemo.log(out.cells + '칸을 넣었고 ' + out.skipped + '칸을 건너뛰었습니다', 'ok');
+  MGDemo.log('건너뛴 이유 — 사번(편집 불가) · 500(점수 범위 초과) · 4번째 열(컬럼 없음)');
+  dump();
+}
+
+function dump(){
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  이름 ' + r.name + '  사번 ' + r.empno + '  점수 ' + r.score);
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

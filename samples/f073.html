@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-5. upload — imageUpload is required — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 Image transfer</div>
+  <h1 class="dm-tit">8.1-5. upload — imageUpload is required</h1>
+  <p class="dm-desc">Choose <code>upload</code> and forget <code>imageUpload</code> and <b>nothing is uploaded at all</b>. A warning is written to the browser console, so that is the first thing to check when photos refuse to go.</p>
+  <ul class="dm-steps">
+    <li>The left grid has <code>imageUpload</code>; the right one is missing it on purpose.</li>
+    <li>Add a photo to each <code>Photos</code> cell.</li>
+    <li>The right one does not progress, and a warning appears in the console (F12).</li>
+  </ul>
+
+  
+  <div class="dm-two">
+    <div><div class="dm-cap">with imageUpload — works</div><div id="gA"></div></div>
+    <div><div class="dm-cap">without it — nothing happens</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'images', label:'Photos', w:300, type:'images'},
+];
+
+let no = 0;
+
+const G1 = ModuGrid('#gA', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{
+    editMode:true, pageSize:3, rowHeight:80, imageMode:'upload',
+    imageUpload: function(file, row){
+      MGDemo.log('left — uploading ' + file.name, 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          const id = 'F' + (++no);
+          MGDemo.log('left — done, ' + id, 'ok');
+          res({ id:id, url:'/files/' + id + '.jpg' });
+        }, 600);
+      });
+    }
+  }
+});
+
+/* imageUpload deliberately left out */
+const G2 = ModuGrid('#gB', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, pageSize:3, rowHeight:80, imageMode:'upload' }
+});
+
+G1.setData(MGDemo.rows(3, 2));
+G2.setData(MGDemo.rows(3, 2));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('Add a photo on the right and open the browser console (F12)');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

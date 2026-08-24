@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4-1. 컬럼을 코드로 추가 · 삭제 · 변경 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.4 동적 조작</div>
+  <h1 class="dm-tit">2.4-1. 컬럼을 코드로 추가 · 삭제 · 변경</h1>
+  <p class="dm-desc">화면을 다시 만들지 않고 컬럼만 바꿀 수 있습니다. 권한이나 조회 조건에 따라 보여줄 항목이 달라질 때 씁니다. 넣을 위치는 <b>맨 뒤 · 인덱스 · 특정 컬럼 앞</b> 세 가지로 지정합니다.</p>
+  <ul class="dm-steps">
+    <li><b>메모 추가</b> — 맨 뒤에 붙습니다.</li>
+    <li><b>부서 추가(직무 앞)</b> — 원하는 컬럼 앞에 끼워 넣습니다.</li>
+    <li><b>급여 삭제</b> — 그 컬럼에 걸려 있던 정렬·필터도 같이 정리됩니다.</li>
+    <li><b>이름 라벨 변경</b> — 라벨과 폭만 바꿉니다.</li>
+    <li>여러 개를 한꺼번에 넣을 때는 <code>addCols()</code> 가 화면을 한 번만 다시 그려 빠릅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.addCol({key:'memo',label:'메모',w:170});st()">메모 추가 (맨 뒤)</button>
+  <button class="db p" onclick="G.addCol({key:'dept',label:'부서',w:110},'role');st()">부서 추가 (직무 앞)</button>
+  <button class="db" onclick="G.addCols([{key:'q1',label:'1분기',w:80,type:'number'},{key:'q2',label:'2분기',w:80,type:'number'}]);st()">분기 2개 한번에</button>
+  <button class="db dr" onclick="G.removeCol('salary');st()">급여 삭제</button>
+  <button class="db" onclick="G.updateCol('name',{label:'성명',w:170});st()">이름 라벨 변경</button>
+  <button class="db" onclick="st()">현재 컬럼</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:10, editMode:true, selMode:'cell', multiSort:true,
+    on:{ dataChange: function(p){ if(p.type==='cols') MGDemo.log('컬럼 구성이 바뀌었습니다', 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+MGDemo.log('급여 헤더에 정렬·필터를 걸어 둔 뒤 삭제해 보세요 — 조건도 같이 정리됩니다');
+
+function st(){
+  const s = G.getState();
+  MGDemo.log('컬럼 = ' + G.getCols().map(function(c){ return c.key; }).join(' , '));
+  MGDemo.log('정렬 ' + (s.sorts.map(x=>x.col+' '+x.dir).join(', ') || '없음')
+           + ' / 필터 ' + (Object.keys(s.cfilters).join(', ') || '없음'));
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

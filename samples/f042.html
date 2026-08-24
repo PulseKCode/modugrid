@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.2-3. What a lock stops, and what it does not — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.2 Edit permissions</div>
+  <h1 class="dm-tit">5.2-3. What a lock stops, and what it does not</h1>
+  <p class="dm-desc">A lock applies to everything the user does on screen. It deliberately does <b>not</b> block <code>updateRow()</code> and other programmatic calls, since your code still has to apply server responses and run batch updates.</p>
+  <ul class="dm-steps">
+    <li>On a locked row (status <b>Inactive</b>), try <b>double-click, F2 and typing</b> — nothing opens.</li>
+    <li>Select a locked cell and press <code>Delete</code> — it is not cleared.</li>
+    <li>Copy the text below and paste it onto a locked row — those cells are skipped.</li>
+    <li>Right-click → <b>Edit Modal</b> shows the fields read-only.</li>
+    <li><b>Change it from code</b> goes through even so.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.openRowModal('edit', lockedId())">Open the modal on a locked row</button>
+  <button type="button" class="db dr" onclick="force()">Change it from code</button>
+  </div>
+  <div class="dm-out">
+    <p>Paste test — copy this and press Ctrl+V on the Name cell of a locked row</p>
+    <textarea rows="2" readonly onclick="this.select()">pasted one
+pasted two</textarea>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:170},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(8);
+rows[0].status = 'I';   // lock the first two rows
+rows[1].status = 'I';
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    rowEditable: function(row){ return row.status !== 'I'; }
+  }
+});
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('Rows 1 and 2 are Inactive, and therefore locked');
+
+function lockedId(){
+  const r = G.getFilteredData().find(function(x){ return x.status === 'I'; });
+  return r ? r.id : 1;
+}
+
+/* updateRow() is a programmatic call, so the lock does not apply */
+function force(){
+  const id = lockedId();
+  G.updateRow(id, { name: 'set from code ' + new Date().toTimeString().slice(3,8) });
+  MGDemo.log('updateRow(' + id + ') went through even though the row is locked', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

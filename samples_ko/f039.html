@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-7. 숫자 칸을 비우면 0이 아니라 빈 값 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 진입 경로</div>
+  <h1 class="dm-tit">5.1-7. 숫자 칸을 비우면 0이 아니라 빈 값</h1>
+  <p class="dm-desc">숫자 컬럼을 <code>Delete</code> 로 비우면 <code>0</code> 이 아니라 <b>빈 값(null)</b> 이 들어갑니다. "0점"과 "아직 입력 안 함"을 서버에서 구분해야 하기 때문입니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 셀 하나를 <code>Delete</code> 로 비웁니다.</li>
+    <li>다른 셀에는 <code>0</code> 을 직접 입력합니다.</li>
+    <li><b>저장된 값 보기</b> 로 둘이 다르게 저장되는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="types()">저장된 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'score', label:'점수', w:110, type:'number'},
+  {key:'salary',label:'급여', w:140, type:'currency'},
+  {key:'memo',  label:'메모', w:170},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log('점수 한 칸은 Delete 로 비우고, 다른 칸에는 0 을 직접 넣어 보세요');
+
+function types(){
+  MGDemo.clearLog();
+  G.getFilteredData().slice(0,6).forEach(function(r){
+    MGDemo.log('id=' + r.id + '  점수 = ' + JSON.stringify(r.score)
+             + (r.score === null ? '  ← 빈 값' : r.score === 0 ? '  ← 숫자 0' : ''));
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-7. Switching the right-click menu off entirely — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-7. Switching the right-click menu off entirely</h1>
+  <p class="dm-desc">With <code>contextMenu:false</code> the grid menu is not shown at all and <b>the browser's own menu</b> appears as usual — useful when the page needs the browser features left alone.</p>
+  <ul class="dm-steps">
+    <li>Right-click on the left — the grid menu appears.</li>
+    <li>Right-click on the right — the browser menu appears (Inspect, Reload and so on).</li>
+    <li>When there is nothing to show, no empty menu is put up.</li>
+  </ul>
+
+  
+  <div class="dm-two">
+    <div><div class="dm-cap">default — the grid menu</div><div id="gA"></div></div>
+    <div><div class="dm-cap">contextMenu:false — the browser menu</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G1 = ModuGrid('#gA', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, pageSize:6 }
+});
+const G2 = ModuGrid('#gB', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, pageSize:6, contextMenu:false }
+});
+G1.setData(MGDemo.rows(6, 3));
+G2.setData(MGDemo.rows(6, 3));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('Right-click on each side and compare');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

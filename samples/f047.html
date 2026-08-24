@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-1. Codes in the data, names on the screen — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-1. Codes in the data, names on the screen</h1>
+  <p class="dm-desc">This is the classic lookup-table arrangement — <b>the code is stored, the name is shown</b>. The shape of your option list hardly matters: <code>{code,name}</code>, <code>{value,label}</code>, <code>{id,text}</code>, <code>{v,t}</code> and plain strings are all recognised.</p>
+  <ul class="dm-steps">
+    <li>Each column declares its options differently, yet all of them show a readable name.</li>
+    <li>Open a cell and pick a different value.</li>
+    <li>Press <b>Show the stored values</b> to confirm the data holds codes.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="raw()">Show the stored values</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:130},
+  {key:'f1', label:'{code,name}',   w:125, options:[{code:'A',name:'Active'},{code:'P',name:'Pending'}]},
+  {key:'f2', label:'{value,label}', w:130, options:[{value:'A',label:'Active'},{value:'P',label:'Pending'}]},
+  {key:'f3', label:'{id,text}',     w:125, options:[{id:'A',text:'Active'},{id:'P',text:'Pending'}]},
+  {key:'f4', label:'{v,t}',         w:115, options:[{v:'A',t:'Active'},{v:'P',t:'Pending'}]},
+  {key:'f5', label:'plain strings', w:130, options:['active','pending']},
+];
+
+const rows = MGDemo.rows(6).map(function(r,i){
+  const c = i % 2 ? 'P' : 'A';
+  r.f1 = r.f2 = r.f3 = r.f4 = c;
+  r.f5 = i % 2 ? 'pending' : 'active';
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+function raw(){
+  MGDemo.clearLog();
+  const r = G.getFilteredData()[0];
+  ['f1','f2','f3','f4','f5'].forEach(function(k){ MGDemo.log(k + ' holds "' + r[k] + '"'); });
+  MGDemo.log('However you declare the options, one code is what gets stored', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

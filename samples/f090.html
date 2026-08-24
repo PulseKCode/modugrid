@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-8. How many rows to a page — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-8. How many rows to a page</h1>
+  <p class="dm-desc">The <code>Per page</code> control offers 10, 25, 50, 100 and <b>everything</b>. Choose everything and the page buttons disappear, leaving one continuous list.</p>
+  <ul class="dm-steps">
+    <li>Move <code>Per page</code> through 10, 25 and All.</li>
+    <li>With All chosen the page buttons are gone.</li>
+    <li>The buttons here do the same from code.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.goPage(3);info()">Go to page 3</button>
+  <button type="button" class="db" onclick="G.changePS(25);info()">25 per page</button>
+  <button type="button" class="db" onclick="G.changePS(0);info()">Show everything</button>
+  <button type="button" class="db" onclick="G.changePS(10);info()">10 per page</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(120));
+window.G = G;
+
+function info(){
+  const s = G.getState();
+  MGDemo.log((s.ps === 0 ? 'showing everything' : s.ps + ' per page') + ' · page ' + s.page
+           + ' · ' + s.filtered.length + ' rows in all', 'ok');
+}
+info();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

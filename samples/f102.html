@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13-1. Fetching a page at a time from the server — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">13. Server integration</div>
+  <h1 class="dm-tit">13-1. Fetching a page at a time from the server</h1>
+  <p class="dm-desc">For sets too large to load in one go. Supply <code>dataSource</code> and the sorting, filtering, search and paging arrive <b>as a single request object</b>, ready to be turned into SQL.</p>
+  <ul class="dm-steps">
+    <li>Sort with the header icons, filter with a funnel and type a search term.</li>
+    <li>Everything sent to the server is printed on each request.</li>
+    <li>Turn a page and only the page number moves.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">Search</span>
+  <input type="text" class="dm-in" id="q" placeholder="name or role" oninput="G.search(this.value)">
+  <button type="button" class="db" onclick="MGDemo.clearLog()">Clear log</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const ALL = MGDemo.rows(137);   // pretend this lives on the server
+
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name',  w:150},
+  {key:'role', label:'Role',  w:130},
+  {key:'score',label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize: 10,
+
+    /* In practice you would call fetch('list.jsp?' + new URLSearchParams(req))
+       and return { rows: [...], total: <row count> }. */
+    dataSource: function(req){
+      MGDemo.log('request — page ' + req.page + ' · sort ' + JSON.stringify(req.sorts)
+               + ' · filters ' + JSON.stringify(req.filters) + ' · search "' + (req.search||'') + '"', 'ok');
+
+      let rows = ALL.slice();
+      if (req.search) rows = rows.filter(function(r){
+        return (r.name + r.role).toLowerCase().indexOf(req.search) >= 0;
+      });
+      Object.keys(req.filters || {}).forEach(function(k){
+        const f = req.filters[k];
+        if (f.type === 'list') rows = rows.filter(function(r){ return f.values.indexOf(String(r[k])) >= 0; });
+        else rows = rows.filter(function(r){ return +r[k] >= +f.min && +r[k] <= +f.max; });
+      });
+      (req.sorts || []).slice().reverse().forEach(function(s){
+        rows.sort(function(a,b){
+          const c = (a[s.col] > b[s.col]) - (a[s.col] < b[s.col]);
+          return s.dir === 'asc' ? c : -c;
+        });
+      });
+      const st = (req.page - 1) * req.pageSize;
+      return Promise.resolve({ rows: rows.slice(st, st + req.pageSize), total: rows.length });
+    }
+  }
+});
+window.G = G;
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

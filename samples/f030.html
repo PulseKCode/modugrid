@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-7. Select all from your own toolbar — toggleCheckAll() — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. Selection</div>
+  <h1 class="dm-tit">4-7. Select all from your own toolbar — toggleCheckAll()</h1>
+  <p class="dm-desc">Call <code>toggleCheckAll(true/false)</code> from a button of your own. The result is the same as clicking the header, and so is the scope: <b>the rows currently on screen</b>.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Tick all</b> and <b>Clear all</b>.</li>
+    <li>Move to another page and press it again — only that page is affected.</li>
+    <li>Apply a filter and press it; only the surviving rows are ticked.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleCheckAll(true);cnt()">Tick all</button>
+  <button type="button" class="db" onclick="G.toggleCheckAll(false);cnt()">Clear all</button>
+  <button type="button" class="db" onclick="G.goPage(2);cnt()">Go to page 2</button>
+  <button type="button" class="db" onclick="cnt()">Current state</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:150},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'row', pageSize:5 } });
+G.setData(MGDemo.rows(20));
+window.G = G;
+
+function cnt(){
+  MGDemo.log('page ' + G.getState().page + ' — ' + G.getChecked().length
+           + ' ticked = [' + G.getChecked().join(', ') + ']', 'ok');
+}
+cnt();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

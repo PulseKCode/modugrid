@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-2. Row ids are filled in for you — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-2. Row ids are filled in for you</h1>
+  <p class="dm-desc">Rows arriving without an <code>id</code>, or sharing one, are <b>sorted out as they load</b>. A number once used is never handed out again, so deleting a row and adding another cannot leave you with two of the same. Supply <code>genId</code> to number them your own way.</p>
+  <ul class="dm-steps">
+    <li><b>Load messy data</b> feeds in rows with ids missing and duplicated.</li>
+    <li>Look at how they were sorted out.</li>
+    <li>Press <b>Add, delete, add</b> and check that the number is not reused.</li>
+    <li><b>Use order numbers</b> switches to an <code>ORD-0001</code> style.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="bad()">Load messy data</button>
+  <button type="button" class="db" onclick="cycle()">Add, delete, add</button>
+  <button type="button" class="db" onclick="custom()">Use order numbers</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'id',   label:'id',   w:120},
+  {key:'name', label:'Name', w:170},
+  {key:'role', label:'Role', w:120},
+];
+
+let G = null;
+
+function build(opt){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }),
+                          options: Object.assign({ pageSize:12 }, opt || {}) });
+  window.G = G;
+}
+
+function bad(){
+  build();
+  G.setData([
+    { id:1,  name:'fine',          role:'QA' },
+    {        name:'no id at all',  role:'Developer' },   // missing
+    { id:1,  name:'duplicate id',  role:'Designer' },    // duplicated
+    { id:'', name:'empty id',      role:'Analyst' },
+    { id:5,  name:'fine',          role:'DevOps' },
+  ]);
+  MGDemo.clearLog();
+  MGDemo.log('Loaded rows with ids missing, duplicated and blank', 'wn');
+  ids();
+}
+
+function cycle(){
+  G.addRow({ name:'first addition', role:'QA' });
+  const a = G.getState().data.slice(-1)[0].id;
+  G.deleteRows(new Set([a]));
+  G.addRow({ name:'second addition', role:'QA' });
+  const b = G.getState().data.slice(-1)[0].id;
+  MGDemo.log('first got id ' + a + ', deleted, next got id ' + b
+           + (a === b ? ' — reused' : ' — not reused'), a === b ? 'er' : 'ok');
+}
+
+function custom(){
+  let n = 0;
+  build({ genId: function(){ return 'ORD-' + String(++n).padStart(4,'0'); } });
+  G.setData([{ name:'first', role:'QA' }, { name:'second', role:'DevOps' }]);
+  MGDemo.log('Numbering switched to the ORD-#### style', 'ok');
+  ids();
+}
+
+function ids(){ MGDemo.log('ids in use — ' + G.getFilteredData().map(function(r){ return r.id; }).join(' , '), 'ok'); }
+
+bad();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

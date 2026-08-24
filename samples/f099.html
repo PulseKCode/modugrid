@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.2-2. Changing the font size — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.2 Fonts</div>
+  <h1 class="dm-tit">12.2-2. Changing the font size</h1>
+  <p class="dm-desc">Enlarge the body font and <b>the row numbers and numeric cells grow with it</b>. They are sized in proportion rather than fixed, so the table stays balanced at any size — handy for a zoom control or a per-user preference.</p>
+  <ul class="dm-steps">
+    <li>Try <b>12px, 15px and 18px</b> in turn.</li>
+    <li>Watch the <code>#</code> column and the Score and Salary cells scale as well.</li>
+    <li>Passing a plain number to <code>setFont()</code> changes the body only.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.setFont(12)">12px</button>
+  <button type="button" class="db p" onclick="G.setFont(15)">15px</button>
+  <button type="button" class="db p" onclick="G.setFont(18)">18px</button>
+  <button type="button" class="db" onclick="G.setFont(null)">Default</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'salary', label:'Salary', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('Change the body size and the row numbers and figures follow');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

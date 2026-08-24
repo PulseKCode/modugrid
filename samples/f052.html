@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-6. Autocomplete — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. Coded values</div>
+  <h1 class="dm-tit">6-6. Autocomplete</h1>
+  <p class="dm-desc">Use this when the list is far too long for a dropdown. As the user types, candidates are fetched from the server; picking one stores <b>the code in the data and shows the name on screen</b>. Because the grid remembers the name it was given, the label survives even though the value was never in <code>options</code>.</p>
+  <ul class="dm-steps">
+    <li>Put the <code>Department</code> cell into edit and type <code>Eng</code> or <code>Sales</code>.</li>
+    <li>Wait a moment for the candidates and pick one.</li>
+    <li>Check that the cell keeps <b>the department name</b> rather than the code.</li>
+    <li>Press <b>Compare stored and shown</b> to see the code underneath.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="cmp()">Compare stored and shown</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+/* Assume the server hands back a {code, name} list */
+const SERVER_DEPT = [
+  {code:'D1', name:'Engineering'},
+  {code:'D2', name:'Engineering Support'},
+  {code:'D3', name:'Sales'},
+  {code:'D4', name:'Sales Planning'},
+  {code:'D5', name:'Corporate Services'},
+];
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:150},
+
+  /* no options at all — every candidate comes from the server */
+  {key:'dept', label:'Department', w:230,
+    acSource: function(key, q){
+      MGDemo.log('asking the server for "' + q + '"', 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){
+          res(SERVER_DEPT.filter(function(o){ return o.name.toLowerCase().indexOf(q.toLowerCase()) >= 0; }));
+        }, 200);
+      });
+    }},
+];
+
+const rows = MGDemo.rows(6).map(function(r){ r.dept = ''; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, acDebounce:200 } });
+G.setData(rows);
+window.G = G;
+
+function cmp(){
+  MGDemo.clearLog();
+  let any = false;
+  G.getFilteredData().forEach(function(r){
+    if (!r.dept) return;
+    any = true;
+    const td = document.querySelector('#grid td[data-c="dept"][data-id="' + r.id + '"]');
+    MGDemo.log('stored "' + r.dept + '"   shown "' + (td ? td.textContent.trim() : '') + '"', 'ok');
+  });
+  if (!any) MGDemo.log('Pick a department in one of the cells first', 'wn');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

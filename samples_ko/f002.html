@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1-2. 한 화면에 여러 그리드 — 테마 · 폰트도 따로 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">1. 기본 구조</div>
+  <h1 class="dm-tit">1-2. 한 화면에 여러 그리드 — 테마 · 폰트도 따로</h1>
+  <p class="dm-desc">그리드를 여러 개 만들어도 서로 간섭하지 않습니다. 정렬·선택은 물론 <b>테마와 글꼴까지 그리드마다 다르게</b> 줄 수 있어, 한 화면에 성격이 다른 표를 나란히 놓기 좋습니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽만 <code>ocean</code> 테마 + 큰 글꼴로 바꿔 봅니다 — 오른쪽은 그대로입니다.</li>
+    <li>왼쪽 헤더의 정렬 아이콘을 눌러도 오른쪽 순서는 변하지 않습니다.</li>
+    <li><b>양쪽 상태 보기</b>로 각각의 정렬·선택을 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G1.setTheme('ocean');G1.setFont({body:{size:15}})">왼쪽 → ocean · 15px</button>
+  <button class="db" onclick="G2.setTheme('forest')">오른쪽 → forest</button>
+  <button class="db" onclick="G1.setTheme('light');G1.setFont(null);G2.setTheme('light')">둘 다 되돌리기</button>
+  <button class="db p" onclick="cmp()">양쪽 상태 보기</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">그리드 A</div><div id="gridA"></div></div>
+    <div><div class="dm-cap">그리드 B</div><div id="gridB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G1 = ModuGrid('#gridA', { cols: COLS.map(c=>({...c})), options:{ pageSize:8 } });
+const G2 = ModuGrid('#gridB', { cols: COLS.map(c=>({...c})), options:{ pageSize:8 } });
+G1.setData(MGDemo.rows(12, 3));
+G2.setData(MGDemo.rows(12, 91));
+window.G1 = G1; window.G2 = G2;
+
+function cmp(){
+  MGDemo.clearLog();
+  [['A',G1],['B',G2]].forEach(function(p){
+    const s = p[1].getState();
+    MGDemo.log(p[0] + ' → 테마 ' + p[1].getTheme()
+             + ' / 정렬 ' + (s.sorts.map(x=>x.col+' '+x.dir).join(',') || '없음')
+             + ' / 선택 ' + p[1].getSelected().length + '건'
+             + ' / 본문 글꼴 ' + (p[1].getFont().body.size || '기본'));
+  });
+}
+cmp();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

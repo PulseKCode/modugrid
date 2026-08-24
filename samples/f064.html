@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-6. Deleting without removing (soft delete) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-6. Deleting without removing (soft delete)</h1>
+  <p class="dm-desc">By default a deleted row <b>stays on screen with a line through it</b>. It is removed for real only once <code>submit()</code> has succeeded, which leaves room to undo a mistake.</p>
+  <ul class="dm-steps">
+    <li>Tick two rows and press <b>Delete</b> — they are struck through.</li>
+    <li>Press <b>Rows pending deletion</b> to see what will go.</li>
+    <li>Press <b>Save</b> and they disappear for good.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db dr" onclick="del()">Delete selected</button>
+  <button type="button" class="db p" onclick="pend()">Rows pending deletion</button>
+  <button type="button" class="db p" onclick="send()">Save (submit)</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10, softDelete:true, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+/* A stand-in for the server. In real code you would pass the submit.jsp URL instead. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-submit') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch is unavailable'));
+  }
+  const body = init.body;
+  if (typeof body === 'string'){
+    MGDemo.log('POST ' + url);
+    MGDemo.log(decodeURIComponent(body).slice(0, 600));
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function del(){
+  const ids = new Set([...G.getSelected(), ...G.getChecked()]);
+  if (!ids.size){ MGDemo.log('Tick a row first', 'wn'); return; }
+  G.deleteRows(ids);
+  pend();
+}
+function pend(){
+  MGDemo.log('pending = [' + G.getPendingDeletes().join(', ') + ']  ·  ' + G.getState().data.length + ' rows on screen', 'ok');
+}
+async function send(){
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    if (out.skipped){ MGDemo.log('Nothing had changed', 'wn'); return; }
+    MGDemo.log('Saved — ' + G.getState().data.length + ' rows left (the pending ones are gone)', 'ok');
+  }catch(e){ MGDemo.log('failed — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

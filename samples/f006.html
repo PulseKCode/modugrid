@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4-1. Adding, removing and changing columns from code — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.4 Manipulating columns</div>
+  <h1 class="dm-tit">2.4-1. Adding, removing and changing columns from code</h1>
+  <p class="dm-desc">Columns can change without rebuilding the screen, which is what you want when the visible fields depend on a role or a search condition. A new column goes at <b>the end, at an index, or before a named column</b>.</p>
+  <ul class="dm-steps">
+    <li><b>Add Note</b> — appended at the end.</li>
+    <li><b>Add Dept before Role</b> — inserted where you ask.</li>
+    <li><b>Remove Salary</b> — any sort or filter on that column is cleaned up with it.</li>
+    <li><b>Rename Name</b> — changes the label and width only.</li>
+    <li>Adding several at once with <code>addCols()</code> redraws the grid a single time.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.addCol({key:'memo',label:'Note',w:170});st()">Add Note (end)</button>
+  <button type="button" class="db p" onclick="G.addCol({key:'dept',label:'Dept',w:120},'role');st()">Add Dept before Role</button>
+  <button type="button" class="db" onclick="G.addCols([{key:'q1',label:'Q1',w:80,type:'number'},{key:'q2',label:'Q2',w:80,type:'number'}]);st()">Add Q1 + Q2 at once</button>
+  <button type="button" class="db dr" onclick="G.removeCol('salary');st()">Remove Salary</button>
+  <button type="button" class="db" onclick="G.updateCol('name',{label:'Full name',w:180});st()">Rename Name</button>
+  <button type="button" class="db" onclick="st()">Show columns</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:10, editMode:true, selMode:'cell', multiSort:true,
+    on:{ dataChange: function(p){ if(p.type==='cols') MGDemo.log('Column set changed', 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+MGDemo.log('Sort and filter the Salary column first, then remove it — the conditions go too');
+
+function st(){
+  const s = G.getState();
+  MGDemo.log('Columns — ' + G.getCols().map(function(c){ return c.key; }).join(' , '));
+  MGDemo.log('Sort ' + (s.sorts.map(x=>x.col+' '+x.dir).join(', ') || 'none')
+           + ' / filters ' + (Object.keys(s.cfilters).join(', ') || 'none'));
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

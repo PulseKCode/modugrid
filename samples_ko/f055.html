@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>7-1. 입력값 검사 — 값은 지우지 않습니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">7. 유효성 검사</div>
+  <h1 class="dm-tit">7-1. 입력값 검사 — 값은 지우지 않습니다</h1>
+  <p class="dm-desc">컬럼에 <code>validate</code> 함수를 달면 입력값을 검사합니다. 조건에 안 맞아도 <b>친 내용을 지우지 않고</b> 셀만 붉게 표시합니다. 애써 입력한 값이 사라지면 사용자가 무엇을 잘못했는지도 모르게 되기 때문입니다.</p>
+  <ul class="dm-steps">
+    <li><code>점수</code> 칸에 <code>150</code> 을 넣고 <code>Enter</code> 를 누릅니다.</li>
+    <li>셀이 붉게 변하지만 150 은 그대로 남습니다.</li>
+    <li>붉은 셀에 마우스를 올리면 무엇이 잘못됐는지 알려줍니다.</li>
+    <li><code>이름</code> 을 지우고 저장해도 마찬가지입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="vals()">지금 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130,
+    validate: function(v){ return !!String(v).trim() || '이름은 반드시 입력해야 합니다'; }},
+  {key:'score', label:'점수', w:110, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || '점수는 0에서 100 사이여야 합니다'; }},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function vals(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  이름 "' + r.name + '"  점수 ' + r.score);
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

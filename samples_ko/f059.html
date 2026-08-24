@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-1. 바뀐 것만 골라내기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-1. 바뀐 것만 골라내기</h1>
+  <p class="dm-desc">화면에서 무엇을 어떻게 고쳤든 <b>처음 상태와 비교해서</b> 바뀐 것만 추려냅니다. 셀 편집이든 모달 저장이든 행 추가·삭제든, 심지어 <code>Ctrl+Z</code> 로 되돌린 것까지 전부 반영됩니다.</p>
+  <ul class="dm-steps">
+    <li>셀을 직접 고쳐 봅니다 → 수정 1건.</li>
+    <li>우클릭 → <b>Edit Row</b> 모달로 고쳐도 똑같이 잡힙니다.</li>
+    <li>행 추가·삭제도 해 봅니다.</li>
+    <li><code>Ctrl+Z</code> 로 되돌리면 건수도 같이 줄어듭니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="G.addRow(mk())">행 추가</button>
+  <button class="db" onclick="G.openRowModal('edit', 1)">모달로 편집</button>
+  <button class="db dr" onclick="G.deleteSelected()">고른 행 삭제</button>
+  <button class="db" onclick="G.undo()">되돌리기</button>
+  <button class="db p" onclick="diff()">바뀐 내역 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:12, showST:true,
+    on:{ dirtyChange: function(p){
+      MGDemo.log('추가 ' + p.inserted + ' / 수정 ' + p.updated + ' / 삭제 ' + p.deleted);
+    }}
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function mk(){
+  return { id: Date.now() % 100000, name:'새 행', status:'A', role:'QA',
+           score:50, progress:0, salary:3000000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function diff(){
+  MGDemo.clearLog();
+  const c = G.getChangeCount();
+  MGDemo.log('추가 ' + c.inserted + ' / 수정 ' + c.updated + ' / 삭제 ' + c.deleted + ' = 총 ' + c.total + '건',
+             c.total ? 'wn' : 'ok');
+  MGDemo.log('바뀐 행 id = [' + G.getDirtyIds().join(', ') + ']');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

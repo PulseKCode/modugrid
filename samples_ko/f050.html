@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-4. 드롭다운에서 글자로 찾기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-4. 드롭다운에서 글자로 찾기</h1>
+  <p class="dm-desc">셀을 열고 글자를 치면 목록이 좁혀집니다. <b>화면에 보이는 형식 · 이름 · 코드</b> 세 가지 모두에 걸리므로, 사용자가 무엇을 기억하고 있든 찾아집니다.</p>
+  <ul class="dm-steps">
+    <li><code>상태</code> 셀을 열고 <code>활</code> 을 칩니다 — 이름으로 찾습니다.</li>
+    <li>지우고 <code>A</code> 를 칩니다 — 코드로도 찾습니다.</li>
+    <li>지우고 <code>[P]</code> 를 칩니다 — 화면에 보이는 형식으로도 찾습니다.</li>
+  </ul>
+
+  
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:170, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+MGDemo.log("목록 표기 '[A] 활성' / 이름 '활성' / 코드 'A' — 셋 다 검색어로 씁니다");
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

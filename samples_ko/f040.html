@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.2-1. 추가 · 수정 · 삭제 권한 나누기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.2 편집 권한</div>
+  <h1 class="dm-tit">5.2-1. 추가 · 수정 · 삭제 권한 나누기</h1>
+  <p class="dm-desc"><code>canInsert · canUpdate · canDelete</code> 로 권한을 나눕니다. 권한이 없으면 <b>우클릭 메뉴 항목이 알아서 사라지고</b>, 수정 권한이 없으면 편집 모달 자리에 상세 보기가 열립니다.</p>
+  <ul class="dm-steps">
+    <li>아래 버튼으로 권한 조합을 바꾸며 그리드를 다시 만듭니다.</li>
+    <li>행에서 <b>우클릭</b> 해 메뉴가 어떻게 달라지는지 봅니다.</li>
+    <li><code>canUpdate:false</code> 상태에서 셀을 더블클릭해도 편집되지 않습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="build(true,true,true)">전체 허용</button>
+  <button class="db" onclick="build(false,true,true)">추가 금지</button>
+  <button class="db" onclick="build(true,false,true)">수정 금지</button>
+  <button class="db" onclick="build(true,true,false)">삭제 금지</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+let G = null;
+
+function build(ins, upd, del){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options:{ editMode:true, selMode:'cell', pageSize:8,
+              canInsert:ins, canUpdate:upd, canDelete:del }
+  });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+  MGDemo.log('추가 ' + (ins?'○':'✗') + ' / 수정 ' + (upd?'○':'✗') + ' / 삭제 ' + (del?'○':'✗')
+           + '  — 행에서 우클릭해 보세요', 'ok');
+}
+
+build(true, true, true);
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

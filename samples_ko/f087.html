@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-5. 그룹 헤더 만들기 (2행 헤더) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-5. 그룹 헤더 만들기 (2행 헤더)</h1>
+  <p class="dm-desc">관련된 컬럼끼리 묶어 <b>헤더를 2행으로</b> 만듭니다. 컬럼에 같은 <code>group</code> 이름을 주기만 하면 됩니다. 항목이 많은 표에서 어떤 성격의 값인지 한눈에 구분됩니다.</p>
+  <ul class="dm-steps">
+    <li>헤더가 <b>인사정보</b> / <b>평가</b> 두 묶음으로 나뉜 것을 봅니다.</li>
+    <li>묶음이 없는 <code>#</code>·<code>이름</code> 은 두 줄을 관통합니다.</li>
+    <li>컬럼 폭을 바꿔도 묶음 헤더가 함께 따라옵니다.</li>
+    <li>아래로 스크롤해도 2행 헤더가 그대로 붙어 있습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.autoFit('salary')">급여 폭 자동 맞춤</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:130},
+
+  /* group 이 같은 컬럼끼리 하나로 묶인다 */
+  {key:'status', label:'상태',   w:110, group:'인사정보', options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120, group:'인사정보'},
+  {key:'joined', label:'입사일', w:120, group:'인사정보', type:'date'},
+
+  {key:'score',    label:'점수',   w:90,  group:'평가', type:'number'},
+  {key:'progress', label:'진행률', w:130, group:'평가', type:'progress'},
+  {key:'salary',   label:'급여',   w:130, group:'평가', type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0 } });
+G.setData(MGDemo.rows(30));
+window.G = G;
+
+MGDemo.log('아래로 스크롤해도 2행 헤더가 붙어 있습니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-7. multipart — 저장할 때 파일까지 한 번에 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-7. multipart — 저장할 때 파일까지 한 번에</h1>
+  <p class="dm-desc">파일을 들고 있다가 저장할 때 <b>변경 내용과 파일을 한 묶음</b>으로 보냅니다. 중간에 이탈해도 서버에 찌꺼기 파일이 남지 않아, 저장을 한 번으로 끝내고 싶을 때 가장 깔끔합니다.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 이미지를 넣습니다 — 이번엔 바로 올라가지 않습니다.</li>
+    <li><code>이름</code> 도 하나 고칩니다.</li>
+    <li><b>저장</b> 을 누르면 그때 변경 내용과 파일이 함께 나갑니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="save()">저장 (submit)</button>
+  <button class="db" onclick="peek()">전송될 JSON 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:4, rowHeight:80, showST:true, imageMode:'multipart' }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+/* 서버 대신 응답을 흉내내는 목(mock). 실제로는 submit.jsp 주소를 넣으면 됩니다. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch 미지원'));
+  }
+  const b = init && init.body;
+  if (typeof b === 'string'){
+    MGDemo.log('POST ' + url + '   (Content-Type: ' + ((init.headers||{})['Content-Type'] || '자동') + ')');
+    MGDemo.log(decodeURIComponent(b).slice(0, 700));
+  } else if (b && typeof b.forEach === 'function'){
+    MGDemo.log('POST ' + url + '   (Content-Type: 브라우저가 자동 지정)');
+    b.forEach(function(v, k){
+      MGDemo.log('  ' + k + ' = ' + (typeof v === 'string' ? v.slice(0, 400) : '(파일 ' + v.size + ' bytes)'));
+    });
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+function peek(){
+  MGDemo.clearLog();
+  const ch = G.getChanges();
+  const all = ch.updated.concat(ch.inserted);
+  if (!all.length){ MGDemo.log('먼저 사진을 넣거나 값을 고쳐 보세요', 'wn'); return; }
+  all.forEach(function(r){ MGDemo.log(JSON.stringify(r)); });
+  MGDemo.log('사진 항목의 ref 값이 파일 파트 이름과 짝을 이룹니다', 'ok');
+}
+
+async function save(){
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    MGDemo.log(out.skipped ? '바뀐 게 없습니다' : '전송 완료', 'ok');
+  }catch(e){ MGDemo.log('실패 — ' + e.message, 'er'); }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

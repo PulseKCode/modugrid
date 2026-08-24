@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-6. Breaking a header across lines — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. Layout</div>
+  <h1 class="dm-tit">10-6. Breaking a header across lines</h1>
+  <p class="dm-desc">For headers too long to fit. A <code>\n</code> in the label breaks the line <b>exactly there</b>; <code>headerWrap:true</code> lets the grid <b>wrap it for you</b> to suit the width.</p>
+  <ul class="dm-steps">
+    <li><code>Joined\ndate</code> carries a <code>\n</code>, so it is always two lines.</li>
+    <li>Press <b>Turn wrapping on</b>.</li>
+    <li>Press <b>Narrow the long header</b> and it wraps by itself.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" id="bw" onclick="wrap()">Turn wrapping on</button>
+  <button type="button" class="db" onclick="narrow()">Narrow the long header</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:130},
+  {key:'joined', label:'Joined\ndate', w:110, type:'date'},          // \n breaks the line here
+  {key:'memo',   label:'A rather long header used to show automatic wrapping', w:250},
+  {key:'score',  label:'Score', w:90, type:'number'},
+];
+
+let on = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:8, headerWrap:on } });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+  MGDemo.log('automatic wrapping ' + (on ? 'ON' : 'OFF'), 'ok');
+}
+
+function wrap(){
+  on = !on;
+  document.getElementById('bw').textContent = 'Turn wrapping ' + (on ? 'off' : 'on');
+  build();
+}
+function narrow(){ G.updateCol('memo', { w:110 }); MGDemo.log('The Note column is now 110px wide', 'ok'); }
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-7. Confirmation only when it cannot be undone — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-7. Confirmation only when it cannot be undone</h1>
+  <p class="dm-desc">With soft delete there is a way back, so nothing is asked. Only <code>softDelete:false</code>, which removes the row on the spot, raises a confirmation. <code>deleteRows()</code> is a programmatic call and never asks either way.</p>
+  <ul class="dm-steps">
+    <li>On the left (soft delete) tick a row and use <b>right-click → Delete</b> — it is struck through at once.</li>
+    <li>Do the same on the right (immediate delete) and you are <b>asked to confirm</b>.</li>
+    <li>The <b>Delete from code</b> buttons below never ask, on either grid.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db dr" onclick="code(G1,'left')">Delete from code (left)</button>
+  <button type="button" class="db dr" onclick="code(G2,'right')">Delete from code (right)</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">softDelete:true (default) — no prompt</div><div id="gA"></div></div>
+    <div><div class="dm-cap">softDelete:false — prompts first</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+function mk(sel, soft){
+  const g = ModuGrid(sel, {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options:{ pageSize:8, softDelete:soft, showST:true }
+  });
+  g.setData(MGDemo.rows(8, 5));
+  return g;
+}
+
+const G1 = mk('#gA', true);
+const G2 = mk('#gB', false);
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('Tick a row, then compare right-click → Delete on the two grids');
+
+/* deleteRows() is programmatic, so it never prompts */
+function code(g, name){
+  const ids = new Set([...g.getSelected(), ...g.getChecked()]);
+  if (!ids.size){ MGDemo.log('Tick a row on the ' + name + ' grid first', 'wn'); return; }
+  g.deleteRows(ids);
+  MGDemo.log(name + ' — deleteRows() ran without a prompt', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

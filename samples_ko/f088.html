@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-6. 헤더 글자 줄바꿈 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-6. 헤더 글자 줄바꿈</h1>
+  <p class="dm-desc">헤더가 길어 잘릴 때 씁니다. 라벨에 <code>\n</code> 을 넣으면 <b>그 자리에서</b> 줄이 바뀌고, <code>headerWrap:true</code> 를 켜면 폭에 맞춰 <b>알아서</b> 줄바꿈합니다.</p>
+  <ul class="dm-steps">
+    <li><code>입사\n연월일</code> 컬럼은 라벨에 <code>\n</code> 이 들어 있어 항상 2줄입니다.</li>
+    <li><b>자동 줄바꿈 켜기</b> 를 누릅니다.</li>
+    <li><b>긴 헤더 좁히기</b> 로 폭을 줄이면 자동으로 줄이 바뀝니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" id="bw" onclick="wrap()">자동 줄바꿈 켜기</button>
+  <button class="db" onclick="narrow()">긴 헤더 좁히기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:110},
+  {key:'joined', label:'입사\n연월일', w:110, type:'date'},          // \n = 그 자리에서 줄바꿈
+  {key:'memo',   label:'아주 긴 헤더 라벨 자동 줄바꿈 확인용', w:230},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+let on = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options:{ pageSize:8, headerWrap:on } });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+  MGDemo.log('자동 줄바꿈 = ' + (on ? 'ON' : 'OFF'), 'ok');
+}
+
+function wrap(){
+  on = !on;
+  document.getElementById('bw').textContent = '자동 줄바꿈 ' + (on ? '끄기' : '켜기');
+  build();
+}
+function narrow(){ G.updateCol('memo', { w:110 }); MGDemo.log('메모 컬럼을 110px 로 좁혔습니다', 'ok'); }
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

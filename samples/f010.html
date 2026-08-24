@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-2. Ascending → descending → off — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 Sorting</div>
+  <h1 class="dm-tit">3.1-2. Ascending → descending → off</h1>
+  <p class="dm-desc">Each click of a sort icon moves through ascending, descending and off. Turning it off restores the order the data arrived in.</p>
+  <ul class="dm-steps">
+    <li>Click the <code>Score</code> sort icon <b>three times in a row</b>.</li>
+    <li>The current state is reported after each click.</li>
+    <li>The <code>#</code> column is not sortable, so clicking it changes nothing.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="cycle()">Run the three states</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+document.querySelector('#grid').addEventListener('click', function(e){
+  if (!e.target.closest('th')) return;
+  setTimeout(function(){
+    const s = G.getState().sorts;
+    MGDemo.log(s.length ? 'Sorted by ' + s.map(x=>x.col+' '+x.dir).join(', ')
+                        : 'Sorting off (original order)', s.length?'ok':'wn');
+  }, 0);
+});
+
+/* From code, doSort takes the key and the event */
+function cycle(){
+  MGDemo.clearLog();
+  ['1st','2nd','3rd'].forEach(function(lab){
+    G.doSort('score', { target: document.body });
+    const s = G.getState().sorts;
+    MGDemo.log(lab + ' click → ' + (s.map(x=>x.col+' '+x.dir).join(', ') || 'off'));
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1-1. 그리드 만들기 — div 하나면 끝 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">1. 기본 구조</div>
+  <h1 class="dm-tit">1-1. 그리드 만들기 — div 하나면 끝</h1>
+  <p class="dm-desc">빈 <code>&lt;div&gt;</code> 하나만 준비하고 <code>ModuGrid(선택자, {cols})</code> 를 부르면 됩니다. 테이블·푸터·팝업·모달·알림까지 그리드가 전부 알아서 만들기 때문에 화면에 미리 짜 둘 HTML이 없습니다.</p>
+  <ul class="dm-steps">
+    <li>이 페이지의 HTML에는 <code>&lt;div id="grid"&gt;&lt;/div&gt;</code> 한 줄뿐입니다. 아래 <b>소스 보기 → HTML 전체</b> 탭에서 확인하세요.</li>
+    <li><code>setData()</code> 로 데이터를 넣습니다.</li>
+    <li><b>데이터 교체</b>를 눌러 같은 그리드에 다른 데이터를 넣어 봅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="reload()">데이터 교체</button>
+  <button class="db" onclick="count()">현재 행 수</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+/* 이 세 줄이 전부입니다 */
+const G = ModuGrid('#grid', { cols: COLS });
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+MGDemo.log('그리드 생성 완료 — 행 ' + G.getFilteredData().length + '개', 'ok');
+
+let seed = 12;
+function reload(){
+  seed += 7;
+  G.setData(MGDemo.rows(12, seed));
+  MGDemo.log('setData() — 새 데이터 12행 로드', 'ok');
+}
+function count(){
+  MGDemo.log('전체 ' + G.getState().data.length + '행 / 화면 표시 ' + G.getFilteredData().length + '행');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

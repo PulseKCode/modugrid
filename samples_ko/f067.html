@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-9. 삭제 되돌리기 — Ctrl+Z 로도 됩니다 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-9. 삭제 되돌리기 — Ctrl+Z 로도 됩니다</h1>
+  <p class="dm-desc">실수로 지웠다면 <code>Ctrl+Z</code> 로 되돌리면 됩니다. 여러 행을 되살릴 때는 체크한 뒤 <code>restoreRows()</code> 를 부르는 게 빠릅니다.</p>
+  <ul class="dm-steps">
+    <li>행을 체크하고 <b>삭제</b> 합니다.</li>
+    <li><code>Ctrl+Z</code> 를 누릅니다 — 취소선이 사라집니다.</li>
+    <li><code>Ctrl+Y</code> 로 다시 삭제 상태가 됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db dr" onclick="del()">고른 행 삭제</button>
+  <button class="db" onclick="G.undo()">되돌리기 (Ctrl+Z)</button>
+  <button class="db" onclick="G.redo()">다시 실행 (Ctrl+Y)</button>
+  <button class="db p" onclick="restore()">체크한 행 되살리기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:10, editMode:true, selMode:'cell', showST:true,
+    on:{ dataChange: function(){ MGDemo.log('삭제 예정 = [' + G.getPendingDeletes().join(', ') + ']'); } }
+  }
+});
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function ids(){ return new Set([...G.getSelected(), ...G.getChecked()]); }
+function del(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('행을 먼저 체크하세요', 'wn'); return; }
+  G.deleteRows(i);
+}
+function restore(){
+  const i = ids();
+  if (!i.size){ MGDemo.log('되살릴 행을 체크하세요', 'wn'); return; }
+  G.restoreRows(i);
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

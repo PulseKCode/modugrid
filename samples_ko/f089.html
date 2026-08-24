@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10-7. 헤더가 길면 말줄임 (...) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">10. 레이아웃</div>
+  <h1 class="dm-tit">10-7. 헤더가 길면 말줄임 (...)</h1>
+  <p class="dm-desc">라벨이 폭보다 길면 끝을 <code>...</code> 로 줄입니다. 이때도 <b>정렬 화살표와 필터 깔때기 자리는 항상 남겨</b> 두므로, 글자가 아이콘을 밀어내 못 누르게 되는 일이 없습니다.</p>
+  <ul class="dm-steps">
+    <li><code>부서명 및 상세 소속</code> 컬럼의 헤더 끝이 <code>...</code> 로 줄어 있습니다.</li>
+    <li>그 상태에서도 <b>정렬 아이콘과 깔때기</b>가 눌리는지 확인합니다.</li>
+    <li>폭을 넓히면 글자가 다시 다 보입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.updateCol('dept',{w:260})">폭 넓히기</button>
+  <button class="db" onclick="G.updateCol('dept',{w:110})">다시 좁히기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:120},
+  {key:'dept', label:'부서명 및 상세 소속 정보', w:110},
+  {key:'role', label:'직무', w:110},
+  {key:'score',label:'점수', w:90, type:'number'},
+];
+
+const DEPT = ['개발본부 프론트팀','개발본부 백엔드팀','디자인본부 UI팀','사업본부 영업1팀'];
+const rows = MGDemo.rows(10).map(function(r,i){ r.dept = DEPT[i % DEPT.length]; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('좁은 헤더에서도 정렬 아이콘과 깔때기를 눌러 보세요');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

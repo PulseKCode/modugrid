@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-3. 코드 대신 이름이 나가는 곳 — 검색 · CSV · 복사까지 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-3. 코드 대신 이름이 나가는 곳 — 검색 · CSV · 복사까지</h1>
+  <p class="dm-desc">코드/이름 구분은 한 군데만 적용되는 게 아닙니다. <b>셀 · 드롭다운 · 자동완성 · 필터 팝업 · 검색 · CSV · 엑셀 복사</b> 일곱 군데 모두 같은 규칙을 씁니다. 화면에서는 이름이 보이는데 파일에는 코드가 찍히는 일이 없습니다.</p>
+  <ul class="dm-steps">
+    <li>검색칸에 <code>활성</code> 을 쳐 봅니다 — 이름으로 찾습니다.</li>
+    <li><code>상태</code> 깔때기를 열면 목록도 이름으로 나옵니다.</li>
+    <li><b>CSV 내보내기</b> 로 받은 파일을 열어 보면 이름으로 저장돼 있습니다.</li>
+    <li>행을 체크하고 <b>엑셀로 복사</b> 후 엑셀에 붙여넣어도 마찬가지입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">검색</span>
+  <input class="dm-in" id="q" placeholder="활성 / A" oninput="G.search(this.value)">
+  <button class="db p" onclick="G.exportCSV('목록값_확인.csv')">CSV 내보내기</button>
+  <button class="db" onclick="excel()">엑셀로 복사</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:150, options:MGDemo.STATUS, optionFormat:'[{code}] {name}'},
+  {key:'role',   label:'직무', w:130},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:12 } });
+G.setData(MGDemo.rows(18));
+window.G = G;
+
+MGDemo.log('저장값은 A / P / I 코드지만, 내보내기에는 "[A] 활성" 형식으로 나갑니다');
+
+function excel(){
+  if (!G.getSelected().length && !G.getChecked().length){ MGDemo.log('먼저 행을 체크하세요', 'wn'); return; }
+  G.ctxCopyExcel();
+  MGDemo.log('클립보드에 복사했습니다 — 엑셀에 붙여넣어 확인하세요', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

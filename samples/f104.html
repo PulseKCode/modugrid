@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13-3. The same question is not asked twice — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">13. Server integration</div>
+  <h1 class="dm-tit">13-3. The same question is not asked twice</h1>
+  <p class="dm-desc">Values for the filter popup (<code>filterSource</code>) and autocomplete candidates (<code>acSource</code>) are remembered once fetched. Ask for the same thing again and no request goes out, which keeps the chatter down.</p>
+  <ul class="dm-steps">
+    <li>Open and close the <code>Role</code> funnel a few times — the count does not rise.</li>
+    <li>Change the search term and the conditions differ, so a request goes out.</li>
+    <li>Type the same letters into the <code>City</code> cell repeatedly for the same effect.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">Search</span>
+  <input type="text" class="dm-in" id="q" placeholder="change the conditions" oninput="G.search(this.value)">
+  <button type="button" class="db p" onclick="calls()">Requests sent</button>
+  <button type="button" class="db" onclick="reset_()">Clear the count</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const ALL = MGDemo.rows(60);
+const CITY = ['New York','Los Angeles','Chicago','Houston','Phoenix','Seattle','Denver','Boston'];
+ALL.forEach(function(r,i){ r.city = CITY[i % CITY.length]; });
+
+let flt = [], ac = [];
+
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Name', w:150},
+  {key:'role', label:'Role', w:130},
+  {key:'city', label:'City', w:170},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize: 10, editMode:true, selMode:'cell', acDebounce:200,
+
+    dataSource: function(req){
+      let rows = ALL.slice();
+      if (req.search) rows = rows.filter(function(r){ return (r.name+r.role).toLowerCase().indexOf(req.search)>=0; });
+      Object.keys(req.filters||{}).forEach(function(k){
+        const f = req.filters[k];
+        if (f.type==='list') rows = rows.filter(function(r){ return f.values.indexOf(String(r[k]))>=0; });
+      });
+      const st = (req.page-1)*req.pageSize;
+      return Promise.resolve({ rows: rows.slice(st, st+req.pageSize), total: rows.length });
+    },
+
+    /* values for the filter popup — not called again for a set of conditions already seen */
+    filterSource: function(colKey, req){
+      flt.push(colKey + ' / "' + (req.search||'') + '"');
+      MGDemo.log('filter values requested ' + flt.length + ' times — ' + colKey, 'wn');
+      const vals = [...new Set(ALL.map(function(r){ return String(r[colKey]); }))].sort();
+      return new Promise(function(res){ setTimeout(function(){ res(vals); }, 250); });
+    },
+
+    /* autocomplete candidates — remembered in the same way */
+    acSource: function(colKey, q){
+      ac.push(q);
+      MGDemo.log('autocomplete requested ' + ac.length + ' times — "' + q + '"', 'wn');
+      return new Promise(function(res){
+        setTimeout(function(){ res(CITY.filter(function(v){ return v.toLowerCase().indexOf(q.toLowerCase())>=0; })); }, 200);
+      });
+    }
+  }
+});
+window.G = G;
+
+function calls(){
+  MGDemo.clearLog();
+  MGDemo.log('filter values — ' + flt.length + ' requests', 'ok');
+  flt.forEach(function(x,i){ MGDemo.log('  ' + (i+1) + '. ' + x); });
+  MGDemo.log('autocomplete — ' + ac.length + ' requests', 'ok');
+  ac.forEach(function(x,i){ MGDemo.log('  ' + (i+1) + '. "' + x + '"'); });
+}
+function reset_(){ flt=[]; ac=[]; MGDemo.clearLog(); MGDemo.log('Count cleared', 'ok'); }
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

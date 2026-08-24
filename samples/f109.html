@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-5. Trimming the right-click menu (contextMenu) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-5. Trimming the right-click menu (contextMenu)</h1>
+  <p class="dm-desc">Entries you do not want can be dropped from the right-click menu. Anything you do not mention stays, and the setting sits <b>on top of the permissions</b> — turn something on here and it still will not appear without the right to use it.</p>
+  <ul class="dm-steps">
+    <li>With the <b>default</b>, right-click a row to see the full menu.</li>
+    <li>Switch to <b>without copy and delete</b> and right-click again.</li>
+    <li>The entry names are <code>detail · edit · copy · copyExcel · insertAbove · insertBelow · tree · delete</code>.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="build(undefined)">Default (everything)</button>
+  <button type="button" class="db" onclick="build({copy:false, copyExcel:false, delete:false})">Without copy and delete</button>
+  <button type="button" class="db" onclick="build({insertAbove:false, insertBelow:false})">Without inserting</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:160},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+let G = null;
+
+function build(cm){
+  if (G) G.destroy();
+  const opt = { editMode:true, selMode:'cell', pageSize:8 };
+  if (cm !== undefined) opt.contextMenu = cm;
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+  MGDemo.log('setting = ' + (cm === undefined ? 'none (everything shows)' : JSON.stringify(cm)) + ' — right-click a row', 'ok');
+}
+
+build(undefined);
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

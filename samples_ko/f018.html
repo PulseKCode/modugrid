@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.2-5. 조건이 걸린 컬럼 표시 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.2 필터</div>
+  <h1 class="dm-tit">3.2-5. 조건이 걸린 컬럼 표시</h1>
+  <p class="dm-desc">조건이 걸린 컬럼 헤더에는 작은 점이 찍힙니다. 컬럼이 많아도 어디에 조건이 남아 있는지 바로 찾을 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li><code>직무</code> 에 목록 조건을, <code>점수</code> 에 범위 조건을 겁니다.</li>
+    <li>두 헤더에 점이 찍힙니다.</li>
+    <li>조건을 풀면 점도 사라집니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="which()">조건 걸린 컬럼</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:12 } });
+G.setData(MGDemo.rows(24));
+window.G = G;
+
+function which(){
+  MGDemo.clearLog();
+  const keys = Object.keys(G.getState().cfilters);
+  if (!keys.length) { MGDemo.log('걸린 조건이 없습니다', 'wn'); return; }
+  keys.forEach(function(k){ MGDemo.log('● ' + k + ' 컬럼에 조건 있음', 'ok'); });
+  MGDemo.log('보이는 행 ' + G.getFilteredData().length + '개');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

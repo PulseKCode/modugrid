@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-2. id 자동으로 매기기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-2. id 자동으로 매기기</h1>
+  <p class="dm-desc">데이터에 <code>id</code> 가 없거나 겹치면 <b>로드할 때 알아서 정리</b>합니다. 한 번 쓴 번호는 다시 쓰지 않으므로, 지웠다 새로 넣어도 예전 것과 헷갈리지 않습니다. 번호 규칙을 바꾸려면 <code>genId</code> 를 주면 됩니다.</p>
+  <ul class="dm-steps">
+    <li><b>id 가 엉망인 데이터</b> — 빠지거나 겹친 것이 섞인 데이터를 넣습니다.</li>
+    <li>자동으로 정리된 결과를 봅니다.</li>
+    <li><b>추가 → 삭제 → 추가</b> 를 눌러 번호가 재사용되지 않는지 확인합니다.</li>
+    <li><b>주문번호 형식으로</b> 는 <code>ORD-0001</code> 처럼 규칙을 바꾼 경우입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="bad()">id 가 엉망인 데이터</button>
+  <button class="db" onclick="cycle()">추가 → 삭제 → 추가</button>
+  <button class="db" onclick="custom()">주문번호 형식으로</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'id',   label:'id',   w:110},
+  {key:'name', label:'이름', w:150},
+  {key:'role', label:'직무', w:120},
+];
+
+let G = null;
+
+function build(opt){
+  if (G) G.destroy();
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }),
+                          options: Object.assign({ pageSize:12 }, opt || {}) });
+  window.G = G;
+}
+
+function bad(){
+  build();
+  G.setData([
+    { id:1,  name:'정상',      role:'QA' },
+    {        name:'id 없음',   role:'Developer' },   // id 누락
+    { id:1,  name:'id 겹침',   role:'Designer' },    // id 중복
+    { id:'', name:'id 빈값',   role:'Analyst' },
+    { id:5,  name:'정상',      role:'DevOps' },
+  ]);
+  MGDemo.clearLog();
+  MGDemo.log('id 누락 · 중복 · 빈값이 섞인 데이터를 넣었습니다', 'wn');
+  ids();
+}
+
+function cycle(){
+  G.addRow({ name:'추가1', role:'QA' });
+  const a = G.getState().data.slice(-1)[0].id;
+  G.deleteRows(new Set([a]));
+  G.addRow({ name:'추가2', role:'QA' });
+  const b = G.getState().data.slice(-1)[0].id;
+  MGDemo.log('처음 추가 id=' + a + ' → 삭제 → 다시 추가 id=' + b
+           + (a === b ? ' (재사용됨)' : ' (재사용하지 않음)'), a === b ? 'er' : 'ok');
+}
+
+function custom(){
+  let n = 0;
+  build({ genId: function(){ return 'ORD-' + String(++n).padStart(4,'0'); } });
+  G.setData([{ name:'가', role:'QA' }, { name:'나', role:'DevOps' }]);
+  MGDemo.log('번호 규칙을 ORD-#### 로 바꿨습니다', 'ok');
+  ids();
+}
+
+function ids(){ MGDemo.log('현재 id = ' + G.getFilteredData().map(function(r){ return r.id; }).join(' , '), 'ok'); }
+
+bad();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-5. 추가된 행은 컬럼 순서대로 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-5. 추가된 행은 컬럼 순서대로</h1>
+  <p class="dm-desc">새로 넣은 행의 JSON 은 <b>화면 컬럼 순서</b> 를 그대로 따릅니다. 로그를 눈으로 확인하거나 서버에서 순서대로 매핑할 때 읽기 쉽습니다.</p>
+  <ul class="dm-steps">
+    <li><b>행 추가</b> 를 두어 번 누릅니다.</li>
+    <li><b>전송 내용 보기</b> 로 항목 순서를 확인합니다.</li>
+    <li>컬럼을 옮긴 뒤 다시 추가해 보면 그 순서를 따릅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.addRow(mk())">행 추가</button>
+  <button class="db" onclick="G.moveCol('score', 3);MGDemo.log('점수 컬럼을 앞으로 이동','ok')">점수 컬럼 앞으로</button>
+  <button class="db p" onclick="peek()">전송 내용 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:10, showST:true } });
+G.setData(MGDemo.rows(4));
+window.G = G;
+
+let seq = 700;
+function mk(){
+  return { id: ++seq, name:'새 행 ' + seq, status:'A', role:'QA',
+           score:60, progress:0, salary:3000000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ins = G.getChanges().inserted;
+  if (!ins.length){ MGDemo.log('먼저 행을 추가해 보세요', 'wn'); return; }
+  MGDemo.log('화면 컬럼 순서 = ' + G.getCols().map(function(c){ return c.key; })
+             .filter(function(k){ return k.charAt(0) !== '_'; }).join(', '));
+  ins.forEach(function(r){ MGDemo.log(JSON.stringify(r), 'ok'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

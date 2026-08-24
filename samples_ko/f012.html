@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1-4. 여러 컬럼으로 정렬 (멀티정렬) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.1 정렬</div>
+  <h1 class="dm-tit">3.1-4. 여러 컬럼으로 정렬 (멀티정렬)</h1>
+  <p class="dm-desc"><code>multiSort:true</code> 를 주면 정렬을 겹쳐 걸 수 있습니다. 누른 순서대로 <b>1, 2, 3 번호 배지</b>가 붙고, 각 컬럼은 따로따로 오름 → 내림 → 해제를 돕니다.</p>
+  <ul class="dm-steps">
+    <li><code>직무</code> 정렬 아이콘 클릭 → 1번 배지.</li>
+    <li>이어서 <code>점수</code> 클릭 → 2번 배지. 직무로 묶고 그 안에서 점수순이 됩니다.</li>
+    <li><code>직무</code> 를 두 번 더 눌러 해제해도 점수 정렬은 남습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.toggleMultiSort();ms()">멀티정렬 켜기/끄기</button>
+  <button class="db" onclick="G.clearSorts();ms()">전체 해제</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:100, options:MGDemo.STATUS},
+  {key:'role',   label:'직무',   w:120},
+  {key:'score',  label:'점수',   w:80,  type:'number'},
+  {key:'salary', label:'급여',   w:120, type:'currency'},
+  {key:'joined', label:'입사일', w:115, type:'date'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ multiSort:true, pageSize:12 } });
+G.setData(MGDemo.rows(16));
+window.G = G;
+
+document.querySelector('#grid').addEventListener('click', function(e){
+  if (!e.target.closest('th')) return;
+  setTimeout(function(){
+    const s = G.getState().sorts;
+    MGDemo.log(s.length ? s.map(function(x,i){ return (i+1)+'순위 ' + x.col + ' ' + x.dir; }).join('  →  ') : '정렬 없음');
+  }, 0);
+});
+
+function ms(){ MGDemo.log('멀티정렬 = ' + (G.getState().multiSort ? 'ON' : 'OFF'), 'ok'); }
+ms();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

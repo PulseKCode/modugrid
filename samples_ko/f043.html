@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.3-1. 대문자 · 소문자로 자동 변환 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.3 입력 제어</div>
+  <h1 class="dm-tit">5.3-1. 대문자 · 소문자로 자동 변환</h1>
+  <p class="dm-desc"><code>textCase</code> 를 주면 입력한 글자를 자동으로 대문자나 소문자로 맞춥니다. 코드값은 대문자, 이메일은 소문자처럼 표기를 통일해야 할 때 씁니다. 컬럼별로도, 그리드 전체로도 지정할 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li><code>코드</code> 칸에 <code>abc</code> 를 치면 <code>ABC</code> 가 됩니다.</li>
+    <li><code>이메일</code> 칸에 <code>ABC@X.COM</code> 을 치면 소문자가 됩니다.</li>
+    <li><code>이름</code> 칸은 그대로 두었으니 한글·영문이 친 대로 들어갑니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="vals()">저장된 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름 (변환 없음)', w:150},
+  {key:'code',  label:'코드 (대문자)',   w:140, textCase:'upper'},
+  {key:'email', label:'이메일 (소문자)', w:210, textCase:'lower'},
+];
+
+const rows = MGDemo.rows(6).map(function(r,i){
+  r.code  = 'a' + (100+i);
+  r.email = 'User' + i + '@Example.COM';
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+function vals(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('이름 "' + r.name + '"   코드 "' + r.code + '"   이메일 "' + r.email + '"');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-6. The menu setting cannot outrank a permission — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-6. The menu setting cannot outrank a permission</h1>
+  <p class="dm-desc">Entries you <b>do not mention stay visible</b> — the setting lists what to hide rather than what to show. And because it sits on top of the permissions, switching something on here will not bring it back if the user has no right to it.</p>
+  <ul class="dm-steps">
+    <li><b>Only delete named, and allowed</b> — only <code>{delete:true}</code> is set, yet the other entries are still there.</li>
+    <li><b>Named but not allowed</b> — <code>{delete:true}</code> is set but <code>canDelete:false</code>, so it does not appear.</li>
+    <li><b>Allowed and named</b> — now it does.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="build(true, {delete:true})">Only delete named, and allowed</button>
+  <button type="button" class="db dr" onclick="build(false, {delete:true})">Named but not allowed</button>
+  <button type="button" class="db p" onclick="build(true, undefined)">No setting (everything)</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:160},
+  {key:'role',  label:'Role',  w:120},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+let G = null;
+
+function build(canDel, cm){
+  if (G) G.destroy();
+  const opt = { editMode:true, selMode:'cell', pageSize:8, canDelete:canDel };
+  if (cm !== undefined) opt.contextMenu = cm;
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+
+  MGDemo.clearLog();
+  MGDemo.log('delete permission ' + (canDel ? 'granted' : 'withheld')
+           + ' · menu setting ' + (cm === undefined ? 'none' : JSON.stringify(cm)), 'ok');
+  MGDemo.log(canDel ? 'Right-click a row and Delete is there'
+                    : 'It is named in the setting, but without the permission it does not appear',
+             canDel ? 'ok' : 'wn');
+}
+
+build(true, {delete:true});
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

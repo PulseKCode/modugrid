@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12.3-1. Choosing what appears in the footer — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">12.3 Display options</div>
+  <h1 class="dm-tit">12.3-1. Choosing what appears in the footer</h1>
+  <p class="dm-desc">The footer carries <b>the row count, the page list and Per page</b>, in that order. Any of them can be switched off, and turning all three off removes the footer altogether.</p>
+  <ul class="dm-steps">
+    <li>Switch <b>Row count</b>, <b>Page list</b> and <b>Per page</b> off one at a time.</li>
+    <li><b>Whole footer</b> removes it in one go.</li>
+    <li>On a read-only screen you might keep the page list and nothing else.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleRowsInfo();st()">Row count</button>
+  <button type="button" class="db p" onclick="G.togglePager();st()">Page list</button>
+  <button type="button" class="db p" onclick="G.togglePageSize();st()">Per page</button>
+  <button type="button" class="db dr" onclick="G.toggleFoot();st()">Whole footer</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'salary', label:'Salary', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:10 } });
+G.setData(MGDemo.rows(60));
+window.G = G;
+
+function st(){
+  const s = G.getState();
+  MGDemo.log('row count ' + (s.showRows?'on':'off')
+           + ' · page list ' + (s.showPager?'on':'off')
+           + ' · per page ' + (s.showPageSize?'on':'off')
+           + ' · footer ' + (s.showFoot?'on':'off'), 'ok');
+}
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

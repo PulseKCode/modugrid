@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-11. base64 — JSON 안에 문자열로 담기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-11. base64 — JSON 안에 문자열로 담기</h1>
+  <p class="dm-desc">사진을 글자로 바꿔 JSON 에 그대로 담습니다. 파일 업로드 처리를 따로 만들지 않아도 되지만 <b>용량이 원본보다 약 33% 커집니다</b>. 서명·아이콘처럼 작고 개수가 적을 때만 쓰고, <code>imageMaxSize</code> 를 꼭 함께 지정하세요.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 <b>작은</b> 이미지를 한 장 넣습니다.</li>
+    <li><b>전송될 JSON 보기</b> 로 <code>data:image/...;base64,</code> 문자열을 확인합니다.</li>
+    <li><b>용량 비교</b> 로 얼마나 커지는지 봅니다.</li>
+    <li>이 데모는 장당 200KB 로 제한해 두었습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="peek()">전송될 JSON 보기</button>
+  <button class="db" onclick="size()">용량 비교</button>
+  <button class="db" onclick="jsp()">서버 코드 예시</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'base64',
+    imageMaxSize: 200*1024,      // base64 를 쓸 때는 반드시 함께 지정
+    imageLimit: 2,
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+function peek(){
+  MGDemo.clearLog();
+  const all = G.getChanges().updated.concat(G.getChanges().inserted);
+  if (!all.length){ MGDemo.log('먼저 사진을 넣어 보세요', 'wn'); return; }
+  const s = JSON.stringify(all);
+  MGDemo.log(s.length > 500 ? s.slice(0, 500) + ' … (생략)' : s);
+}
+
+function size(){
+  MGDemo.clearLog();
+  let any = false;
+  G.getFilteredData().forEach(function(r){
+    (r.images || []).forEach(function(im){
+      any = true;
+      const raw = im.size || 0;
+      const enc = (im.data || '').length;
+      MGDemo.log(im.name + '  원본 ' + Math.round(raw/1024) + 'KB  →  문자열 ' + Math.round(enc/1024) + 'KB'
+               + (raw ? '  (' + Math.round(enc/raw*100) + '%)' : ''), 'wn');
+    });
+  });
+  if (!any) MGDemo.log('먼저 사진을 넣어 보세요', 'wn');
+}
+
+function jsp(){
+  MGDemo.clearLog();
+  MGDemo.log('// JSP 쪽에서 base64 문자열 복원');
+  MGDemo.log('String dataUrl = img.getString("data");');
+  MGDemo.log('byte[] bytes   = Base64.getDecoder()');
+  MGDemo.log('                 .decode(dataUrl.substring(dataUrl.indexOf(\',\') + 1));');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

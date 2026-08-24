@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.3-1. Searching by code or by display name — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.3 Search</div>
+  <h1 class="dm-tit">3.3-1. Searching by code or by display name</h1>
+  <p class="dm-desc"><code>search(q)</code> sweeps several columns at once. For coded columns it matches <b>both the display name on screen and the code stored underneath</b>, so it finds the row whichever one the user remembers.</p>
+  <ul class="dm-steps">
+    <li>Type <code>Active</code> — matched on the visible text.</li>
+    <li>Type <code>A</code> — matched on the stored code.</li>
+    <li>Press <b>Narrow the search</b> to restrict it to particular columns.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <span class="dm-lab">Search</span>
+  <input type="text" class="dm-in" id="q" placeholder="Active / A / Pending" oninput="G.search(this.value);after()">
+  <button type="button" class="db" onclick="document.getElementById('q').value='';G.search('');after()">Clear</button>
+  <button type="button" class="db p" id="bk" onclick="swap()">Searching: all columns</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',    label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'memo',   label:'Note',   w:160},
+];
+
+let narrow = false;
+let G = null;
+
+function build(){
+  if (G) G.destroy();
+  const opt = { pageSize:12 };
+  if (narrow) opt.searchKeys = ['name','memo'];    // only these two are searched
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(20));
+  window.G = G;
+  MGDemo.log('Searching ' + (narrow ? 'Name and Note only' : 'all columns (derived automatically)'), 'ok');
+}
+
+function swap(){
+  narrow = !narrow;
+  document.getElementById('bk').textContent = 'Searching: ' + (narrow ? 'Name and Note' : 'all columns');
+  build();
+  const q = document.getElementById('q');
+  if (q && q.value) { G.search(q.value); after(); }
+}
+
+function after(){ MGDemo.log(G.getFilteredData().length + ' rows shown'); }
+
+build();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-8. Shift + 화살표로 범위 넓히기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-8. Shift + 화살표로 범위 넓히기</h1>
+  <p class="dm-desc">셀 모드에서는 엑셀처럼 사각 범위를, 행 모드에서는 연속된 행 범위를 넓힙니다. 마우스로 잡아 둔 범위에서 이어서 넓힐 수도 있습니다.</p>
+  <ul class="dm-steps">
+    <li>셀을 하나 클릭한 뒤 <code>Shift</code>+<code>↓</code>, <code>Shift</code>+<code>→</code> 를 눌러 봅니다.</li>
+    <li>그냥 화살표를 누르면 범위가 풀리고 한 칸 이동합니다.</li>
+    <li><b>행 모드로 바꾸기</b> 후 <code>Shift</code>+<code>↓</code> 도 해 봅니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" id="bmode" onclick="swap()">행 모드로 바꾸기</button>
+  <button class="db" onclick="rng()">잡힌 범위 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90,  type:'number'},
+  {key:'salary',label:'급여', w:120, type:'currency'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ selMode:'cell', pageSize:12 } });
+G.setData(MGDemo.rows(14));
+window.G = G;
+
+function swap(){
+  const next = G.getState().selMode === 'cell' ? 'row' : 'cell';
+  G.setSelMode(next);
+  document.getElementById('bmode').textContent = (next === 'cell' ? '행 모드로 바꾸기' : '셀 모드로 바꾸기');
+  MGDemo.log('선택 모드 = ' + next, 'ok');
+}
+
+function rng(){
+  const s = G.getState();
+  if (s.selMode === 'cell'){
+    if (s.rangeR1 < 0) { MGDemo.log('잡힌 범위가 없습니다', 'wn'); return; }
+    const rows = Math.abs(s.rangeR2 - s.rangeR1) + 1;
+    const cols = Math.abs(s.rangeC2 - s.rangeC1) + 1;
+    MGDemo.log('범위 ' + rows + '행 × ' + cols + '열 = ' + (rows*cols) + '칸', 'ok');
+  } else {
+    MGDemo.log('선택된 행 = [' + G.getSelected().join(', ') + ']', 'ok');
+  }
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

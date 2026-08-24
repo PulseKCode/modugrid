@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-2. 보이는 글자 꾸미기 (optionFormat) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-2. 보이는 글자 꾸미기 (optionFormat)</h1>
+  <p class="dm-desc"><code>optionFormat</code> 에 <code>{code} {name}</code> 같은 자리표시자를 넣어 화면 표기를 정합니다. 옵션 객체에 들어 있는 <b>다른 필드도 그대로 끼워 넣을 수 있어</b> 부서명·인원수 같은 부가 정보를 함께 보여줄 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li>컬럼마다 같은 코드인데 표시가 다릅니다.</li>
+    <li><code>부서</code> 는 옵션의 <code>dept</code>·<code>cnt</code> 필드까지 넣었습니다.</li>
+    <li>셀을 열면 드롭다운 목록도 같은 형식으로 보입니다.</li>
+  </ul>
+
+  
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const DEPT = [
+  {code:'D1', name:'개발',   dept:'IT본부',   cnt:42},
+  {code:'D2', name:'디자인', dept:'IT본부',   cnt:11},
+  {code:'D3', name:'영업',   dept:'사업본부', cnt:27},
+];
+
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'이름', w:110},
+  {key:'d1', label:'코드 + 이름',   w:130, options:DEPT, optionFormat:'{code} {name}'},
+  {key:'d2', label:'이름 (코드)',   w:140, options:DEPT, optionFormat:'{name} ({code})'},
+  {key:'d3', label:'부가정보까지',  w:200, options:DEPT, optionFormat:'{dept} · {name} {cnt}명'},
+];
+
+const rows = MGDemo.rows(6).map(function(r,i){
+  const c = DEPT[i % DEPT.length].code;
+  r.d1 = r.d2 = r.d3 = c;
+  return r;
+});
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('세 컬럼 모두 저장값은 D1 / D2 / D3 — 보이는 형식만 다릅니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-9. multipart — ref 로 파일 찾기 · Content-Type 은 건드리지 않기 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-9. multipart — ref 로 파일 찾기 · Content-Type 은 건드리지 않기</h1>
+  <p class="dm-desc">JSON 쪽 사진 항목의 <code>ref</code> 값이 곧 파일 파트 이름입니다. 서버는 <code>ref</code> 를 읽어 해당 파일을 꺼내면 됩니다. 그리고 <b><code>Content-Type</code> 을 직접 지정하면 안 됩니다</b> — 구분자(boundary)까지 브라우저가 알아서 붙입니다.</p>
+  <ul class="dm-steps">
+    <li>사진을 넣고 <b>저장</b> 을 누릅니다.</li>
+    <li>JSON 안의 <code>ref</code> 와 파일 파트 이름이 같은지 봅니다.</li>
+    <li><code>Content-Type</code> 이 "브라우저가 자동 지정" 으로 나가는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="save()">저장 (submit)</button>
+  <button class="db" onclick="jsp()">서버 코드 예시</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{ editMode:true, pageSize:4, rowHeight:80, showST:true, imageMode:'multipart' }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+/* 서버 대신 응답을 흉내내는 목(mock). 실제로는 submit.jsp 주소를 넣으면 됩니다. */
+const realFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+window.fetch = function(url, init){
+  if (String(url).indexOf('mock-') < 0){
+    return realFetch ? realFetch(url, init) : Promise.reject(new Error('fetch 미지원'));
+  }
+  const b = init && init.body;
+  if (typeof b === 'string'){
+    MGDemo.log('POST ' + url + '   (Content-Type: ' + ((init.headers||{})['Content-Type'] || '자동') + ')');
+    MGDemo.log(decodeURIComponent(b).slice(0, 700));
+  } else if (b && typeof b.forEach === 'function'){
+    MGDemo.log('POST ' + url + '   (Content-Type: 브라우저가 자동 지정)');
+    b.forEach(function(v, k){
+      MGDemo.log('  ' + k + ' = ' + (typeof v === 'string' ? v.slice(0, 400) : '(파일 ' + v.size + ' bytes)'));
+    });
+  }
+  return Promise.resolve(new Response(JSON.stringify({ ok:true }),
+    { headers:{ 'content-type':'application/json' } }));
+};
+
+async function save(){
+  MGDemo.clearLog();
+  try{
+    const out = await G.submit('mock-submit', { paramName:'changes' });
+    MGDemo.log(out.skipped ? '바뀐 게 없습니다' : '전송 완료 — ref 와 파트 이름을 비교해 보세요', 'ok');
+  }catch(e){ MGDemo.log('실패 — ' + e.message, 'er'); }
+}
+
+function jsp(){
+  MGDemo.clearLog();
+  MGDemo.log('// JSP 쪽에서 ref 로 파일 꺼내기');
+  MGDemo.log('String ref  = img.getString("ref");        // "img_3_images_0"');
+  MGDemo.log('Part   part = request.getPart(ref);');
+  MGDemo.log('try (InputStream in = part.getInputStream()) { ... }');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

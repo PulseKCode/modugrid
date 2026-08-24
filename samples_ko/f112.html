@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-8. 메시지를 우리말로 바꾸기 (i18n) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-8. 메시지를 우리말로 바꾸기 (i18n)</h1>
+  <p class="dm-desc">내장 메시지는 영어가 기본입니다. <code>options.i18n</code> 에 <b>바꿀 것만 적으면</b> 되고, 안 적은 것은 영어로 남습니다. 값에 함수를 주면 상황에 따라 달라지는 문구도 만들 수 있습니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽은 기본(영어), 오른쪽은 일부만 우리말로 바꿨습니다.</li>
+    <li>각각 <b>되돌리기</b> 를 눌러 알림 문구를 비교합니다.</li>
+    <li><b>폭 자동 맞춤</b> 도 눌러 보세요 — 함수로 만든 문구입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G1.undo()">왼쪽 되돌리기</button>
+  <button class="db p" onclick="G2.undo()">오른쪽 되돌리기</button>
+  <button class="db" onclick="G1.autoFit('name')">왼쪽 폭 맞춤</button>
+  <button class="db" onclick="G2.autoFit('name')">오른쪽 폭 맞춤</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">기본 (영어)</div><div id="gA"></div></div>
+    <div><div class="dm-cap">일부만 우리말로</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G1 = ModuGrid('#gA', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, selMode:'cell', pageSize:6 }
+});
+
+const G2 = ModuGrid('#gB', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{
+    editMode:true, selMode:'cell', pageSize:6,
+    i18n:{
+      copied:       '복사했습니다',
+      nothingUndo:  '되돌릴 작업이 없습니다',
+      nothingRedo:  '다시 실행할 작업이 없습니다',
+      invalidValue: '값이 올바르지 않습니다',
+      noMatch:      '일치하는 항목 없음',
+      selectAll:    '전체 선택',
+      save:         '저장',
+      cancel:       '취소',
+      close:        '닫기',
+      autoFit:      function(key){ return key + ' 컬럼 폭을 맞췄습니다'; }
+    }
+  }
+});
+
+G1.setData(MGDemo.rows(6, 11));
+G2.setData(MGDemo.rows(6, 11));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('오른쪽은 10개만 바꿨고 나머지는 영어로 남습니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

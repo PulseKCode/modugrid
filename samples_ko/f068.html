@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-10. 변경 표시 색 끄기 (dirtyMark) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-10. 변경 표시 색 끄기 (dirtyMark)</h1>
+  <p class="dm-desc">신규는 초록, 수정은 노랑, 삭제는 빨강으로 행 배경이 칠해집니다. 색이 부담스러우면 <code>dirtyMark</code> 로 끄면 됩니다. 이때도 <b>삭제 취소선은 남습니다</b> — 지워질 행인지는 반드시 보여야 하기 때문입니다.</p>
+  <ul class="dm-steps">
+    <li>행을 추가하고, 다른 행을 수정하고, 또 다른 행을 삭제해 세 가지 색을 만듭니다.</li>
+    <li><b>표시 색 끄기</b> 를 누릅니다 — 배경색이 사라집니다.</li>
+    <li>삭제한 행의 <b>취소선은 그대로</b> 남는지 확인합니다.</li>
+    <li><code>_st</code> 칸의 <code>+ * -</code> 표시도 남습니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db" onclick="G.addRow(mk())">행 추가</button>
+  <button class="db dr" onclick="del()">고른 행 삭제</button>
+  <button class="db p" onclick="G.toggleDirtyMark();st()">표시 색 켜기 / 끄기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:12, dirtyMark:true, showST:true } });
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+let seq = 800;
+function mk(){
+  return { id: ++seq, name:'새 행 ' + seq, status:'A', role:'QA',
+           score:60, progress:0, salary:3000000, joined:'2026-01-01', memo:'', images:[] };
+}
+function del(){
+  const i = new Set([...G.getSelected(), ...G.getChecked()]);
+  if (!i.size){ MGDemo.log('행을 먼저 체크하세요', 'wn'); return; }
+  G.deleteRows(i);
+}
+function st(){
+  MGDemo.log('변경 표시 색 = ' + (G.getState().dirtyMark ? 'ON' : 'OFF')
+           + ' / 삭제 예정 = [' + G.getPendingDeletes().join(', ') + '] (취소선은 유지)', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

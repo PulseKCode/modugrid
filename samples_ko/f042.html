@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.2-3. 잠금이 적용되는 곳과 안 되는 곳 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.2 편집 권한</div>
+  <h1 class="dm-tit">5.2-3. 잠금이 적용되는 곳과 안 되는 곳</h1>
+  <p class="dm-desc">잠금은 사용자가 화면에서 하는 모든 입력에 걸립니다. 다만 <code>updateRow()</code> 같은 <b>프로그램 호출은 막지 않습니다</b> — 서버 응답을 반영하거나 일괄 처리를 해야 하기 때문입니다.</p>
+  <ul class="dm-steps">
+    <li>잠긴 행(상태 <b>비활성</b>)의 셀을 <b>더블클릭 · F2 · 타이핑</b> 해 봅니다 — 열리지 않습니다.</li>
+    <li>잠긴 셀을 잡고 <code>Delete</code> 를 눌러도 비워지지 않습니다.</li>
+    <li>아래 TSV를 복사해 잠긴 행에 붙여넣어 보세요 — 건너뜁니다.</li>
+    <li>우클릭 → <b>Edit Row</b> 모달에서도 읽기 전용으로 나옵니다.</li>
+    <li><b>코드로 값 바꾸기</b> 는 잠겨 있어도 반영됩니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.openRowModal('edit', lockedId())">잠긴 행 모달 열기</button>
+  <button class="db dr" onclick="force()">코드로 값 바꾸기 (막히지 않음)</button>
+  </div>
+  <div class="dm-out">
+    <p>붙여넣기 테스트 — 아래를 복사해 잠긴 행의 이름 칸에 Ctrl+V</p>
+    <textarea rows="2" readonly onclick="this.select()">붙여넣기1
+붙여넣기2</textarea>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:150},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(8);
+rows[0].status = 'I';   // 1행을 잠금 대상으로
+rows[1].status = 'I';
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    rowEditable: function(row){ return row.status !== 'I'; }
+  }
+});
+G.setData(rows);
+window.G = G;
+
+MGDemo.log('상태가 "비활성" 인 1·2행이 잠겨 있습니다');
+
+function lockedId(){
+  const r = G.getFilteredData().find(function(x){ return x.status === 'I'; });
+  return r ? r.id : 1;
+}
+
+/* updateRow() 는 프로그램 호출이라 잠금과 무관하게 반영된다 */
+function force(){
+  const id = lockedId();
+  G.updateRow(id, { name: '코드로 바꿈 ' + new Date().toTimeString().slice(3,8) });
+  MGDemo.log('updateRow(' + id + ') — 잠긴 행이지만 반영됨', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-5. New rows follow the column order — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. Change tracking</div>
+  <h1 class="dm-tit">8-5. New rows follow the column order</h1>
+  <p class="dm-desc">The JSON for an inserted row is written in <b>the order the columns appear</b>, which makes the payload easy to read in a log and easy to map field by field on the server.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Add a row</b> once or twice.</li>
+    <li>Press <b>Preview what will be sent</b> and read the order of the keys.</li>
+    <li>Move a column, add another row, and the new order is followed.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.addRow(mk())">Add a row</button>
+  <button type="button" class="db" onclick="G.moveCol('score', 3);MGDemo.log('Score moved forward','ok')">Move Score forward</button>
+  <button type="button" class="db p" onclick="peek()">Preview what will be sent</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:10, showST:true } });
+G.setData(MGDemo.rows(4));
+window.G = G;
+
+let seq = 700;
+function mk(){
+  return { id: ++seq, name:'New row ' + seq, status:'A', role:'QA',
+           score:60, progress:0, salary:3000, joined:'2026-01-01', memo:'', images:[] };
+}
+
+function peek(){
+  MGDemo.clearLog();
+  const ins = G.getChanges().inserted;
+  if (!ins.length){ MGDemo.log('Add a row first', 'wn'); return; }
+  MGDemo.log('columns on screen = ' + G.getCols().map(function(c){ return c.key; })
+             .filter(function(k){ return k.charAt(0) !== '_'; }).join(', '));
+  ins.forEach(function(r){ MGDemo.log(JSON.stringify(r), 'ok'); });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

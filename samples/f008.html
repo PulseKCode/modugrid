@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.4-3. Being told when columns change — dataChange {type:'cols'} — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">2.4 Manipulating columns</div>
+  <h1 class="dm-tit">2.4-3. Being told when columns change — dataChange {type:'cols'}</h1>
+  <p class="dm-desc">Every change to the column set fires <code>dataChange</code> with <code>type:'cols'</code>. Listen for it if you keep a saved layout that needs refreshing.</p>
+  <ul class="dm-steps">
+    <li>Add and remove columns with the buttons.</li>
+    <li>Each action reports once.</li>
+    <li><code>addCols()</code> reports <b>once</b> however many columns you pass.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.addCol({key:'memo',label:'Note',w:150})">addCol</button>
+  <button type="button" class="db p" onclick="G.addCols([{key:'x1',label:'X1',w:70},{key:'x2',label:'X2',w:70},{key:'x3',label:'X3',w:70}])">addCols ×3</button>
+  <button type="button" class="db dr" onclick="G.removeCol('memo')">removeCol</button>
+  <button type="button" class="db" onclick="G.updateCol('name',{label:'Full name'})">updateCol</button>
+  <button type="button" class="db" onclick="reset()">setCols (replace all)</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#',  w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',   w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'role',   label:'Role',   w:120},
+  {key:'score',  label:'Score',  w:80,  type:'number'},
+  {key:'salary', label:'Salary', w:110, type:'currency'},
+  {key:'joined', label:'Joined', w:115, type:'date'},
+];
+
+let n = 0;
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:8,
+    on:{ dataChange: function(p){
+      if (p.type !== 'cols') return;
+      n++;
+      MGDemo.log('Notification ' + n + ' — now ' + G.getCols().length + ' columns', 'ok');
+    }}
+  }
+});
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+/* A real use: save the layout whenever the columns change
+   on:{ dataChange: p => { if(p.type==='cols') localStorage.setItem('layout', JSON.stringify(G.getLayout())); } } */
+
+function reset(){
+  G.setCols([
+    {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+    {key:'name',  label:'Name',  w:170},
+    {key:'score', label:'Score', w:110, type:'number'},
+  ]);
+  MGDemo.log('setCols() — replaced with three columns', 'wn');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

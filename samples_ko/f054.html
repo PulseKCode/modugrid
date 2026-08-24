@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>6-8. 전송 직전 코드로 되돌리기 — toCode() — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">6. 목록 값</div>
+  <h1 class="dm-tit">6-8. 전송 직전 코드로 되돌리기 — toCode()</h1>
+  <p class="dm-desc">다른 화면에서 넘어온 데이터에 옵션 <b>객체</b>가 통째로 들어 있는 경우가 있습니다. 그대로 서버에 보내면 <code>[object Object]</code> 가 되므로, <code>toCode()</code> 로 코드만 뽑아냅니다. <code>toCodeRow()</code> 는 행 전체를 정리한 <b>사본</b>을 돌려주고 원본은 건드리지 않습니다.</p>
+  <ul class="dm-steps">
+    <li>2·3행의 <code>상태</code> 에는 일부러 객체를 넣어 두었습니다.</li>
+    <li><b>코드로 되돌리기</b> 를 눌러 결과를 봅니다.</li>
+    <li>날짜·배열처럼 코드가 아닌 값은 그대로 통과합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="conv()">코드로 되돌리기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:120, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+const rows = MGDemo.rows(4);
+rows[0].status = 'A';                           // 정상
+rows[1].status = { code:'P', name:'대기' };      // 객체가 그대로 들어온 경우
+rows[2].status = { value:'I', label:'비활성' };
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:8 } });
+G.setData(rows);
+window.G = G;
+
+function conv(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('원본 ' + JSON.stringify(r.status) + '  →  "' + G.toCode(r.status) + '"');
+  });
+  const one = G.getFilteredData()[1];
+  MGDemo.log('toCodeRow() = ' + JSON.stringify(G.toCodeRow(one, ['id','name','status'])), 'ok');
+  MGDemo.log('원본은 그대로 = ' + JSON.stringify(one.status));
+  MGDemo.log('코드가 아닌 값은 통과 — toCode([1,2]) = ' + JSON.stringify(G.toCode([1,2])));
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.3-2. Hints in empty cells (placeholder) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.3 Input control</div>
+  <h1 class="dm-tit">5.3-2. Hints in empty cells (placeholder)</h1>
+  <p class="dm-desc">An empty cell can carry a hint such as <code>Enter a name</code>. There are three settings — <b>every empty cell, the first row only, or nothing at all</b>. Showing it on the first row keeps the screen calm while still explaining what belongs where.</p>
+  <ul class="dm-steps">
+    <li>It starts on <b>every empty cell</b>.</li>
+    <li>Switch to <b>first row only</b> and the hints below disappear.</li>
+    <li>Switch to <b>nothing</b> and they all go.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="set('all')">Every empty cell</button>
+  <button type="button" class="db p" onclick="set('first')">First row only</button>
+  <button type="button" class="db p" onclick="set('none')">Nothing</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:160, placeholder:'Enter a name'},
+  {key:'memo',  label:'Note',  w:230, placeholder:'Type a short note'},
+  {key:'score', label:'Score', w:120, type:'number', placeholder:'0 to 100'},
+];
+
+/* values cleared so the hints show */
+const rows = MGDemo.rows(6).map(function(r){ r.name=''; r.memo=''; r.score=null; return r; });
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, pageSize:8, placeholderMode:'all' } });
+G.setData(rows);
+window.G = G;
+
+function set(m){
+  G.setPlaceholderMode(m);
+  MGDemo.log('Hints shown on ' + (m==='all'?'every empty cell':m==='first'?'the first row only':'nothing'), 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

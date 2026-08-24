@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-9. 우리 화면의 버튼과 연결하기 (controls) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-9. 우리 화면의 버튼과 연결하기 (controls)</h1>
+  <p class="dm-desc">앱에서 만든 버튼이나 상태 표시를 <code>options.controls</code> 로 연결하면, 그리드가 상태를 바꿀 때 <b>그 버튼의 활성 표시와 글자를 대신 갱신</b>해 줍니다. 그리드 기본 UI 대신 자체 툴바를 쓰고 싶을 때 씁니다.</p>
+  <ul class="dm-steps">
+    <li>아래 회색 영역의 버튼은 <b>이 페이지가 직접 만든 것</b>입니다.</li>
+    <li>버튼을 눌러 그리드 기능을 켜고 꺼 봅니다.</li>
+    <li>버튼의 <b>활성 표시</b>와 옆의 상태 글자가 자동으로 따라오는지 봅니다.</li>
+  </ul>
+
+  
+  <div class="dm-out">
+    <p>↓ 이 버튼과 글자는 페이지가 만든 것 — controls 로 연결했습니다</p>
+    <div class="dm-tb" style="margin:0">
+      <button class="db" id="btnEdit" onclick="G.toggleEditMode()">편집 모드</button>
+      <button class="db" id="btnFreeze" onclick="G.toggleFreeze()">컬럼 고정</button>
+      <button class="db" id="btnTree" onclick="G.toggleTree()">계층 보기</button>
+      <span class="dm-lab" id="stEdit">—</span>
+      <span class="dm-lab" id="stTree">—</span>
+    </div>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1, freeze:1},
+  {key:'name', label:'조직', w:200, freeze:1},
+  {key:'role', label:'구분', w:130},
+  {key:'score',label:'점수', w:100, type:'number'},
+  {key:'memo', label:'메모', w:240},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    pageSize:0, selMode:'cell',
+    /* 페이지가 만든 요소의 id 를 알려준다 */
+    controls:{ btnEdit:'btnEdit', btnFreeze:'btnFreeze', btnTree:'btnTree',
+               stEdit:'stEdit',   stTree:'stTree' }
+  }
+});
+G.setData(MGDemo.tree());
+window.G = G;
+
+MGDemo.log('위 버튼을 눌러 보세요 — 활성 표시와 상태 글자가 자동으로 바뀝니다');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

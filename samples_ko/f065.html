@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8-7. 삭제 확인창은 되돌릴 수 없을 때만 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8. 변경추적 · 전송</div>
+  <h1 class="dm-tit">8-7. 삭제 확인창은 되돌릴 수 없을 때만</h1>
+  <p class="dm-desc">소프트 삭제(기본)에서는 되돌릴 수 있으니 확인창을 띄우지 않습니다. <code>softDelete:false</code> 로 <b>즉시 삭제</b>일 때만 확인을 받습니다. 다만 <code>deleteRows()</code> 는 프로그램 호출이라 어느 쪽이든 묻지 않습니다.</p>
+  <ul class="dm-steps">
+    <li>왼쪽(소프트 삭제)에서 행을 체크하고 <b>우클릭 → Delete</b> — 바로 취소선이 그어집니다.</li>
+    <li>오른쪽(즉시 삭제)에서 같은 조작을 하면 <b>확인창</b>이 뜹니다.</li>
+    <li>아래 <b>코드로 삭제</b> 버튼은 양쪽 모두 확인창 없이 지웁니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db dr" onclick="code(G1,'왼쪽')">왼쪽 코드로 삭제</button>
+  <button class="db dr" onclick="code(G2,'오른쪽')">오른쪽 코드로 삭제</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">softDelete:true (기본) — 확인창 없음</div><div id="gA"></div></div>
+    <div><div class="dm-cap">softDelete:false — 확인창 있음</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'status', label:'상태', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수', w:90, type:'number'},
+];
+
+function mk(sel, soft){
+  const g = ModuGrid(sel, {
+    cols: COLS.map(function(c){ return {...c}; }),
+    options:{ pageSize:8, softDelete:soft, showST:true }
+  });
+  g.setData(MGDemo.rows(8, 5));
+  return g;
+}
+
+const G1 = mk('#gA', true);
+const G2 = mk('#gB', false);
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('행을 체크한 뒤 우클릭 → Delete 로 양쪽을 비교해 보세요');
+
+/* deleteRows() 는 프로그램 호출 — 설정과 무관하게 확인창이 없다 */
+function code(g, name){
+  const ids = new Set([...g.getSelected(), ...g.getChecked()]);
+  if (!ids.size){ MGDemo.log(name + ' 그리드에서 행을 먼저 체크하세요', 'wn'); return; }
+  g.deleteRows(ids);
+  MGDemo.log(name + ' — deleteRows() 실행 (확인창 없음)', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

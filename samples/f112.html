@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-8. Translating the built-in messages (i18n) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-8. Translating the built-in messages (i18n)</h1>
+  <p class="dm-desc">The built-in wording is English. Pass <code>options.i18n</code> with <b>just the entries you want changed</b> and the rest stay as they are. A function value lets a message vary with the situation.</p>
+  <ul class="dm-steps">
+    <li>The left grid uses the built-in wording; the right has some entries replaced.</li>
+    <li>Press <b>Undo</b> on each and compare the messages.</li>
+    <li>Try <b>Fit the column</b> too — that message is built by a function.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G1.undo()">Undo on the left</button>
+  <button type="button" class="db p" onclick="G2.undo()">Undo on the right</button>
+  <button type="button" class="db" onclick="G1.autoFit('name')">Fit the column (left)</button>
+  <button type="button" class="db" onclick="G2.autoFit('name')">Fit the column (right)</button>
+  </div>
+  <div class="dm-two">
+    <div><div class="dm-cap">built-in wording</div><div id="gA"></div></div>
+    <div><div class="dm-cap">some entries replaced</div><div id="gB"></div></div>
+  </div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:140},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G1 = ModuGrid('#gA', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{ editMode:true, selMode:'cell', pageSize:6 }
+});
+
+const G2 = ModuGrid('#gB', {
+  cols: COLS.map(function(c){ return {...c}; }),
+  options:{
+    editMode:true, selMode:'cell', pageSize:6,
+    i18n:{
+      copied:       'Copied to the clipboard',
+      nothingUndo:  'There is nothing left to undo',
+      nothingRedo:  'There is nothing left to redo',
+      invalidValue: 'That value will not do',
+      noMatch:      'No matches',
+      selectAll:    'Select every row',
+      save:         'Save it',
+      cancel:       'Never mind',
+      close:        'Close',
+      autoFit:      function(key){ return 'Fitted the ' + key + ' column'; }
+    }
+  }
+});
+
+G1.setData(MGDemo.rows(6, 11));
+G2.setData(MGDemo.rows(6, 11));
+window.G1 = G1; window.G2 = G2;
+
+MGDemo.log('Ten entries were replaced on the right; the rest keep the built-in wording');
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

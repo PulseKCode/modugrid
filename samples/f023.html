@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.4-2. Showing a hierarchy as a tree — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">3.4 Grouping and tree</div>
+  <h1 class="dm-tit">3.4-2. Showing a hierarchy as a tree</h1>
+  <p class="dm-desc">Point each row at its parent with <code>parentId</code> and mark rows that have children with <code>_hc:true</code>. Use it for org charts, category trees, bills of materials — anything with a parent and child relationship.</p>
+  <ul class="dm-steps">
+    <li>Press <b>Tree view</b> — only the top level is left.</li>
+    <li>Click <code>▸</code> to open a branch.</li>
+    <li>Right-clicking a row lets you expand and collapse as well.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleTree();st()">Tree view on / off</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn',  label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'name', label:'Organisation', w:240},
+  {key:'role', label:'Type',  w:130},
+  {key:'score',label:'Score', w:90, type:'number'},
+];
+
+/* Row shape:
+   { id:2, parentId:1, _hc:true, name:'Engineering' }   parentId = the parent, _hc = has children */
+const G = ModuGrid('#grid', { cols: COLS, options:{ pageSize:0 } });
+G.setData(MGDemo.tree());
+window.G = G;
+
+MGDemo.log('Head Office → Engineering · Design → teams / Branch Office → sales teams');
+
+function st(){ MGDemo.log('Tree view ' + (G.getState().treeOn ? 'ON' : 'OFF'), 'ok'); }
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-1. Undo and redo (Ctrl+Z · Ctrl+Y) — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. Other</div>
+  <h1 class="dm-tit">14-1. Undo and redo (Ctrl+Z · Ctrl+Y)</h1>
+  <p class="dm-desc">Every change is recorded as you make it. <code>Ctrl+Z</code> steps back one at a time and <code>Ctrl+Y</code> steps forward again, and each step <b>says which action it is undoing</b>.</p>
+  <ul class="dm-steps">
+    <li>Mix a few cell edits, row insertions and deletions.</li>
+    <li>Press <code>Ctrl+Z</code> and read the messages.</li>
+    <li>Press <code>Ctrl+Y</code> to put them back.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db" onclick="G.addRow(mk())">Add a row</button>
+  <button type="button" class="db dr" onclick="G.deleteSelected()">Delete selected</button>
+  <button type="button" class="db p" onclick="G.undo()">Undo</button>
+  <button type="button" class="db p" onclick="G.redo()">Redo</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'Name',  w:160},
+  {key:'score', label:'Score', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:12, showST:true,
+    on:{ dataChange: function(p){
+      if (p.type === 'undo' || p.type === 'redo')
+        MGDemo.log((p.type === 'undo' ? 'undid' : 'redid') + (p.label ? ' — ' + p.label : ''), 'ok');
+    }}
+  }
+});
+G.setData(MGDemo.rows(6));
+window.G = G;
+
+let seq = 900;
+function mk(){
+  return { id: ++seq, name:'New row ' + seq, status:'A', role:'QA',
+           score:50, progress:0, salary:0, joined:'2026-01-01', memo:'', images:[] };
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

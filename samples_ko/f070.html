@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8.1-2. 용량 · 장수 제한 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">8.1 이미지 전송</div>
+  <h1 class="dm-tit">8.1-2. 용량 · 장수 제한</h1>
+  <p class="dm-desc"><code>imageMaxSize</code>(장당 용량)와 <code>imageLimit</code>(행당 장수)로 한도를 정합니다. 한도를 넘는 파일은 <b>그 파일만 빠지고</b> 나머지는 정상 등록되며, 왜 빠졌는지 안내가 뜹니다.</p>
+  <ul class="dm-steps">
+    <li><code>사진</code> 칸에 이미지를 <b>3장 넘게</b> 넣어 봅니다 — 3장까지만 들어갑니다.</li>
+    <li><code>＋ Add</code> 표시가 <code>3/3</code> 으로 바뀝니다.</li>
+    <li>500KB 가 넘는 파일을 넣어 보면 그 파일만 빠집니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="cnt()">칸별 장수 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름', w:130},
+  {key:'images', label:'사진', w:280, type:'images'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, pageSize:4, rowHeight:80, showST:true,
+    imageMode: 'none',
+    imageLimit: 3,                  // 행당 3장까지
+    imageMaxSize: 500*1024,         // 장당 500KB 까지
+  }
+});
+G.setData(MGDemo.rows(3));
+window.G = G;
+
+MGDemo.log('행당 3장 / 장당 500KB 로 제한했습니다');
+
+function cnt(){
+  MGDemo.clearLog();
+  G.getFilteredData().forEach(function(r){
+    MGDemo.log('id=' + r.id + '  ' + (r.images||[]).length + ' / 3 장');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

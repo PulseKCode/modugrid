@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-6. Delete 로 값 지우기 — 범위도 한 번에 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 진입 경로</div>
+  <h1 class="dm-tit">5.1-6. Delete 로 값 지우기 — 범위도 한 번에</h1>
+  <p class="dm-desc"><code>Delete</code> 는 지금 칸의 값을 비웁니다. 여러 칸을 드래그로 잡아 두었으면 <b>범위 전체</b>가 한꺼번에 비워지고, <code>Ctrl+Z</code> 한 번이면 전부 되돌아옵니다.</p>
+  <ul class="dm-steps">
+    <li>셀 여러 개를 드래그로 잡습니다.</li>
+    <li><code>Delete</code> 를 누릅니다 — 잡은 범위가 전부 비워집니다.</li>
+    <li><code>Ctrl+Z</code> <b>한 번</b>으로 전부 복구되는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="G.clearCells()">선택 범위 비우기</button>
+  <button class="db" onclick="G.undo()">되돌리기 (Ctrl+Z)</button>
+  <button class="db" onclick="dump()">현재 값 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'이름',   w:130},
+  {key:'status', label:'상태',   w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'점수',   w:90,  type:'number'},
+  {key:'joined', label:'입사일', w:120, type:'date'},
+  {key:'memo',   label:'메모',   w:180, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8 } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+function dump(){
+  MGDemo.clearLog();
+  G.getFilteredData().slice(0,5).forEach(function(r){
+    MGDemo.log('id=' + r.id + '  이름 "' + r.name + '"  점수 ' + r.score + '  메모 "' + r.memo + '"');
+  });
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

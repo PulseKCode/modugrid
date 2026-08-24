@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>7-3. 저장 전에 확인하기 — isValid() — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">7. 유효성 검사</div>
+  <h1 class="dm-tit">7-3. 저장 전에 확인하기 — isValid()</h1>
+  <p class="dm-desc">저장 버튼에서 <code>isValid()</code> 로 한 번 막고, 잘못된 칸 목록은 <code>getInvalidCells()</code> 로 받아 사용자에게 보여줍니다. 서버에 보내기 전 표준 절차입니다.</p>
+  <ul class="dm-steps">
+    <li>칸 몇 개에 잘못된 값을 넣습니다.</li>
+    <li><b>저장 시도</b> 를 누르면 목록이 뜨고 저장이 막힙니다.</li>
+    <li>전부 고친 뒤 다시 누르면 통과합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="save()">저장 시도</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130,
+    validate: function(v){ return !!String(v).trim() || '이름은 반드시 입력해야 합니다'; }},
+  {key:'score', label:'점수', w:110, type:'number',
+    validate: function(v){ return (v >= 0 && v <= 100) || '0~100 사이여야 합니다'; }},
+];
+
+const G = ModuGrid('#grid', { cols: COLS, options:{ editMode:true, selMode:'cell', pageSize:8, showST:true } });
+G.setData(MGDemo.rows(8));
+window.G = G;
+
+/* 저장 버튼에 넣는 표준 형태 */
+function save(){
+  MGDemo.clearLog();
+  if (!G.isValid()){
+    G.getInvalidCells().forEach(function(b){
+      MGDemo.log('[확인 필요] id=' + b.id + ' ' + b.key + ' — ' + b.message, 'er');
+    });
+    MGDemo.log('잘못된 값이 있어 저장하지 않았습니다', 'er');
+    return;
+  }
+  const c = G.getChangeCount();
+  MGDemo.log('검사 통과 — 추가 ' + c.inserted + ' / 수정 ' + c.updated + ' / 삭제 ' + c.deleted, 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14-5. 우클릭 메뉴 정리하기 (contextMenu) — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">14. 기타</div>
+  <h1 class="dm-tit">14-5. 우클릭 메뉴 정리하기 (contextMenu)</h1>
+  <p class="dm-desc">우클릭 메뉴에서 필요 없는 항목을 뺄 수 있습니다. 적지 않은 항목은 그대로 보이며, 이 설정은 <b>권한 위에 얹히는 추가 제한</b>입니다 — 권한이 없으면 여기서 켜도 나오지 않습니다.</p>
+  <ul class="dm-steps">
+    <li><b>기본</b> 상태에서 행을 우클릭해 전체 메뉴를 봅니다.</li>
+    <li><b>복사·삭제 빼기</b> 로 바꾸고 다시 우클릭합니다.</li>
+    <li>항목명은 <code>detail · edit · copy · copyExcel · insertAbove · insertBelow · tree · delete</code> 입니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="build(undefined)">기본 (전체 표시)</button>
+  <button class="db" onclick="build({copy:false, copyExcel:false, delete:false})">복사 · 삭제 빼기</button>
+  <button class="db" onclick="build({insertAbove:false, insertBelow:false})">삽입 빼기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:140},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+let G = null;
+
+function build(cm){
+  if (G) G.destroy();
+  const opt = { editMode:true, selMode:'cell', pageSize:8 };
+  if (cm !== undefined) opt.contextMenu = cm;
+  G = ModuGrid('#grid', { cols: COLS.map(function(c){ return {...c}; }), options: opt });
+  G.setData(MGDemo.rows(8));
+  window.G = G;
+  MGDemo.log('설정 = ' + (cm === undefined ? '없음 (전체 표시)' : JSON.stringify(cm)) + ' — 행에서 우클릭해 보세요', 'ok');
+}
+
+build(undefined);
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

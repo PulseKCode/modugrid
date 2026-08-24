@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5.1-1. Three ways to start editing a cell — ModuGrid Samples</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">5.1 Entry points</div>
+  <h1 class="dm-tit">5.1-1. Three ways to start editing a cell</h1>
+  <p class="dm-desc">With <code>editMode</code> on, editing begins on a <b>double-click, on F2, or simply by typing</b>. All three open the same editor, so the cell never shifts under your hands.</p>
+  <ul class="dm-steps">
+    <li><b>Double-click</b> the <code>Name</code> cell.</li>
+    <li>Press <code>Esc</code>, then <b>F2</b> on the same cell.</li>
+    <li>Press <code>Esc</code> again, leave the cell selected and <b>just start typing</b>.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button type="button" class="db p" onclick="G.toggleEditMode();st()">Edit mode on / off</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- The demo code, kept verbatim. MGDemo.boot() injects and runs it. -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_st', label:'',  w:28, type:'st', noSort:1, noResize:1, noFilter:1},
+  {key:'name',   label:'Name',   w:150},
+  {key:'status', label:'Status', w:110, options:MGDemo.STATUS},
+  {key:'score',  label:'Score',  w:90,  type:'number'},
+  {key:'joined', label:'Joined', w:120, type:'date'},
+  {key:'memo',   label:'Note',   w:180, type:'textarea'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    editMode:true, selMode:'cell', pageSize:10,
+    on:{ cellEdit: function(p){ MGDemo.log('saved ' + p.key + ' = ' + p.value, 'ok'); } }
+  }
+});
+G.setData(MGDemo.rows(10));
+window.G = G;
+
+function st(){ MGDemo.log('Edit mode ' + (G.getState().editMode ? 'ON' : 'OFF'), 'ok'); }
+st();
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>

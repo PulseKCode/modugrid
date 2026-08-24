@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4-1. 클릭 선택과 체크박스는 별개 — ModuGrid 샘플</title>
+<link rel="stylesheet" href="modugrid.min.css">
+<link rel="stylesheet" href="_demo.css">
+</head>
+<body class="dm">
+<div class="dm-page">
+
+  <div class="dm-grp">4. 선택</div>
+  <h1 class="dm-tit">4-1. 클릭 선택과 체크박스는 별개</h1>
+  <p class="dm-desc">행을 <b>클릭해서 고른 것</b>과 <b>체크박스로 켠 것</b>은 서로 다른 목록입니다. "지금 보고 있는 행"과 "처리할 대상"을 따로 관리할 수 있어, 클릭으로 훑어보다가 필요한 것만 체크해 두는 식으로 씁니다.</p>
+  <ul class="dm-steps">
+    <li>행 두어 개를 <b>클릭</b>해 고릅니다 (체크박스는 그대로).</li>
+    <li>다른 행의 <b>체크박스</b>만 켭니다 (선택은 그대로).</li>
+    <li><b>양쪽 목록 보기</b> 로 서로 다른 결과가 나오는지 확인합니다.</li>
+  </ul>
+
+  <div class="dm-tb">
+  <button class="db p" onclick="both()">양쪽 목록 보기</button>
+  </div>
+  <div id="grid" class="dm-grid"></div>
+
+  <div id="log" class="dm-log"></div>
+  <div id="src"></div>
+</div>
+
+<script src="modugrid.min.js"></script>
+<script src="_demo.js"></script>
+
+<!-- 데모 코드 원문 — MGDemo.boot() 이 주입해 실행한다 -->
+<script type="text/plain" id="demo-src">
+const COLS = [
+  {key:'_rn', label:'#', w:42, type:'rn', noSort:1, noResize:1, noFilter:1},
+  {key:'_cb', label:'',  w:36, type:'cb', noSort:1, noResize:1, noFilter:1},
+  {key:'name',  label:'이름', w:130},
+  {key:'role',  label:'직무', w:120},
+  {key:'score', label:'점수', w:90, type:'number'},
+];
+
+const G = ModuGrid('#grid', {
+  cols: COLS,
+  options:{
+    selMode:'row', pageSize:10,
+    on:{ selectionChange: function(p){
+      MGDemo.log('선택 [' + p.selected.join(',') + ']  /  체크 [' + p.checked.join(',') + ']');
+    }}
+  }
+});
+G.setData(MGDemo.rows(12));
+window.G = G;
+
+function both(){
+  MGDemo.clearLog();
+  MGDemo.log('클릭 선택 = [' + G.getSelected().join(', ') + ']', 'ok');
+  MGDemo.log('체크박스 = [' + G.getChecked().join(', ') + ']', 'ok');
+}
+</script>
+
+<script>MGDemo.boot();</script>
+</body>
+</html>
