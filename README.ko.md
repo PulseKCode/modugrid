@@ -26,8 +26,8 @@
 ## 시작하기
 
 ```html
-<link rel="stylesheet" href="modugrid.min.css">
-<script src="modugrid.min.js"></script>
+<link rel="stylesheet" href="dist/modugrid.min.css">
+<script src="dist/modugrid.min.js"></script>
 
 <div id="grid"></div>
 ```
