@@ -66,5 +66,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "modugrid": "^1.0.0"
   }
 }

@@ -5,6 +5,7 @@
 **v1.0.0** · A dependency-free vanilla JS data grid.
 
 [![CI](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml/badge.svg)](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/modugrid.svg)](https://www.npmjs.com/package/modugrid)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 
@@ -41,8 +42,20 @@ Two files — `modugrid.min.js` and `modugrid.min.css` — are all it takes. No 
 Or straight from a CDN, with no download at all:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.css">
-<script src="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.css">
+<script src="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.js"></script>
+```
+
+From npm, if you have a bundler:
+
+<!-- sync:ignore-code -->
+```bash
+npm install modugrid
+```
+
+```javascript
+import ModuGrid from 'modugrid';
+import 'modugrid/css/min';
 ```
 
 ```javascript
