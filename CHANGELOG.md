@@ -25,4 +25,12 @@ First public release.
 - IME-safe input for Korean and other composed scripts (hidden-input approach)
 - Theme and font settings, soft delete, right-click context menu
 
+### Distribution
+
+- Full sources published (`modugrid.js` · `modugrid.css`) under MIT
+- `dist/` committed for CDN and build-tool-free environments — UMD · minified UMD · ESM · CSS · minified CSS
+- 131 tests on jsdom, run against both the sources and the minified build
+- CI on Node 18 · 20 · 22, with a job that fails when the committed `dist/` drifts from the sources
+- 113 sample pages in English and Korean, plus a bilingual API and feature reference
+
 [1.0.0]: https://github.com/PulseKCode/modugrid/releases/tag/v1.0.0
