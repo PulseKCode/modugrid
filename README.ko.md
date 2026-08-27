@@ -4,7 +4,13 @@
 
 **v1.0.0** · 의존성 없는 Vanilla JS 데이터 그리드.
 
+[![CI](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml/badge.svg)](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+
 `modugrid.min.js` + `modugrid.min.css` 두 파일이면 동작합니다. 빌드 도구 · 프레임워크 · 외부 라이브러리가 필요 없습니다.
+
+**[데모 보기](https://pulsekcode.github.io/modugrid/samples_ko/main.html)** · [샘플 113개](https://pulsekcode.github.io/modugrid/samples_ko/index.html) · [English](https://pulsekcode.github.io/modugrid/samples/index.html)
 
 ---
 
@@ -30,6 +36,13 @@
 <script src="dist/modugrid.min.js"></script>
 
 <div id="grid"></div>
+```
+
+파일을 내려받지 않고 CDN으로 바로 쓸 수도 있습니다.
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.css">
+<script src="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.js"></script>
 ```
 
 ```javascript
@@ -162,6 +175,25 @@ options: {
 | `samples/main.html` | | 데모 페이지 |
 | `server/submit.jsp` | | 서버 수신 샘플 (JSP + Oracle) |
 | `server/upload.jsp` | | 이미지 업로드 수신 샘플 (`imageMode:'upload'`) |
+| `modugrid.js` `modugrid.css` | | 빌드의 원본이 되는 소스 |
+
+---
+
+## 소스에서 빌드하기
+
+<!-- sync:ignore-code -->
+```bash
+git clone https://github.com/PulseKCode/modugrid.git
+cd modugrid
+npm ci            # terser · clean-css · jsdom
+npm run build     # 소스 -> dist/ (5개)
+npm test          # 131개 테스트, jsdom
+npm run test:dist # 압축본 대상으로 같은 테스트
+```
+
+`dist/`는 의도적으로 커밋합니다. CDN이 저장소를 그대로 서빙하고, 이 그리드가 대상으로 삼는
+환경에는 빌드 도구가 없는 경우가 많기 때문입니다. CI가 매 푸시마다 다시 빌드해서
+커밋된 `dist/`가 소스와 어긋나면 실패시킵니다.
 
 ---
 

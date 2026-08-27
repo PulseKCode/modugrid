@@ -4,7 +4,13 @@
 
 **v1.0.0** · A dependency-free vanilla JS data grid.
 
+[![CI](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml/badge.svg)](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+
 Two files — `modugrid.min.js` and `modugrid.min.css` — are all it takes. No build step, no framework, no third-party libraries.
+
+**[Live demo](https://pulsekcode.github.io/modugrid/samples/main.html)** · [113 samples](https://pulsekcode.github.io/modugrid/samples/index.html) · [한국어](https://pulsekcode.github.io/modugrid/samples_ko/index.html)
 
 ---
 
@@ -30,6 +36,13 @@ Two files — `modugrid.min.js` and `modugrid.min.css` — are all it takes. No 
 <script src="dist/modugrid.min.js"></script>
 
 <div id="grid"></div>
+```
+
+Or straight from a CDN, with no download at all:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.css">
+<script src="https://cdn.jsdelivr.net/gh/PulseKCode/modugrid@1.0.0/dist/modugrid.min.js"></script>
 ```
 
 ```javascript
@@ -162,6 +175,25 @@ Sorting, filtering, search and paging state arrive in `req`, and responses that 
 | `samples/main.html` | | demo page |
 | `server/submit.jsp` | | server receiver sample (JSP + Oracle) |
 | `server/upload.jsp` | | image upload receiver sample (`imageMode:'upload'`) |
+| `modugrid.js` `modugrid.css` | | the sources the build is made from |
+
+---
+
+## Building from source
+
+<!-- sync:ignore-code -->
+```bash
+git clone https://github.com/PulseKCode/modugrid.git
+cd modugrid
+npm ci            # terser · clean-css · jsdom
+npm run build     # sources -> dist/ (5 files)
+npm test          # 131 tests, jsdom
+npm run test:dist # the same suite against the minified build
+```
+
+`dist/` is committed on purpose: CDNs serve the repository directly, and the users
+this grid is aimed at often work without a build tool. CI rebuilds on every push
+and fails if the committed `dist/` has drifted from the sources.
 
 ---
 
