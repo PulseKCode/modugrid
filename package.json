@@ -1,0 +1,70 @@
+{
+  "name": "modugrid",
+  "version": "1.0.0",
+  "description": "Dependency-free vanilla JS data grid for enterprise forms — inline editing, dirty tracking, frozen columns, grouped headers, IME-safe Korean input.",
+  "keywords": [
+    "grid",
+    "datagrid",
+    "data-grid",
+    "table",
+    "vanilla-js",
+    "no-dependencies",
+    "inline-edit",
+    "dirty-tracking",
+    "editable-table",
+    "ime"
+  ],
+  "author": "BongJun Park",
+  "license": "MIT",
+  "homepage": "https://github.com/PulseKCode/modugrid#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PulseKCode/modugrid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PulseKCode/modugrid/issues"
+  },
+  "main": "dist/modugrid.js",
+  "module": "dist/modugrid.mjs",
+  "unpkg": "dist/modugrid.min.js",
+  "jsdelivr": "dist/modugrid.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/modugrid.mjs",
+      "require": "./dist/modugrid.js",
+      "default": "./dist/modugrid.js"
+    },
+    "./css": "./dist/modugrid.css",
+    "./css/min": "./dist/modugrid.min.css",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist/",
+    "docs/",
+    "modugrid.js",
+    "modugrid.css",
+    "README.md",
+    "README.ko.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "demo": "node tools/build-demo.js",
+    "test": "node test/run.js",
+    "test:dist": "node build.js && node test-dist.js",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "clean-css": "^5.3.3",
+    "jsdom": "^24.0.0",
+    "terser": "^5.31.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

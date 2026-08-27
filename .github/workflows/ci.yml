@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: 테스트 (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: 테스트 (소스)
+        run: npm test
+
+      - name: 빌드 + 테스트 (배포본)
+        run: npm run test:dist
+
+  dist-sync:
+    name: dist 최신 여부 확인
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      # dist/ 는 CDN·직접 다운로드 사용자를 위해 커밋해 두므로,
+      # 소스만 고치고 빌드를 잊으면 배포본이 낡은 채로 남는다. 그 상태를 막는다.
+      - name: 커밋된 dist 가 소스와 일치하는가
+        run: |
+          npm run build
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            echo "::error::dist/ 가 소스와 다릅니다. 로컬에서 'npm run build' 후 dist/ 를 커밋하세요."
+            git --no-pager diff --stat dist/
+            exit 1
+          fi
+          echo "dist/ 최신 상태입니다."

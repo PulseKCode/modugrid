@@ -157,11 +157,11 @@ Sorting, filtering, search and paging state arrive in `req`, and responses that 
 
 | File | Required | Role |
 |---|---|---|
-| `modugrid.min.js` | O | the entire grid engine |
-| `modugrid.min.css` | O | styles and theme variables |
-| `main.html` | | demo page |
-| `submit.jsp` | | server receiver sample (JSP + Oracle) |
-| `upload.jsp` | | image upload receiver sample (`imageMode:'upload'`) |
+| `dist/modugrid.min.js` | O | the entire grid engine |
+| `dist/modugrid.min.css` | O | styles and theme variables |
+| `samples/main.html` | | demo page |
+| `server/submit.jsp` | | server receiver sample (JSP + Oracle) |
+| `server/upload.jsp` | | image upload receiver sample (`imageMode:'upload'`) |
 
 ---
 

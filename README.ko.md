@@ -157,11 +157,11 @@ options: {
 
 | 파일 | 필수 | 역할 |
 |---|---|---|
-| `modugrid.min.js` | O | 그리드 엔진 전체 |
-| `modugrid.min.css` | O | 스타일 · 테마 변수 |
-| `main.html` | | 데모 페이지 |
-| `submit.jsp` | | 서버 수신 샘플 (JSP + Oracle) |
-| `upload.jsp` | | 이미지 업로드 수신 샘플 (`imageMode:'upload'`) |
+| `dist/modugrid.min.js` | O | 그리드 엔진 전체 |
+| `dist/modugrid.min.css` | O | 스타일 · 테마 변수 |
+| `samples/main.html` | | 데모 페이지 |
+| `server/submit.jsp` | | 서버 수신 샘플 (JSP + Oracle) |
+| `server/upload.jsp` | | 이미지 업로드 수신 샘플 (`imageMode:'upload'`) |
 
 ---
 

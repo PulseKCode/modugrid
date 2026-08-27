@@ -1,0 +1,756 @@
+/* ====================================================================
+   ModuGrid v1.4.0  Open-Source Universal Data Grid
+   BugFix: RowNum, Freeze, EditMode, image cells, double-click selection
+   New: image D&D redesign, cell range selection
+==================================================================== */
+:root{
+  --F:'Pretendard','Segoe UI',system-ui,sans-serif;
+  --FM:'JetBrains Mono','Fira Code',monospace;
+  --bg:#fff; --bg-gut:var(--bg-hd); --bg-hd:#f4f5f7; --bg-hv:#eef2ff; --bg-sel:#dde8ff;
+  --bg-alt:#fafbfc; --bg-tb:#16172a; --bg-fl:#f8f9fc; --bg-grp:#eef0f8;
+  --bd:#e0e4ef; --bd2:#c4cad8; --bd3:#9aa3bd;
+  --tx:#1a1d2e; --tx2:#5a5f7a; --txh:#3b3f52;
+  --ac:#4361ee; --acl:#eef1ff; --ach:#3451d1;
+  --ok:#0ea770; 
+  --d-new:#eafaf3; --d-upd:#fff7e6;   /* change tracking: new / modified row background */
+  --i-bad:#ffe8e8;                    /* background of a cell that failed validate */
+  --d-del:#ffeced;                    /* background of a row marked for deletion */
+  --wn:#f59e0b; 
+  --er:#ef4444; 
+   
+   
+  --sh:0 6px 20px rgba(0,0,0,.10);
+  --r1:4px; --r2:8px; --r3:12px;
+  --ROW:38px; --HDR:42px; --TOOL:50px;
+  /* Fonts - header and body are tuned separately (options.headerFont / bodyFont, G.setFont) */
+  --fs-hd:10px;  --fw-hd:800; --ff-hd:var(--F); --fst-hd:normal;   /* header */
+  --fs-bd:12px;  --fw-bd:400; --ff-bd:var(--F); --fst-bd:normal;   /* body and editors */
+  --tr:120ms ease;
+  --fsh:4px 0 10px rgba(0,0,0,.10);
+}
+/* ══════════════════════════════════════════════════════════════════
+   Theme presets - switched via the data-theme attribute (G.setTheme)
+     Set it on <html> for the whole page, or on a grid container for that grid only.
+     Each theme overrides only the :root defaults it actually needs.
+     light is the default, so it has no block of its own (no attribute = light).
+══════════════════════════════════════════════════════════════════ */
+
+/* 2. dark - standard dark */
+[data-theme=dark]{
+  --bg:#13141f; --bg-hd:#1c1d2e; --bg-hv:#1e2240; --bg-sel:#1a2460;
+  --bg-alt:#161724; --bg-tb:#0b0c1a; --bg-fl:#1a1b2e; --bg-grp:#1a1d35;
+  --d-new:#10261e; --d-upd:#2a2314;
+  --i-bad:#3a1616; --d-del:#2e1418;
+  --bd:#2a2d42; --bd2:#3a3e5a; --bd3:#4a506a;
+  --tx:#e8eaf2; --tx2:#8b91b0; --txh:#b0b5d0;
+  --acl:#1a2060; --sh:0 6px 20px rgba(0,0,0,.45);
+  --fsh:4px 0 10px rgba(0,0,0,.40);
+}
+
+/* 3. midnight - navy-toned dark, high contrast */
+[data-theme=midnight]{
+  --bg:#0b1020; --bg-hd:#141b33; --bg-hv:#18224a; --bg-sel:#1d2f6b;
+  --bg-alt:#0e1428; --bg-tb:#070b18; --bg-fl:#111830; --bg-grp:#141d3a;
+  --d-new:#0d2a20; --d-upd:#2c2512; --i-bad:#3b1418; --d-del:#33131a;
+  --bd:#1e2846; --bd2:#2c3860; --bd3:#3d4a78;
+  --tx:#eef2ff; --tx2:#8f9ac4; --txh:#b8c2e8;
+  --ac:#5b8cff; --acl:#16224d; --ach:#3f74ff;
+  --sh:0 6px 22px rgba(0,0,0,.55); --fsh:4px 0 12px rgba(0,0,0,.5);
+}
+
+/* 4. slate - neutral grey, understated */
+[data-theme=slate]{
+  --bg:#fbfcfd; --bg-hd:#eef1f5; --bg-hv:#e6eaf0; --bg-sel:#dde3ec;
+  --bg-alt:#f5f7f9; --bg-tb:#2b323d; --bg-fl:#f3f5f8; --bg-grp:#e9edf2;
+  --bd:#dfe4ea; --bd2:#c3cad4; --bd3:#98a2b0;
+  --tx:#20262f; --tx2:#616b78; --txh:#3c4450;
+  --ac:#5a6b82; --acl:#eaeef3; --ach:#45566d;
+}
+
+/* 5. ocean - teal tones */
+[data-theme=ocean]{
+  --bg:#fbfeff; --bg-hd:#e8f4f8; --bg-hv:#dcf0f6; --bg-sel:#c5e7f2;
+  --bg-alt:#f3fafc; --bg-tb:#0d3b45; --bg-fl:#f1fafc; --bg-grp:#e0f1f6;
+  --bd:#d3e8ef; --bd2:#a8d2de; --bd3:#7ab4c4;
+  --tx:#0f2f38; --tx2:#4a7885; --txh:#1f5563;
+  --ac:#0e7c93; --acl:#e2f5fa; --ach:#0a6376; --ok:#0d9488;
+}
+
+/* 6. forest - green tones */
+[data-theme=forest]{
+  --bg:#fcfefc; --bg-hd:#eaf5ee; --bg-hv:#e0f1e6; --bg-sel:#cbe9d6;
+  --bg-alt:#f5fbf7; --bg-tb:#14331f; --bg-fl:#f2faf5; --bg-grp:#e3f2e8;
+  --bd:#d8ebdf; --bd2:#aed4bc; --bd3:#82b596;
+  --tx:#122c1c; --tx2:#4c7259; --txh:#245036;
+  --ac:#17845a; --acl:#e6f6ec; --ach:#116a48;
+}
+
+/* 7. sunset - orange and amber tones */
+[data-theme=sunset]{
+  --bg:#fffdfb; --bg-hd:#fdf0e6; --bg-hv:#fce8d9; --bg-sel:#fbdcc2;
+  --bg-alt:#fffaf5; --bg-tb:#40200c; --bg-fl:#fef7f1; --bg-grp:#fbe9dc;
+  --bd:#f4e0d0; --bd2:#e5bf9f; --bd3:#cf9a70;
+  --tx:#3a2113; --tx2:#8a6247; --txh:#5c3a22;
+  --ac:#d97528; --acl:#fdefe3; --ach:#b85f1c;
+}
+
+/* 8. rose - magenta and pink tones */
+[data-theme=rose]{
+  --bg:#fffcfd; --bg-hd:#fdeef3; --bg-hv:#fce4ec; --bg-sel:#f8cfdd;
+  --bg-alt:#fff8fa; --bg-tb:#3d1223; --bg-fl:#fef6f8; --bg-grp:#fbe6ee;
+  --bd:#f5dde5; --bd2:#e6b6c6; --bd3:#d0899f;
+  --tx:#361620; --tx2:#8a5a6a; --txh:#5e2f40;
+  --ac:#c2185b; --acl:#fdeaf1; --ach:#9e1249;
+}
+
+/* 9. contrast - high contrast (accessibility, projectors) */
+[data-theme=contrast]{
+  --bg:#fff; --bg-hd:#000; --bg-hv:#ffe680; --bg-sel:#ffd633;
+  --bg-alt:#f2f2f2; --bg-tb:#000; --bg-fl:#f7f7f7; --bg-grp:#e6e6e6;
+  --bd:#000; --bd2:#000; --bd3:#000;
+  --tx:#000; --tx2:#333; --txh:#fff;
+  --ac:#0033cc; --acl:#cce0ff; --ach:#002499;
+  --ok:#006622; --wn:#996600; --er:#cc0000;
+  --fw-hd:900; --r1:0px; --r2:0px; --r3:0px;
+}
+
+/* 10. compact - default colours, higher density (more rows per screen) */
+[data-theme=compact]{
+  --ROW:26px; --HDR:30px; --TOOL:40px;
+  --fs-hd:9px; --fs-bd:11px;
+  --r1:2px; --r2:4px; --r3:6px;
+}
+
+/* 11. compact-dark — dark + compact */
+[data-theme=compact-dark]{
+  --bg:#13141f; --bg-hd:#1c1d2e; --bg-hv:#1e2240; --bg-sel:#1a2460;
+  --bg-alt:#161724; --bg-tb:#0b0c1a; --bg-fl:#1a1b2e; --bg-grp:#1a1d35;
+  --d-new:#10261e; --d-upd:#2a2314; --i-bad:#3a1616; --d-del:#2e1418;
+  --bd:#2a2d42; --bd2:#3a3e5a; --bd3:#4a506a;
+  --tx:#e8eaf2; --tx2:#8b91b0; --txh:#b0b5d0;
+  --acl:#1a2060; --sh:0 6px 20px rgba(0,0,0,.45); --fsh:4px 0 10px rgba(0,0,0,.40);
+  --ROW:26px; --HDR:30px; --TOOL:40px;
+  --fs-hd:9px; --fs-bd:11px; --r1:2px; --r2:4px; --r3:6px;
+}
+
+/* -- Recomputing derived variables (this is what makes theme switching work) --------
+   var() substitution for CSS custom properties resolves against the declaring element.
+   If --bg-gut is declared only on :root as var(--bg-hd), then when setTheme puts
+   data-theme on the grid container (.jsg-root), the value inherited is the one already
+   resolved from :root's --bg-hd (the light default, #f4f5f7).
+   -> That is why the left gutter cells (_rn/_cb/_st) stayed light while the rest
+   changed. Redeclaring it on the grid container makes it resolve against that
+   element's themed --bg-hd. (themeVars is inline style on the same element, so it wins over this.) */
+.jsg-root{--bg-gut:var(--bg-hd)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--F);font-size:13px;background:var(--bg);color:var(--tx);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ── Page ── */
+.ph{padding:16px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--tx)}.logo span{color:var(--ac)}
+.sub{font-size:11px;color:var(--tx2);margin-top:2px}
+.tags{display:flex;gap:4px;flex-wrap:wrap;padding-top:2px}
+.tag{font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;text-transform:uppercase;letter-spacing:.3px}
+.tv{background:var(--acl);color:var(--ac)} .tm{background:var(--okb);color:var(--ok)}
+.tj{background:#fef9e7;color:#b7860b} .tp{background:var(--pub);color:var(--pu)}
+.gw{padding:10px 24px 24px}
+
+/* ── Grid Shell ── */
+.jsg{border:1px solid var(--bd);border-radius:var(--r3);overflow:hidden;background:var(--bg)}
+
+/* ── Toolbar ── */
+.jtb{display:flex;align-items:center;gap:4px;padding:0 10px;height:var(--TOOL);background:var(--bg-tb);border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.tg{display:flex;align-items:center;gap:2px}
+.sep{width:1px;height:16px;background:rgba(255,255,255,.10);margin:0 3px}
+.sp{flex:1}
+.tb{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:var(--r1);border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);color:rgba(255,255,255,.78);font-size:10px;font-family:var(--F);font-weight:600;cursor:pointer;transition:all var(--tr);white-space:nowrap;user-select:none}
+.tb:hover{background:rgba(255,255,255,.13);color:#fff}
+.tb.p{background:var(--ac);border-color:var(--ac);color:#fff}.tb.p:hover{background:var(--ach)}
+.tb.a{background:rgba(255,210,0,.14);border-color:rgba(255,210,0,.35);color:#ffd700}
+.tb.on2{background:rgba(14,167,112,.2);border-color:var(--ok);color:#4af8a8}
+.tsw{position:relative}
+.tsw input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);border-radius:var(--r1);color:#fff;font-size:11px;font-family:var(--F);padding:4px 8px 4px 26px;width:165px;outline:none;transition:all var(--tr)}
+.tsw input::placeholder{color:rgba(255,255,255,.27)}
+.tsw input:focus{border-color:var(--ac);background:rgba(255,255,255,.11)}
+.si{position:absolute;left:7px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:rgba(255,255,255,.30);pointer-events:none}
+
+/* ── Feature bar ── */
+.fpb{display:flex;align-items:center;gap:4px;padding:5px 12px;background:var(--bg-fl);border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.fp{font-size:9px;font-weight:800;padding:1px 6px;border-radius:99px;border:1px solid;text-transform:uppercase;letter-spacing:.3px;cursor:default}
+.fg{background:var(--okb);color:var(--ok);border-color:var(--ok)}
+.fp2{background:var(--pub);color:var(--pu);border-color:var(--pu)}
+
+/* ── Controls bar ── */
+.cb{display:flex;align-items:center;gap:5px;padding:7px 24px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.cl{font-size:10px;color:var(--tx2);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.cbtn{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-size:10px;font-family:var(--F);font-weight:600;cursor:pointer;transition:all var(--tr)}
+.cbtn:hover{border-color:var(--ac);color:var(--ac);background:var(--acl)}
+.cbtn.on{background:var(--ac);border-color:var(--ac);color:#fff}
+
+/* ── Info bar ── */
+.ibar{display:flex;align-items:center;gap:8px;padding:4px 12px;background:var(--bg-grp);border-bottom:1px solid var(--bd);font-size:10px;color:var(--tx2);flex-wrap:wrap}
+.kbd{font-family:var(--FM);background:var(--bg-hd);border:1px solid var(--bd2);border-radius:3px;padding:0 4px;font-size:9px;color:var(--tx)}
+.ud{font-size:9px;padding:1px 6px;border-radius:99px;font-weight:700;background:var(--bg-hd);border:1px solid var(--bd);color:var(--tx2)}
+.ud.has{border-color:var(--ac);color:var(--ac);background:var(--acl)}
+
+/* ── Sort bar ── */
+.msb{display:none;align-items:center;gap:5px;padding:5px 12px;background:var(--bg-fl);border-bottom:1px solid var(--bd);flex-wrap:wrap;font-size:10px;color:var(--tx2)}
+.msb.vis{display:flex}
+.msc{display:flex;align-items:center;gap:3px;padding:2px 7px 2px 9px;background:var(--acl);border:1px solid rgba(67,97,238,.2);border-radius:99px;color:var(--ac);font-weight:700;font-size:10px}
+.msx{cursor:pointer;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(67,97,238,.12);font-size:8px;font-weight:800;color:var(--ac)}
+.msx:hover{background:rgba(67,97,238,.28)}
+.msbdg{background:var(--ac);color:#fff;font-size:8px;font-weight:800;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ─────────────────────────────────
+   TABLE LAYOUT
+───────────────────────────────── */
+/* ── Split Pane Grid Layout ── */
+.gsc-wrap{position:relative;display:flex;overflow:hidden;max-height:420px;border:1px solid var(--bd2);border-radius:var(--r2);background:var(--bg)}
+.gsc-left{flex:none;display:flex;flex-direction:column;overflow:hidden;z-index:10;border-right:2px solid var(--bd2);background:var(--bg)}
+.jsg-left-hdr{flex:none;overflow:hidden;background:var(--bg-hd)}
+.jsg-left-body{flex:1;overflow:hidden}
+.jsg-gsc{flex:1;overflow:auto}
+/* border-collapse:separate - in collapse mode the borders detach from the sticky header,
+   so the bottom edge of the header tears while scrolling (breaks as rows pass under it) */
+.gt{border-collapse:separate;border-spacing:0;table-layout:fixed}
+
+/* ── Header ── */
+.gth{}
+.jth{height:var(--HDR);padding:0 9px;background:var(--bg-hd);border-bottom:2px solid var(--bd2);border-right:1px solid var(--bd);font-size:var(--fs-hd);font-weight:var(--fw-hd);font-family:var(--ff-hd);font-style:var(--fst-hd);color:var(--txh);text-align:left;white-space:nowrap;cursor:default;vertical-align:middle;text-transform:uppercase;letter-spacing:.4px;user-select:none;transition:background var(--tr);position:relative;overflow:visible}
+.jth:last-child{border-right:none}
+.jth:hover{background:var(--bg-hv)}
+.thi{display:flex;align-items:center;gap:4px;min-width:0}
+/* Header label ellipsis -
+   If the label is wider than the column, it is truncated with an ellipsis.
+   * min-width:0 is the key. A flex item defaults to min-width:auto, so it will not
+     shrink below its content width -> the label pushes the icons (sort arrows, multi-sort
+     badge, filter funnel) out of the way or spills into the next column.
+     Dropping it to 0 lets only the label shrink; every icon is flex-shrink:0 and
+     keeps its place -> icon space is always reserved.
+   Do not put overflow:hidden on .jth - the resize handle (.rh) sits at right:-3px,
+     outside the th, and would be clipped. So truncation happens on the label alone. */
+.thl{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Header line breaks -
+   1) A \n inside the label breaks only at that point (works without headerWrap)
+   2) options.headerWrap=true wraps to the column width and lets the header height grow */
+.jth .thl br{display:block}
+.hdr-wrap .jth{white-space:normal;height:auto;min-height:var(--HDR);padding-top:4px;padding-bottom:4px}
+.hdr-wrap .jth .thi{align-items:center}
+.hdr-wrap .jth .thl{white-space:normal;overflow-wrap:anywhere;line-height:1.25;
+  overflow:visible;text-overflow:clip}   /* in wrap mode, use multiple lines instead of an ellipsis */
+/* Sort icons
+   - unsorted: both triangles dimmed (a hint that sorting is available), slightly darker on hover
+   - sorted:   only the active direction remains, emphasised and enlarged
+     (with both visible, colour alone does not distinguish ascending from descending) */
+.tsi{display:flex;flex-direction:column;gap:1px;opacity:.25;flex-shrink:0;
+  cursor:pointer;padding:2px 3px;margin:-2px -1px;border-radius:var(--r1);
+  transition:opacity var(--tr),background var(--tr)}
+.tsi:hover{background:var(--acl)}
+.jth:hover .tsi{opacity:.6}
+.jth[data-s] .tsi{opacity:1}
+.jth[data-s=asc] .ad,
+.jth[data-s=desc] .au{display:none}          /* hide the inactive direction */
+.jth[data-s=asc] .au,
+.jth[data-s=desc] .ad{color:var(--ac);width:9px;height:6px}
+.jth[data-s] .thi{color:var(--ac)}           /* a sorted column emphasises its label too */
+.sbdg{background:var(--ac);color:#fff;font-size:8px;font-weight:800;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fdot{width:5px;height:5px;border-radius:50%;background:var(--wn);position:absolute;top:4px;right:4px;pointer-events:none}
+/* Column resize */
+/* Column boundary handle - drag to resize, double-click to auto-fit (same as Excel).
+   It straddles the border line so the click target is wider. */
+.rh{position:absolute;right:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:10;background:transparent;transition:background var(--tr)}
+.rh:hover,.rh.rdr{background:var(--ac);border-radius:2px}
+
+/* ─────────────────────────────────
+   FREEZE FIX: th AND td both sticky
+   left = cumulative width of frozen cols
+───────────────────────────────── */
+/* fz: split pane handles freeze — sticky no longer needed */
+th.fz{background:var(--bg-hd)}
+td.fz{background:var(--bg)}
+tr:nth-child(even) td{background:var(--bg-alt)}
+tr.rsel td{background:var(--bg-sel)!important}
+tr:hover td{background:var(--bg-hv)!important}
+.fzshadow{box-shadow:var(--fsh)}
+
+/* -- System columns (_rn row number / _st status / _cb checkbox) --
+   .crn/.ccb/.cst are applied to both th and td.
+   If the body font and colour rules are not scoped to td, they override the .jth header
+   styles and the header ends up looking like a body cell -> split the selectors into .jtd / .jth. */
+
+/* Body cells */
+.jtd.ccb{text-align:center;padding:0}
+.jtd.cst{text-align:center;padding:0}
+.jtd.crn{text-align:right;font-size:calc(var(--fs-bd) - 2px);
+     font-weight:400;font-family:var(--FM);font-style:normal;padding-right:10px}
+
+/* Left-hand system columns (row number, status, checkbox) use the header background,
+   like Excel's row gutter. They must beat striping and change marks (jnew/jupd/jdel),
+   hence !important. To make them look like ordinary cells again, set --bg-gut to transparent. */
+.jtr > .jtd.crn,
+.jtr > .jtd.ccb,
+.jtr > .jtd.cst{
+  background-color:var(--bg-gut)!important;
+  color:var(--txh);
+  border-right:1px solid var(--bd2)}
+/* A selected row highlights its gutter as well (same as Excel) */
+.jtr.rsel > .jtd.crn,
+.jtr.rsel > .jtd.ccb,
+.jtr.rsel > .jtd.cst{background-color:var(--bg-sel)!important}
+
+/* Header - reuse the .jth header styling (weight, caps, colour) and only fix the alignment */
+.jth.ccb,.jth.cst{text-align:center;padding:0}
+.jth.ccb .thi,.jth.cst .thi{justify-content:center}
+.jth.crn{text-align:right;padding-right:10px}
+.jth.crn .thi{justify-content:flex-end}
+
+/* ── Rows & Cells ── */
+.jtr{border-bottom:1px solid var(--bd);transition:background var(--tr)}
+.jtr:nth-child(even){background:var(--bg-alt)}
+.jtr:hover{background:var(--bg-hv)}
+.jtr.rsel{background:var(--bg-sel)!important}
+/* -- Unsaved change marks (jnew = new, jupd = modified) --
+   Higher specificity than tr:nth-child(even) td so it beats striping;
+   selection (.rsel) and hover are !important, so those win instead. */
+/* The left gutter (:not(.crn/.ccb/.cst)) is excluded - it always keeps the header background */
+.jtr.jnew > .jtd:not(.crn):not(.ccb):not(.cst){background-color:var(--d-new)}
+.jtr.jupd > .jtd:not(.crn):not(.ccb):not(.cst){background-color:var(--d-upd)}
+/* Rows marked for deletion - they stay in the list until submit */
+/* Marked for deletion - the strikethrough and dimming are status information, so always shown */
+.jtr.jdel > .jtd{color:var(--tx2)!important;
+  text-decoration:line-through;text-decoration-color:var(--er);opacity:.75}
+/* The background colour applies only when the dirtyMark option is on (.jdelbg) */
+.jtr.jdelbg > .jtd:not(.crn):not(.ccb):not(.cst){background-color:var(--d-del)!important}
+.jtr.jdel > .jtd .jcb{opacity:.6}
+.jtr.jdel > .jtd.crn,.jtr.jdel > .jtd.ccb,.jtr.jdel > .jtd.cst{text-decoration:none}
+
+/* Marker for the _st status column */
+.jst{display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;border-radius:3px;font-size:var(--fs-bd);font-weight:900;line-height:1}
+.jst-i{background:var(--d-new);color:var(--ok)}
+.jst-u{background:var(--d-upd);color:var(--wn)}
+.jst-d{background:var(--d-del);color:var(--er)}
+.jtd {padding:0 8px;border-right:1px solid var(--bd);font-size:var(--fs-bd);font-weight:var(--fw-bd);font-family:var(--ff-bd);font-style:var(--fst-bd);color:var(--tx);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;cursor:default;transition:background var(--tr);user-select:none;box-sizing:border-box;overflow:hidden;line-height:1}
+.jtd:last-child{border-right:none}
+
+/* ── Select modes ── */
+/* Row select: highlight full row (handled by .rsel on tr) */
+/* Cell select */
+.jtd.cfocus{outline:1px solid var(--ac);outline-offset:-1px;z-index:2}
+.jtd.cin-range{background:rgba(67,97,238,.08)!important}
+.jtd.cin-range.cfocus{background:rgba(67,97,238,.18)!important}
+
+/* ── EditMode ── */
+.jsg-root.editmode .jtd.editable{cursor:text}
+.jsg-root.editmode .jtd.editable:hover{background:var(--acl)!important}
+.jtd.edit-open{padding:0!important;overflow:visible!important;z-index:50;background:var(--acl)!important}
+.jtd.edit-open input,.jtd.edit-open textarea,.jtd.edit-open select{
+  display:block;width:100%;height:100%;padding:0 7px;
+  background:var(--acl);color:var(--tx);
+  font-size:var(--fs-bd);font-family:var(--ff-bd);font-weight:var(--fw-bd);font-style:var(--fst-bd);outline:none;border-radius:0;resize:none}
+/* Editor border for input/textarea = 1px.
+   A 2px border would change the box size, so it is drawn with an inset box-shadow.
+   Same position and thickness as the td .cfocus outline (1px) shown when entering
+   via the hidden input (F2 / typing). The date and combo text fields are excluded,
+   since their own wrappers draw the border. */
+.jtd.edit-open input:not(.jsg-date-txt):not(.jsg-date-pick):not(.jsg-combo-txt),.jtd.edit-open textarea{
+  border:none;box-shadow:inset 0 0 0 1px var(--ac)}
+.jtd.edit-open select{border:2px solid var(--ac)}
+.jtd.edit-open textarea{padding:4px 7px;line-height:1.4}
+
+/* Autocomplete */
+.acdrop{position:fixed;z-index:9000;background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r2);box-shadow:var(--sh);max-height:180px;overflow-y:auto;min-width:160px;display:none}
+.acdrop.vis{display:block}
+.acitem{padding:5px 10px;font-size:var(--fs-bd);color:var(--tx);cursor:pointer;display:flex;align-items:center;gap:5px;transition:background var(--tr)}
+.acitem:hover,.acitem.aca{background:var(--bg-hv)}
+.acitem.aca{color:var(--ac);font-weight:600}
+.accode{margin-left:6px;font-size:10px;color:var(--tx2);opacity:.75}
+.acitem.aca .accode{color:var(--ac)}
+.acsrc{font-size:9px;padding:1px 4px;border-radius:99px;border:1px solid;margin-left:auto}
+.acweb{background:var(--ifb);color:var(--if);border-color:var(--if)}
+.acloc{background:var(--okb);color:var(--ok);border-color:var(--ok)}
+.acche{background:var(--wnb);color:var(--wn);border-color:var(--wn)}
+
+/* ── C. Image cell (v1.4.0 redesign) ── */
+/* ReadMode: compact thumbnail strip */
+.img-cell-read{display:flex;align-items:center;gap:3px;width:100%;height:100%}
+.img-cell-thumb{width:20px;height:20px;border-radius:3px;object-fit:cover;border:1px solid var(--bd);flex-shrink:0;cursor:pointer}
+.img-cell-count{font-size:10px;color:var(--tx2);flex-shrink:0}
+/* EditMode: D&D box — dotted rounded rect */
+.img-dnd-wrap{
+  position:relative;border:1.5px dashed var(--bd2);border-radius:var(--r2);
+  padding:4px 6px;min-height:32px;width:100%;background:var(--bg-fl);
+  display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color var(--tr),background var(--tr)
+}
+.img-dnd-wrap.dov{border-color:var(--ac);background:var(--acl)}
+.img-dnd-hint{font-size:9px;color:var(--tx2);text-align:center;pointer-events:none;padding:2px 0}
+.img-dnd-list{display:flex;flex-direction:column;gap:2px}
+.img-dnd-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--tx);padding:1px 2px;border-radius:var(--r1);transition:background var(--tr)}
+.img-dnd-item:hover{background:var(--bg-hv)}
+.img-dnd-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+.img-up{margin-left:4px;font-size:10px;color:var(--ac);flex:none}
+.img-up.err{color:var(--er);font-weight:800}
+.img-dnd-item.up-pending{opacity:.6}
+.img-dnd-item.up-error{background:var(--i-bad)}
+.img-dnd-del{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--tx2);font-size:10px;cursor:pointer;flex-shrink:0;transition:all var(--tr);line-height:1}
+.img-dnd-del:hover{background:var(--erb);color:var(--er)}
+.img-dnd-add{font-size:9px;color:var(--ac);cursor:pointer;text-align:center;padding:1px 0;opacity:.8;transition:opacity var(--tr)}
+.img-dnd-add:hover{opacity:1}
+/* Image preview popup */
+.imgprev{position:fixed;z-index:9500;background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r2);box-shadow:var(--sh);padding:5px;display:none;pointer-events:none}
+.imgprev.vis{display:block}
+.imgprev img{max-width:200px;max-height:160px;border-radius:var(--r1);display:block}
+
+/* ── Cell types ── */
+
+/* Placeholder text for empty cells - not a real value, so dimmed and excluded from selection/copy */
+.cph{color:var(--tx2);opacity:.5;font-style:italic;user-select:none;pointer-events:none}
+.jtd.cfocus .cph{opacity:.65}
+.cnum{font-family:var(--FM);font-size:calc(var(--fs-bd) - 1px);text-align:right;display:block}
+.ctxt{font-size:11px;color:var(--tx)}
+.pgfl-flat{height:100%;border-radius:99px;background:var(--ac);transition:width .3s}
+.clnk{color:var(--ac);text-decoration:none;cursor:pointer}.clnk:hover{text-decoration:underline}
+.cav{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;line-height:1}
+.av{width:20px;height:20px;border-radius:50%;background:var(--acl);color:var(--ac);font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-transform:uppercase}
+.cpg{display:flex;align-items:center;gap:4px}
+.pgtr{flex:1;height:4px;background:var(--bd);border-radius:99px;overflow:hidden;min-width:44px}
+.pgfl{height:100%;border-radius:99px;background:var(--ac)}
+.pgfl.pgfl.pgfl
+.pglb{font-size:10px;font-family:var(--FM);color:var(--tx2);min-width:26px;text-align:right}
+.jcb{width:13px;height:13px;cursor:pointer;accent-color:var(--ac)}
+
+/* ── Row resize handle ── */
+.rrh{position:absolute;bottom:0;left:0;right:0;height:3px;cursor:row-resize;z-index:8;background:transparent}
+.rrh:hover{background:var(--ac);opacity:.6}
+
+/* ── Group row ── */
+.grpr td{background:var(--bg-grp)!important;font-size:calc(var(--fs-bd) - 1px);font-weight:800;color:var(--txh);padding:0 12px;cursor:pointer;border-bottom:1px solid var(--bd)}
+.grpr:hover td{background:var(--bg-hv)!important}
+.gtog{display:inline-block;width:13px;text-align:center;transition:transform var(--tr)}
+.grpr.coll .gtog{transform:rotate(-90deg)}
+.gagg{font-family:var(--FM);font-size:10px;color:var(--tx2);margin-left:8px;font-weight:400}
+
+/* ── Row Detail ── */
+/* -- Row modal (detail / edit / add) -- */
+.jsg-mov{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(10,12,24,.45);z-index:9500;padding:20px}
+.jsg-mov.vis{display:flex}
+.jsg-mbox{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r3);
+  box-shadow:0 24px 60px rgba(0,0,0,.30);width:min(720px,100%);max-height:88vh;display:flex;flex-direction:column}
+.jsg-mhd{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 16px;border-bottom:1px solid var(--bd);color:var(--tx);font-size:13px}
+.jsg-mx{cursor:pointer;color:var(--tx2);font-size:20px;line-height:1;padding:0 2px}
+.jsg-mx:hover{color:var(--er)}
+.jsg-mbd{padding:14px 16px;overflow:auto}
+.jsg-mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 14px}
+.jsg-mfld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.jsg-mlbl{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px}
+.jsg-mi{width:100%;box-sizing:border-box;padding:6px 9px;border:1px solid var(--bd2);
+  border-radius:var(--r1);background:var(--bg);color:var(--tx);font-size:12px;font-family:var(--F);outline:none}
+.jsg-mi:focus{border-color:var(--ac);box-shadow:0 0 0 2px var(--acl)}
+.jsg-mi[readonly],.jsg-mi:disabled{background:var(--bg-fl);color:var(--tx2);cursor:not-allowed}
+/* Read-only fields - non-editable columns show the value only */
+.jsg-mval{padding:6px 9px;border:1px solid transparent;border-radius:var(--r1);
+  background:var(--bg-fl);color:var(--tx2);font-size:12px;min-height:31px;box-sizing:border-box;
+  white-space:pre-wrap;word-break:break-word}
+.jsg-mft{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--bd)}
+.jsg-mbtn{padding:6px 16px;border-radius:var(--r1);border:1px solid var(--bd2);
+  background:var(--bg);color:var(--tx2);font-size:12px;font-weight:600;font-family:var(--F);cursor:pointer}
+.jsg-mbtn:hover{background:var(--bg-hv)}
+.jsg-mbtn.ok{background:var(--ac);border-color:var(--ac);color:#fff}
+.jsg-mbtn.ok:hover{background:var(--ach)}
+.rdfld{font-size:11px}
+.rdlbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--tx2);margin-bottom:2px}
+.rdval{color:var(--tx);font-weight:500}
+
+/* ── Tree ── */
+.treetog{width:14px;height:14px;border-radius:var(--r1);border:1px solid var(--bd2);background:var(--bg-hd);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;flex-shrink:0;color:var(--tx2);transition:all var(--tr);line-height:1}
+.treetog:hover{border-color:var(--ac);color:var(--ac);background:var(--acl)}
+.treedot{width:5px;height:5px;border-radius:50%;border:1px solid var(--bd2);display:inline-block;margin:0 5px;flex-shrink:0}
+
+/* ── Empty ── */
+.empty{padding:40px 0;text-align:center;color:var(--tx2)}
+.ei{font-size:22px;margin-bottom:8px;opacity:.3}.et{font-size:12px;font-weight:700}.es{font-size:11px}
+/* No-results row - a left-hand spacer that keeps the frozen pane and body heights aligned (content hidden) */
+.empty-ph{visibility:hidden}
+.jsg-emptyr > td{padding:0!important;border:none;background:var(--bg)}
+
+/* ── Footer ── */
+.jfoot{display:flex;align-items:center;justify-content:space-between;padding:0 12px;height:40px;border-top:1px solid var(--bd);background:var(--bg-hd);flex-wrap:wrap;gap:4px}
+.fi{font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:10px}
+.fi strong{color:var(--tx);font-weight:700}
+.fps{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--tx2)}
+.fps select{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r1);color:var(--tx);font-size:10px;font-family:var(--F);padding:1px 4px;cursor:pointer;outline:none}
+.pgn{display:flex;align-items:center;gap:1px}
+.pb{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:var(--r1);border:1px solid transparent;background:transparent;color:var(--tx2);font-size:10px;font-family:var(--F);cursor:pointer;font-weight:600;transition:all var(--tr)}
+.pb:hover:not([disabled]){background:var(--bg-hv);border-color:var(--bd);color:var(--tx)}
+.pb.act{background:var(--ac);border-color:var(--ac);color:#fff!important}
+.pb[disabled]{opacity:.28;cursor:not-allowed;pointer-events:none}
+
+/* ── Status ── */
+.jstat{display:flex;align-items:center;gap:10px;padding:4px 12px;background:var(--bg-fl);border-top:1px solid var(--bd);font-size:9px;color:var(--tx2);flex-wrap:wrap}
+.sti{display:flex;align-items:center;gap:3px}
+.std{width:5px;height:5px;border-radius:50%;background:var(--ok)}
+
+/* ── Context Menu ── */
+.ctx{position:fixed;z-index:7000;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);box-shadow:var(--sh);padding:3px;min-width:168px;display:none}
+.ctx.vis{display:block}
+.ctxi{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:var(--r1);font-size:11px;color:var(--tx);cursor:pointer;transition:background var(--tr)}
+.ctxi:hover{background:var(--bg-hv)}
+.ctxi.dr{color:var(--er)}.ctxi.dr:hover{background:var(--erb)}
+.ctxsep{height:1px;background:var(--bd);margin:3px 5px}
+
+/* ── Column Filter Popup ── */
+.cfp{position:fixed;z-index:8000;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);box-shadow:var(--sh);padding:10px;width:208px;display:none}
+.cfp.vis{display:block}
+.cfpt{font-size:10px;font-weight:800;color:var(--txh);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.cfpin{width:100%;padding:4px 7px;border:1px solid var(--bd);border-radius:var(--r1);background:var(--bg-fl);color:var(--tx);font-size:11px;font-family:var(--F);outline:none;margin-bottom:5px}
+.cfpin:focus{border-color:var(--ac)}
+.cfpcl{max-height:128px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.cfpci{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx);cursor:pointer;padding:2px 3px;border-radius:var(--r1);transition:background var(--tr)}
+/* Filter popup - the select-all line */
+.cfpall{border-bottom:1px solid var(--bd);margin-bottom:2px;padding-bottom:5px;
+  position:sticky;top:0;background:var(--bg);z-index:1}
+.cfpall b{font-weight:700}
+.cfpcnt{margin-left:auto;font-size:10px;color:var(--tx2);font-variant-numeric:tabular-nums}
+.cfpci:hover{background:var(--bg-hv)}
+.cfpci input{width:12px;height:12px;accent-color:var(--ac);cursor:pointer}
+.cfpft{display:flex;gap:5px}
+.cfpbt{flex:1;padding:4px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg-hd);color:var(--tx);font-size:10px;font-family:var(--F);cursor:pointer;font-weight:600;transition:background var(--tr)}
+.cfpbt:hover{background:var(--bg-hv)}
+.cfpbt.ok{background:var(--ac);border-color:var(--ac);color:#fff}
+.cfpbt.ok:hover{background:var(--ach)}
+.cfprng{display:flex;align-items:center;gap:3px;margin-bottom:5px}
+.cfprng input{flex:1;padding:3px 5px;border:1px solid var(--bd);border-radius:var(--r1);background:var(--bg-fl);color:var(--tx);font-size:10px;font-family:var(--FM);outline:none;width:0}
+.cfprng input:focus{border-color:var(--ac)}
+
+/* ── Modal ── */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:9000;display:none;align-items:center;justify-content:center}
+.mov.vis{display:flex}
+.modal{background:var(--bg);border-radius:var(--r3);box-shadow:var(--sh);width:440px;max-width:96vw;overflow:hidden}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:800;color:var(--tx)}
+.mcl{cursor:pointer;color:var(--tx2);font-size:16px;line-height:1;transition:color var(--tr)}.mcl:hover{color:var(--tx)}
+.mbd{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mf label{display:block;font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.mf input,.mf select,.mf textarea{width:100%;padding:5px 8px;border:1px solid var(--bd);border-radius:var(--r1);background:var(--bg-fl);color:var(--tx);font-size:12px;font-family:var(--F);outline:none;transition:border-color var(--tr)}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--ac)}
+.mft{padding:10px 16px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:6px}
+.mbt{padding:6px 14px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg-hd);color:var(--tx);font-size:11px;font-family:var(--F);font-weight:600;cursor:pointer;transition:background var(--tr)}
+.mbt:hover{background:var(--bg-hv)}
+.mbt.sv{background:var(--ac);border-color:var(--ac);color:#fff}.mbt.sv:hover{background:var(--ach)}
+
+/* ── Toast ── */
+/* Toast notification - centred on the grid.
+   .jsg-root is position:relative, so absolute positioning keeps it inside the grid area.
+   With several grids on a page, each shows its toast centred on itself. */
+.jsg-toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);
+  background:#1a1d2e;color:#fff;padding:7px 18px;border-radius:99px;
+  font-size:12px;font-weight:700;z-index:9999;pointer-events:none;
+  opacity:0;transition:opacity .22s,transform .22s;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.jsg-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* When the app supplies its own element via options.controls.toast (backwards compatibility) */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a1d2e;color:#fff;padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;z-index:9999;pointer-events:none;opacity:0;transition:opacity .22s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* Scrollbar */
+.jsg-gsc::-webkit-scrollbar{width:6px;height:6px}
+.jsg-gsc::-webkit-scrollbar-track{background:var(--bg-fl)}
+.jsg-gsc::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:99px}
+.jsg-gsc::-webkit-scrollbar-thumb:hover{background:var(--ac)}
+
+@media(max-width:640px){.ph,.gw,.cb{padding-left:12px;padding-right:12px}.tsw input{width:110px}}
+/* ========== Dropdown (select) editor - combo box style ========== */
+/* Inside the cell: input + arrow (inset 1px on all sides, same as the hidden input) */
+.jsg-combo{position:absolute;left:1px;top:1px;box-sizing:border-box;
+  width:calc(100% - 2px);height:calc(100% - 2px);
+  display:flex;align-items:center;background:#fff;
+  box-shadow:inset 0 0 0 1px var(--ac);z-index:70}
+.jtd.edit-open .jsg-combo-txt{
+  flex:1 1 auto;min-width:0;width:auto;height:100%;box-sizing:border-box;
+  border:none;outline:none;box-shadow:none;padding:0 7px;
+  font-size:var(--fs-bd);font-family:var(--F);background:transparent;color:var(--tx)}
+.jsg-combo-arw{flex:0 0 auto;width:16px;text-align:center;font-size:8px;
+  color:var(--ac);cursor:pointer;user-select:none}
+/* List layer - position:fixed, so it is not clipped by .jsg-gsc (overflow:auto).
+   Overall size is about half of the previous list box (max-height 220px). */
+.jsg-combo-list{position:fixed;display:none;max-height:110px;overflow-y:auto;overflow-x:hidden;
+  background:var(--bg);border:1px solid var(--ac);border-top:none;
+  border-radius:0 0 var(--r1) var(--r1);box-shadow:0 8px 18px rgba(0,0,0,.22);z-index:8000}
+.jsg-combo-list.vis{display:block}
+.jsg-combo-opt{padding:3px 6px;font-size:var(--fs-bd);color:var(--tx);cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jsg-combo-opt:hover{background:var(--bg-hv)}
+.jsg-combo-opt.sel{background:var(--acl);color:var(--ac);font-weight:600}
+.jsg-combo-empty{padding:3px 6px;font-size:11px;color:var(--tx2)}
+/* List scrollbar - thinner than the grid default (6px) */
+.jsg-combo-list::-webkit-scrollbar{width:4px}
+.jsg-combo-list::-webkit-scrollbar-track{background:transparent}
+.jsg-combo-list::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:99px}
+.jsg-combo-list::-webkit-scrollbar-thumb:hover{background:var(--ac)}
+.jsg-combo-list{scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+
+/* Dropdown cell when not editing: arrow on the right (.csel is applied only in edit mode) */
+.jtd.csel{padding-right:16px}
+.jsg-selarw{position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  font-size:8px;line-height:1;color:var(--tx2);cursor:pointer;user-select:none;pointer-events:auto}
+.jtd.csel:hover .jsg-selarw{color:var(--ac)}
+.jtd.edit-open .jsg-selarw{display:none}
+
+/* Date cell when not editing: calendar icon on the right (.cdate is applied only in edit mode).
+   The span is a 22px viewport (overflow:hidden) with a native <input type=date> laid out
+   wide inside it, right-aligned. Both browsers draw the calendar button at the right edge
+   of the input, so exactly that button falls inside the visible 22px -> the first click
+   opens the calendar. The input is opacity:0, so the calendar glyph behind it stays visible. */
+.jtd.cdate{padding-right:22px}
+.jsg-datearw{position:absolute;right:0;top:0;bottom:0;width:22px;
+  overflow:hidden;cursor:pointer;user-select:none;pointer-events:auto}
+.jsg-datearw::before{content:'📅';position:absolute;right:3px;top:50%;
+  transform:translateY(-50%);font-size:11px;line-height:1;opacity:.55;pointer-events:none}
+.jtd.cdate:hover .jsg-datearw::before{opacity:1}
+.jsg-cell-pick{position:absolute;right:0;top:0;width:220px;height:100%;
+  opacity:0;cursor:pointer;border:none;outline:none;box-shadow:none;
+  padding:0;margin:0;background:transparent;font-size:var(--fs-bd)}
+.jtd.edit-open .jsg-datearw{display:none}
+
+/* -- Sticky header stabilisation --
+   Per-th sticky plus cell-owned borders (separate) keep the header background and its
+   2px bottom line fully covering the rows regardless of scrolling. z-index 60: above the
+   edited cell (50) and resize handle (8), below the list box (70) and popups (7000+) */
+.jsg-ghead .jth{position:sticky;top:0;z-index:60;background:var(--bg-hd)}
+
+/* -- Column group header --
+   The .jgh height (22px) and the second-row sticky offset (top:22px) must stay in sync */
+.jgh{height:22px;padding:0 6px;background:var(--bg-hd);
+  border-bottom:1px solid var(--bd);border-right:1px solid var(--bd);
+  font-size:10px;font-weight:800;color:var(--txh);text-align:center;
+  text-transform:uppercase;letter-spacing:.5px;user-select:none;vertical-align:middle}
+.jgh-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--fs-hd);font-weight:var(--fw-hd);font-family:var(--ff-hd);font-style:var(--fst-hd)}
+.jsg-ghead .jgh{position:sticky;top:0;z-index:60;background:var(--bg-hd)}
+.jsg-ghead tr:nth-child(2) .jth{top:22px}
+
+/* -- Validation errors -- */
+.errtip{position:fixed;display:none;z-index:9600;background:#e5484d;color:#fff;
+  font-size:11px;font-weight:600;padding:4px 8px;border-radius:4px;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);pointer-events:none;max-width:260px}
+.errtip.vis{display:block}
+/* Cell that failed validate - the value is kept, only the background turns red.
+   Must beat striping, change marks (jnew/jupd) and selection (rsel), hence !important */
+.jtd.cinvalid{background:var(--i-bad)!important;color:var(--er)!important;
+  box-shadow:inset 0 0 0 1px var(--er)}
+.jtd.edit-open.edit-err input,
+.jtd.edit-open.edit-err select,
+.jtd.edit-open.edit-err textarea{
+  outline:2px solid #e5484d!important;outline-offset:-2px}
+/* The hidden-input path (F2, typing, double-click) does not add edit-open to the td, so it needs its own rule */
+.jtd.edit-err .jsg-ime-holder.editing .jsg-ime-input{
+  outline:2px solid #e5484d!important;outline-offset:-2px;background:#fff5f5}
+.jtd.edit-err{outline:1px solid #e5484d;outline-offset:-1px}
+
+/* -- Column drag and drop -- */
+.jth.col-dragging{opacity:.35}
+.colghost{position:fixed;display:none;z-index:9700;background:var(--bg-hd);
+  border:1px solid var(--bd2);padding:3px 10px;border-radius:5px;
+  font-size:11px;font-weight:700;color:var(--txh);
+  box-shadow:0 6px 16px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
+.colghost.vis{display:block}
+.dropind{position:fixed;display:none;z-index:9690;width:2px;background:var(--ac);pointer-events:none}
+.dropind.vis{display:block}
+/* -- Column show/hide panel -- */
+.colpanel{position:fixed;display:none;z-index:9650;background:var(--bg);
+  border:1px solid var(--bd2);border-radius:8px;box-shadow:0 10px 28px rgba(0,0,0,.28);
+  padding:6px;min-width:150px;max-height:60vh;overflow:auto}
+.colpanel.vis{display:block}
+.cph{font-size:10px;font-weight:800;color:var(--tx2);padding:4px 6px;
+  text-transform:uppercase;letter-spacing:.4px}
+.cpi{display:flex;align-items:center;gap:7px;padding:4px 6px;font-size:12px;
+  color:var(--tx);cursor:pointer;border-radius:5px;user-select:none}
+.cpi:hover{background:var(--bg-hv)}
+
+/* -- Server-side loading indicator -- */
+.jsg-root{position:relative}
+.loading{position:absolute;display:none;z-index:9550;left:50%;top:64px;transform:translateX(-50%);
+  background:var(--bg-hd);border:1px solid var(--bd2);color:var(--txh);
+  font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);pointer-events:none}
+.loading.vis{display:block}
+
+/* -- Aggregate footer row (sticky bottom) -- */
+.jaf{position:sticky;bottom:0;z-index:55;background:var(--bg-hd);
+  border-top:2px solid var(--bd2);border-right:1px solid var(--bd);
+  height:24px;padding:0 8px;font-size:11px;font-weight:700;color:var(--txh);
+  text-align:right;white-space:nowrap;vertical-align:middle}
+.jaf-l{opacity:.5;font-size:9px;margin-right:4px;letter-spacing:.4px}
+
+/* -- Row reordering by drag -- */
+.jtd[data-c="_rn"]{cursor:grab}
+tr.row-dragging .jtd{opacity:.35}
+
+/* Server-side filter list loading */
+.cf-loading{padding:12px 8px;font-size:11px;color:var(--tx2);text-align:center}
+
+/* -- Image cells: fit the input to the cell (form) size -- */
+.img-dnd-wrap{box-sizing:border-box;width:100%;max-width:100%;overflow:hidden}
+.img-dnd-list{max-height:60px;overflow-y:auto}   /* scroll inside the cell when there are many files (stops rows growing without limit) */
+.img-dnd-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.jtd[data-c] .img-dnd-wrap,.jtd .img-cell-read{max-width:100%}
+
+/* Reusable cell editor - the input/textarea that fills the cell */
+.jsg-cell-input{box-sizing:border-box;width:100%;height:100%;border:none;
+  outline:none;padding:0 7px;font-size:var(--fs-bd);font-family:inherit;background:#fff;color:var(--tx);border-radius:0}
+textarea.jsg-cell-input{padding:3px 8px;resize:none;line-height:1.4}
+
+
+/* The always-focused hidden input - the div is 0x0 (takes no space), the input sits off-screen (hidden via z-index).
+   Once typing starts, JS expands this div to the focused cell's position and size, turning it into the editor. */
+.jsg-ime-holder{position:absolute;box-sizing:border-box;width:0;height:0;overflow:visible;padding:0;margin:0;border:0;top:0;left:0}
+.jsg-ime-input{position:absolute;width:100%;height:100%;z-index:-4000;
+  box-sizing:border-box;border:none;outline:none;padding:0;margin:0;
+  font-size:12px;font-family:inherit;background:transparent;color:var(--tx)}
+/* Editing active: the div expands over the cell and the input becomes visible */
+/* While editing, sit above the freeze pane (z-index 10) and normal cells (70). Editing a frozen cell also uses this value to stay on top. */
+.jsg-ime-holder.editing{z-index:100}
+.jsg-ime-holder.editing .jsg-ime-input{z-index:100;background:#fff;padding:0 8px;
+  border:none;box-shadow:none;outline:none}
+.jsg-ime-input[type=number]{text-align:right}
+
+/* -- Date editor: text field plus calendar icon --
+   How the calendar opens: rather than relying on the showPicker() API, a native
+   <input type=date> is laid transparently over the whole editor so the user presses
+   its own calendar button directly.
+     - the text field (z-index 2) covers the left side, so clicking there edits text
+     - only the native calendar button is exposed in the right-hand 26px -> it opens with default behaviour in Chrome and Firefox alike; the calendar glyph is pointer-events:none decoration and the click is taken by the native input behind it */
+.jsg-date-edit{position:relative;width:100%;height:100%;display:flex;align-items:stretch;
+  box-sizing:border-box;background:#fff;overflow:hidden;padding-right:26px}
+.jtd.edit-open .jsg-date-txt{flex:1 1 auto;min-width:0;width:auto;height:100%;
+  position:relative;z-index:2;box-sizing:border-box;border:none;outline:none;box-shadow:none;
+  padding:0 8px;font-size:var(--fs-bd);font-family:inherit;background:#fff;color:var(--tx)}
+.jsg-date-txt{flex:1;min-width:0;box-sizing:border-box;border:none;outline:none;
+  padding:0 8px;font-size:var(--fs-bd);font-family:inherit;background:#fff;color:var(--tx)}
+/* Red when the format is invalid (text plus a faint background) */
+.jsg-date-txt.jsg-date-invalid{color:#d32f2f;background:#fff5f5;
+  box-shadow:inset 0 0 0 1px #f3b0b0}
+/* Native date input: overlapped on the right so only the calendar icon shows */
+/* Calendar glyph - decoration only. Clicks are taken by the native input behind it. */
+.jsg-date-cal{position:absolute;right:0;top:0;width:26px;height:100%;z-index:2;
+  pointer-events:none;border:none;background:transparent;padding:0;margin:0;
+  font-size:13px;line-height:1;opacity:.65;
+  display:flex;align-items:center;justify-content:center}
+.jsg-date-edit:hover .jsg-date-cal{opacity:1}
+/* Native date input - a transparent click layer covering the whole editor.
+   The text field (z-index 2) covers the left, so the only thing exposed is the 26px calendar button on the right.
+   Both browsers render that button at the input's right edge, so it lines up with the calendar glyph. */
+.jtd.edit-open .jsg-date-pick,.jsg-date-pick{
+  position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;
+  opacity:0;pointer-events:auto;cursor:pointer;
+  border:none;box-shadow:none;padding:0;margin:0;background:transparent}
+/* Chrome/Edge/Safari: hide the date text and extra buttons so the calendar icon fills the right-hand 26px */
+.jsg-date-pick::-webkit-datetime-edit,
+.jsg-date-pick::-webkit-inner-spin-button,
+.jsg-date-pick::-webkit-clear-button{display:none}
+.jsg-date-pick::-webkit-calendar-picker-indicator{
+  position:absolute;right:0;top:0;width:26px;height:100%;
+  margin:0;padding:0;opacity:0;cursor:pointer}
+
+.jtd.edit-open .jsg-date-edit{outline:1px solid var(--ac);outline-offset:0;box-shadow:none}
