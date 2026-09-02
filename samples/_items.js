@@ -66,6 +66,14 @@ window.MG_ITEMS = [
  },
  {
   "n": 9,
+  "no": "2.5-1",
+  "file": "f114.html",
+  "g": "2.5 Custom cells",
+  "t": "Custom cells — render(value, row, ctx) and cellClick",
+  "d": "Whatever HTML render returns goes into the cell as-is, so a cell can hold bars, tags or buttons. The third argument carries the column, which lets one formatter serve several columns, and cellClick reports the element that was actually pressed."
+ },
+ {
+  "n": 10,
   "no": "3.1-1",
   "file": "f009.html",
   "g": "3.1 Sorting",
@@ -73,7 +81,7 @@ window.MG_ITEMS = [
   "d": "Click the ▲▼ icons at the right of a header to sort. The header label is reserved for moving the column, so dragging the text reorders the columns instead."
  },
  {
-  "n": 10,
+  "n": 11,
   "no": "3.1-2",
   "file": "f010.html",
   "g": "3.1 Sorting",
@@ -81,7 +89,7 @@ window.MG_ITEMS = [
   "d": "Each click of a sort icon moves through ascending, descending and off. Turning it off restores the order the data arrived in."
  },
  {
-  "n": 11,
+  "n": 12,
   "no": "3.1-3",
   "file": "f011.html",
   "g": "3.1 Sorting",
@@ -89,7 +97,7 @@ window.MG_ITEMS = [
   "d": "Only the sorted column shows a solid arrow and an emphasised label, so you can tell at a glance where the ordering comes from."
  },
  {
-  "n": 12,
+  "n": 13,
   "no": "3.1-4",
   "file": "f012.html",
   "g": "3.1 Sorting",
@@ -97,7 +105,7 @@ window.MG_ITEMS = [
   "d": "Pass multiSort:true and sorts stack up. Each column gets a 1, 2, 3 order badge in the order you clicked, and each one cycles through ascending, descending and off on its own."
  },
  {
-  "n": 13,
+  "n": 14,
   "no": "3.1-5",
   "file": "f013.html",
   "g": "3.1 Sorting",
@@ -105,7 +113,7 @@ window.MG_ITEMS = [
   "d": "A sort bar appears above the grid as soon as anything is sorted. Drop one condition with the ✕ on its chip, or clear the lot with Clear."
  },
  {
-  "n": 14,
+  "n": 15,
   "no": "3.2-1",
   "file": "f014.html",
   "g": "3.2 Filtering",
@@ -113,7 +121,7 @@ window.MG_ITEMS = [
   "d": "The funnel icon on a header opens the list of values actually present in that column. Tick the ones you want and press Apply."
  },
  {
-  "n": 15,
+  "n": 16,
   "no": "3.2-2",
   "file": "f015.html",
   "g": "3.2 Filtering",
@@ -121,7 +129,7 @@ window.MG_ITEMS = [
   "d": "The Select all box at the top of the popup has three states — everything ticked, some ticked (shown as an indeterminate mark) and nothing ticked. The selected / total count sits beside it."
  },
  {
-  "n": 16,
+  "n": 17,
   "no": "3.2-3",
   "file": "f016.html",
   "g": "3.2 Filtering",
@@ -129,7 +137,7 @@ window.MG_ITEMS = [
   "d": "A column with many distinct values gets a search box at the top of the popup. While a search is active, Select all only touches the entries you can see, so anything hidden keeps its current state."
  },
  {
-  "n": 17,
+  "n": 18,
   "no": "3.2-4",
   "file": "f017.html",
   "g": "3.2 Filtering",
@@ -137,7 +145,7 @@ window.MG_ITEMS = [
   "d": "Number, currency and progress columns offer min and max boxes instead of a value list. The actual range found in the data is printed underneath as a hint."
  },
  {
-  "n": 18,
+  "n": 19,
   "no": "3.2-5",
   "file": "f018.html",
   "g": "3.2 Filtering",
@@ -145,7 +153,7 @@ window.MG_ITEMS = [
   "d": "A small dot appears on the header of any column with an active condition, which saves hunting through a wide table."
  },
  {
-  "n": 19,
+  "n": 20,
   "no": "3.2-6",
   "file": "f019.html",
   "g": "3.2 Filtering",
@@ -153,7 +161,7 @@ window.MG_ITEMS = [
   "d": "On a read-only screen you may not want filtering at all — showFilter:false removes it. Switching it off also clears any conditions already applied, so every row comes back."
  },
  {
-  "n": 20,
+  "n": 21,
   "no": "3.2-7",
   "file": "f020.html",
   "g": "3.2 Filtering",
@@ -161,7 +169,7 @@ window.MG_ITEMS = [
   "d": "Adding noFilter:1 to a column definition removes just that funnel. It suits free-text columns such as a note, where every value is different and a list would be useless."
  },
  {
-  "n": 21,
+  "n": 22,
   "no": "3.3-1",
   "file": "f021.html",
   "g": "3.3 Search",
@@ -169,7 +177,7 @@ window.MG_ITEMS = [
   "d": "search(q) sweeps several columns at once. For coded columns it matches both the display name on screen and the code stored underneath, so it finds the row whichever one the user remembers."
  },
  {
-  "n": 22,
+  "n": 23,
   "no": "3.4-1",
   "file": "f022.html",
   "g": "3.4 Grouping and tree",
@@ -177,7 +185,7 @@ window.MG_ITEMS = [
   "d": "Rows are gathered by the value of a column and each group gets a header carrying count, average and sum. It gives you a per-department headcount and salary total without building a separate screen."
  },
  {
-  "n": 23,
+  "n": 24,
   "no": "3.4-2",
   "file": "f023.html",
   "g": "3.4 Grouping and tree",
@@ -185,7 +193,7 @@ window.MG_ITEMS = [
   "d": "Point each row at its parent with parentId and mark rows that have children with _hc:true. Use it for org charts, category trees, bills of materials — anything with a parent and child relationship."
  },
  {
-  "n": 24,
+  "n": 25,
   "no": "4-1",
   "file": "f024.html",
   "g": "4. Selection",
@@ -193,7 +201,7 @@ window.MG_ITEMS = [
   "d": "Rows you click and rows you tick are kept as separate lists. That lets you treat one as \"what I am looking at\" and the other as \"what I am about to act on\" — browse by clicking, tick the few you actually need."
  },
  {
-  "n": 25,
+  "n": 26,
   "no": "4-2",
   "file": "f025.html",
   "g": "4. Selection",
@@ -201,7 +209,7 @@ window.MG_ITEMS = [
   "d": "The checkbox in the _cb header has three states — all ticked, some ticked (an in-between mark) and none ticked — so the header alone tells you how much is selected."
  },
  {
-  "n": 26,
+  "n": 27,
   "no": "4-3",
   "file": "f026.html",
   "g": "4. Selection",
@@ -209,7 +217,7 @@ window.MG_ITEMS = [
   "d": "Every time you tick or untick a row the header mark is brought up to date. Tick the last outstanding row and the header fills in; untick any one and it drops back to the in-between state."
  },
  {
-  "n": 27,
+  "n": 28,
   "no": "4-4",
   "file": "f027.html",
   "g": "4. Selection",
@@ -217,7 +225,7 @@ window.MG_ITEMS = [
   "d": "The header checkbox works on the rows currently rendered — the current page under ordinary paging, or the surviving rows when a filter is on. Rows you cannot see are never swept up by accident."
  },
  {
-  "n": 28,
+  "n": 29,
   "no": "4-5",
   "file": "f028.html",
   "g": "4. Selection",
@@ -225,7 +233,7 @@ window.MG_ITEMS = [
   "d": "Replace the select-all checkbox with a label such as Select. It suits screens where an accidental select-all would be expensive."
  },
  {
-  "n": 29,
+  "n": 30,
   "no": "4-6",
   "file": "f029.html",
   "g": "4. Selection",
@@ -233,7 +241,7 @@ window.MG_ITEMS = [
   "d": "Passing 'none' or false empties the header cell. It is the surest way to keep select-all off the screen entirely."
  },
  {
-  "n": 30,
+  "n": 31,
   "no": "4-7",
   "file": "f030.html",
   "g": "4. Selection",
@@ -241,7 +249,7 @@ window.MG_ITEMS = [
   "d": "Call toggleCheckAll(true/false) from a button of your own. The result is the same as clicking the header, and so is the scope: the rows currently on screen."
  },
  {
-  "n": 31,
+  "n": 32,
   "no": "4-8",
   "file": "f031.html",
   "g": "4. Selection",
@@ -249,7 +257,7 @@ window.MG_ITEMS = [
   "d": "In cell mode this grows a rectangular block the way a spreadsheet does; in row mode it grows a run of rows. A range you started with the mouse can be extended from the keyboard."
  },
  {
-  "n": 32,
+  "n": 33,
   "no": "4-9",
   "file": "f032.html",
   "g": "4. Selection",
@@ -257,7 +265,7 @@ window.MG_ITEMS = [
   "d": "getSelected() and getChecked() hand back arrays of ids. That is what you want to post to a server; when you need the row contents, look them up in getFilteredData()."
  },
  {
-  "n": 33,
+  "n": 34,
   "no": "5.1-1",
   "file": "f033.html",
   "g": "5.1 Entry points",
@@ -265,7 +273,7 @@ window.MG_ITEMS = [
   "d": "With editMode on, editing begins on a double-click, on F2, or simply by typing. All three open the same editor, so the cell never shifts under your hands."
  },
  {
-  "n": 34,
+  "n": 35,
   "no": "5.1-2",
   "file": "f034.html",
   "g": "5.1 Entry points",
@@ -273,7 +281,7 @@ window.MG_ITEMS = [
   "d": "Click a cell once and start typing — the input goes straight in, the way a spreadsheet behaves. There is no edit button to press first, and it works the same in row mode as in cell mode."
  },
  {
-  "n": 35,
+  "n": 36,
   "no": "5.1-3",
   "file": "f035.html",
   "g": "5.1 Entry points",
@@ -281,7 +289,7 @@ window.MG_ITEMS = [
   "d": "If you wander off to another cell in the middle of an edit, what you had typed is committed first and the editor follows you across. Nothing is lost for want of pressing Enter."
  },
  {
-  "n": 36,
+  "n": 37,
   "no": "5.1-4",
   "file": "f036.html",
   "g": "5.1 Entry points",
@@ -289,7 +297,7 @@ window.MG_ITEMS = [
   "d": "Tab commits the value and moves right, Shift+Tab moves left. At the end of a row it carries on to the next one, which makes filling a row at a time straightforward."
  },
  {
-  "n": 37,
+  "n": 38,
   "no": "5.1-5",
   "file": "f037.html",
   "g": "5.1 Entry points",
@@ -297,7 +305,7 @@ window.MG_ITEMS = [
   "d": "Enter commits and moves down, Shift+Enter moves up. Esc throws away what you typed and puts the original value back."
  },
  {
-  "n": 38,
+  "n": 39,
   "no": "5.1-6",
   "file": "f038.html",
   "g": "5.1 Entry points",
@@ -305,7 +313,7 @@ window.MG_ITEMS = [
   "d": "Delete empties the current cell, or the entire selected range if you have one. It counts as a single step, so one Ctrl+Z brings everything back."
  },
  {
-  "n": 39,
+  "n": 40,
   "no": "5.1-7",
   "file": "f039.html",
   "g": "5.1 Entry points",
@@ -313,7 +321,7 @@ window.MG_ITEMS = [
   "d": "Clearing a numeric cell with Delete stores an empty value (null) rather than 0, because a server usually needs to tell \"scored nothing\" apart from \"not filled in yet\"."
  },
  {
-  "n": 40,
+  "n": 41,
   "no": "5.2-1",
   "file": "f040.html",
   "g": "5.2 Edit permissions",
@@ -321,7 +329,7 @@ window.MG_ITEMS = [
   "d": "canInsert · canUpdate · canDelete split the three rights apart. Entries the user is not allowed to use disappear from the right-click menu, and without update rights the edit modal opens read-only instead."
  },
  {
-  "n": 41,
+  "n": 42,
   "no": "5.2-2",
   "file": "f041.html",
   "g": "5.2 Edit permissions",
@@ -329,7 +337,7 @@ window.MG_ITEMS = [
   "d": "Lock a whole row when its status is closed, or lock one cell when the figure belongs to somebody else. Use both together and the row lock is applied first."
  },
  {
-  "n": 42,
+  "n": 43,
   "no": "5.2-3",
   "file": "f042.html",
   "g": "5.2 Edit permissions",
@@ -337,7 +345,7 @@ window.MG_ITEMS = [
   "d": "A lock applies to everything the user does on screen. It deliberately does not block updateRow() and other programmatic calls, since your code still has to apply server responses and run batch updates."
  },
  {
-  "n": 43,
+  "n": 44,
   "no": "5.3-1",
   "file": "f043.html",
   "g": "5.3 Input control",
@@ -345,7 +353,7 @@ window.MG_ITEMS = [
   "d": "textCase folds what the user types into upper or lower case. Use it to keep reference codes upper case and e-mail addresses lower case. It can be set on one column or across the grid."
  },
  {
-  "n": 44,
+  "n": 45,
   "no": "5.3-2",
   "file": "f044.html",
   "g": "5.3 Input control",
@@ -353,7 +361,7 @@ window.MG_ITEMS = [
   "d": "An empty cell can carry a hint such as Enter a name. There are three settings — every empty cell, the first row only, or nothing at all. Showing it on the first row keeps the screen calm while still explaining what belongs where."
  },
  {
-  "n": 45,
+  "n": 46,
   "no": "5.3-3",
   "file": "f045.html",
   "g": "5.3 Input control",
@@ -361,7 +369,7 @@ window.MG_ITEMS = [
   "d": "addRow() appends at the end; insertAt() puts a row above or below the selected one. The Insert Above and Insert Below entries in the right-click menu call exactly the same thing."
  },
  {
-  "n": 46,
+  "n": 47,
   "no": "5.3-4",
   "file": "f046.html",
   "g": "5.3 Input control",
@@ -369,7 +377,7 @@ window.MG_ITEMS = [
   "d": "Drag the # cell up or down to move a row. Drag its lower edge and that one row grows taller, which is handy when a note runs long."
  },
  {
-  "n": 47,
+  "n": 48,
   "no": "6-1",
   "file": "f047.html",
   "g": "6. Coded values",
@@ -377,7 +385,7 @@ window.MG_ITEMS = [
   "d": "This is the classic lookup-table arrangement — the code is stored, the name is shown. The shape of your option list hardly matters: {code,name}, {value,label}, {id,text}, {v,t} and plain strings are all recognised."
  },
  {
-  "n": 48,
+  "n": 49,
   "no": "6-2",
   "file": "f048.html",
   "g": "6. Coded values",
@@ -385,7 +393,7 @@ window.MG_ITEMS = [
   "d": "Put placeholders such as {code} {name} into optionFormat to shape what appears. Any other field on the option object can be used too, so a department name or a headcount can travel with the value."
  },
  {
-  "n": 49,
+  "n": 50,
   "no": "6-3",
   "file": "f049.html",
   "g": "6. Coded values",
@@ -393,7 +401,7 @@ window.MG_ITEMS = [
   "d": "The code-and-name split is not applied in one place only. Cells, dropdowns, autocomplete, the filter popup, search, CSV export and the Excel copy all follow the same rule, so a file never comes out full of raw codes."
  },
  {
-  "n": 50,
+  "n": 51,
   "no": "6-4",
   "file": "f050.html",
   "g": "6. Coded values",
@@ -401,7 +409,7 @@ window.MG_ITEMS = [
   "d": "Open a cell, start typing and the list narrows. It matches on the formatted text, the display name and the code, so whichever of the three the user has in mind will find the entry."
  },
  {
-  "n": 51,
+  "n": 52,
   "no": "6-5",
   "file": "f051.html",
   "g": "6. Coded values",
@@ -409,7 +417,7 @@ window.MG_ITEMS = [
   "d": "Typing something the list does not contain stores it as typed, so nobody is blocked by a lookup table that has not caught up yet. The list itself is left alone, so the next time you open the cell you see the original entries."
  },
  {
-  "n": 52,
+  "n": 53,
   "no": "6-6",
   "file": "f052.html",
   "g": "6. Coded values",
@@ -417,7 +425,7 @@ window.MG_ITEMS = [
   "d": "Use this when the list is far too long for a dropdown. As the user types, candidates are fetched from the server; picking one stores the code in the data and shows the name on screen. Because the grid remembers the name it was given, the label survives even though the value was never in options."
  },
  {
-  "n": 53,
+  "n": 54,
   "no": "6-7",
   "file": "f053.html",
   "g": "6. Coded values",
@@ -425,7 +433,7 @@ window.MG_ITEMS = [
   "d": "Candidates come from the server (acSource) or from a local list (acHints). If the server does not answer, the local list stands in; a query already asked is not asked again. Columns that do not need it are switched off with ac:false."
  },
  {
-  "n": 54,
+  "n": 55,
   "no": "6-8",
   "file": "f054.html",
   "g": "6. Coded values",
@@ -433,7 +441,7 @@ window.MG_ITEMS = [
   "d": "Data arriving from another screen sometimes carries the whole option object instead of the code. Send that as it is and the server receives [object Object]. toCode() pulls the code out; toCodeRow() returns a tidied copy and leaves your original untouched."
  },
  {
-  "n": 55,
+  "n": 56,
   "no": "7-1",
   "file": "f055.html",
   "g": "7. Validation",
@@ -441,7 +449,7 @@ window.MG_ITEMS = [
   "d": "Attach a validate function to a column and the value is checked as it is committed. A value that fails is kept and the cell is simply marked red — wiping the input would leave the user with nothing to correct and no idea what went wrong."
  },
  {
-  "n": 56,
+  "n": 57,
   "no": "7-2",
   "file": "f056.html",
   "g": "7. Validation",
@@ -449,7 +457,7 @@ window.MG_ITEMS = [
   "d": "Whether the value is typed into the cell, chosen from the calendar or saved from the modal, the check runs once and to the same rules. No route quietly skips it."
  },
  {
-  "n": 57,
+  "n": 58,
   "no": "7-3",
   "file": "f057.html",
   "g": "7. Validation",
@@ -457,7 +465,7 @@ window.MG_ITEMS = [
   "d": "Guard your save button with isValid() and collect the offending cells from getInvalidCells() to show the user. It is the standard step before anything goes to the server."
  },
  {
-  "n": 58,
+  "n": 59,
   "no": "7-4",
   "file": "f058.html",
   "g": "7. Validation",
@@ -465,7 +473,7 @@ window.MG_ITEMS = [
   "d": "An invalid value raises a ⚠ message tooltip that fades after a while — three seconds by default, adjustable with errorMsgDuration. Pass zero or less and it stays until the value is fixed."
  },
  {
-  "n": 59,
+  "n": 60,
   "no": "8-1",
   "file": "f059.html",
   "g": "8. Change tracking",
@@ -473,7 +481,7 @@ window.MG_ITEMS = [
   "d": "Whatever the user did and however they did it, the grid compares the current state against the state it started from and reports only the differences. Cell edits, modal saves, insertions, deletions and even undo are all picked up."
  },
  {
-  "n": 60,
+  "n": 61,
   "no": "8-2",
   "file": "f060.html",
   "g": "8. Change tracking",
@@ -481,7 +489,7 @@ window.MG_ITEMS = [
   "d": "This page shows exactly what leaves for the server. It arrives in three parts — inserted carries whole rows, updated is {id, changes} with only the fields that moved, and deleted is an array of ids. Coded columns go out as codes, and stray option objects are reduced on the way."
  },
  {
-  "n": 61,
+  "n": 62,
   "no": "8-3",
   "file": "f061.html",
   "g": "8. Change tracking",
@@ -489,7 +497,7 @@ window.MG_ITEMS = [
   "d": "Leave it unset and the fields are derived from the columns on screen. Name them in submitFields when you want to send less than that."
  },
  {
-  "n": 62,
+  "n": 63,
   "no": "8-4",
   "file": "f062.html",
   "g": "8. Change tracking",
@@ -497,7 +505,7 @@ window.MG_ITEMS = [
   "d": "Rather than the whole row, updated holds just the values that changed (alongside the id). It drops straight into the SET clause of an UPDATE, which keeps the server side short."
  },
  {
-  "n": 63,
+  "n": 64,
   "no": "8-5",
   "file": "f063.html",
   "g": "8. Change tracking",
@@ -505,7 +513,7 @@ window.MG_ITEMS = [
   "d": "The JSON for an inserted row is written in the order the columns appear, which makes the payload easy to read in a log and easy to map field by field on the server."
  },
  {
-  "n": 64,
+  "n": 65,
   "no": "8-6",
   "file": "f064.html",
   "g": "8. Change tracking",
@@ -513,7 +521,7 @@ window.MG_ITEMS = [
   "d": "By default a deleted row stays on screen with a line through it. It is removed for real only once submit() has succeeded, which leaves room to undo a mistake."
  },
  {
-  "n": 65,
+  "n": 66,
   "no": "8-7",
   "file": "f065.html",
   "g": "8. Change tracking",
@@ -521,7 +529,7 @@ window.MG_ITEMS = [
   "d": "With soft delete there is a way back, so nothing is asked. Only softDelete:false, which removes the row on the spot, raises a confirmation. deleteRows() is a programmatic call and never asks either way."
  },
  {
-  "n": 66,
+  "n": 67,
   "no": "8-8",
   "file": "f066.html",
   "g": "8. Change tracking",
@@ -529,7 +537,7 @@ window.MG_ITEMS = [
   "d": "A row marked for deletion is closed to editing, since there is little point correcting something on its way out. Ticking and selecting still work, because that is how you bring it back."
  },
  {
-  "n": 67,
+  "n": 68,
   "no": "8-9",
   "file": "f067.html",
   "g": "8. Change tracking",
@@ -537,7 +545,7 @@ window.MG_ITEMS = [
   "d": "Delete something by mistake and Ctrl+Z puts it back. To recover several rows at once, tick them and call restoreRows()."
  },
  {
-  "n": 68,
+  "n": 69,
   "no": "8-10",
   "file": "f068.html",
   "g": "8. Change tracking",
@@ -545,7 +553,7 @@ window.MG_ITEMS = [
   "d": "New rows are shaded green, edited ones amber and deleted ones red. If that is too much, dirtyMark turns the shading off — but the deletion strikethrough stays, because a row on its way out has to be visible."
  },
  {
-  "n": 69,
+  "n": 70,
   "no": "8.1-1",
   "file": "f069.html",
   "g": "8.1 Image transfer",
@@ -553,7 +561,7 @@ window.MG_ITEMS = [
   "d": "This setting decides when a photo is uploaded and in what shape it travels. Preview only? none. Large files? upload. One save for everything? multipart. Something small like a signature? base64."
  },
  {
-  "n": 70,
+  "n": 71,
   "no": "8.1-2",
   "file": "f070.html",
   "g": "8.1 Image transfer",
@@ -561,7 +569,7 @@ window.MG_ITEMS = [
   "d": "imageMaxSize caps each file and imageLimit caps the row. A file over the limit is left out on its own — everything else still goes in, and a message explains what happened."
  },
  {
-  "n": 71,
+  "n": 72,
   "no": "8.1-3",
   "file": "f071.html",
   "g": "8.1 Image transfer",
@@ -569,7 +577,7 @@ window.MG_ITEMS = [
   "d": "Photos are shown on screen and never sent anywhere. This is the default, and in this mode the images field is left out of the payload entirely."
  },
  {
-  "n": 72,
+  "n": 73,
   "no": "8.1-4",
   "file": "f072.html",
   "g": "8.1 Image transfer",
@@ -577,7 +585,7 @@ window.MG_ITEMS = [
   "d": "The file goes to the server the moment it is chosen, and the {id, url} that comes back replaces it. When you save, only the reference travels, so a heavy set of photos does not make the save heavy."
  },
  {
-  "n": 73,
+  "n": 74,
   "no": "8.1-5",
   "file": "f073.html",
   "g": "8.1 Image transfer",
@@ -585,7 +593,7 @@ window.MG_ITEMS = [
   "d": "Choose upload and forget imageUpload and nothing is uploaded at all. A warning is written to the browser console, so that is the first thing to check when photos refuse to go."
  },
  {
-  "n": 74,
+  "n": 75,
   "no": "8.1-6",
   "file": "f074.html",
   "g": "8.1 Image transfer",
@@ -593,7 +601,7 @@ window.MG_ITEMS = [
   "d": "Save while an upload is still running and the reference goes out empty. Guard the save button with hasPendingUploads()."
  },
  {
-  "n": 75,
+  "n": 76,
   "no": "8.1-7",
   "file": "f075.html",
   "g": "8.1 Image transfer",
@@ -601,7 +609,7 @@ window.MG_ITEMS = [
   "d": "The files are held until you save, then the changes and the files travel together. Nobody leaves orphaned uploads behind on the server, which makes this the tidiest option when one save should do everything."
  },
  {
-  "n": 76,
+  "n": 77,
   "no": "8.1-8",
   "file": "f076.html",
   "g": "8.1 Image transfer",
@@ -609,7 +617,7 @@ window.MG_ITEMS = [
   "d": "Each file is sent under the name img_{rowId}_{columnKey}_{index}. The first photo on row 3 arrives as img_3_images_0, and that is the name the server asks for."
  },
  {
-  "n": 77,
+  "n": 78,
   "no": "8.1-9",
   "file": "f077.html",
   "g": "8.1 Image transfer",
@@ -617,7 +625,7 @@ window.MG_ITEMS = [
   "d": "The ref on an image entry in the JSON is the file part name, so the server reads ref and asks for that part. One caution: do not set Content-Type yourself — the browser has to add the boundary along with it."
  },
  {
-  "n": 78,
+  "n": 79,
   "no": "8.1-10",
   "file": "f078.html",
   "g": "8.1 Image transfer",
@@ -625,7 +633,7 @@ window.MG_ITEMS = [
   "d": "A successful save lets go of the original files. Nothing piles up in memory as you carry on working, and a photo already sent is not sent again with the next save."
  },
  {
-  "n": 79,
+  "n": 80,
   "no": "8.1-11",
   "file": "f079.html",
   "g": "8.1 Image transfer",
@@ -633,7 +641,7 @@ window.MG_ITEMS = [
   "d": "The photo is turned into text and travels inside the JSON. There is no file upload to build on the server, but the payload grows by roughly a third. Keep it for small, few items such as signatures and icons, and always set imageMaxSize alongside it."
  },
  {
-  "n": 80,
+  "n": 81,
   "no": "9-1",
   "file": "f080.html",
   "g": "9. Copy and export",
@@ -641,7 +649,7 @@ window.MG_ITEMS = [
   "d": "Select a range and press Ctrl+C, or use Copy Row(Excel) from the right-click menu, and paste straight into a spreadsheet. exportCSV() writes a file instead. Both follow the same rule: coded columns give their display names, numbers and money go out unformatted, so the figures are ready to calculate with."
  },
  {
-  "n": 81,
+  "n": 82,
   "no": "9-2",
   "file": "f081.html",
   "g": "9. Copy and export",
@@ -649,7 +657,7 @@ window.MG_ITEMS = [
   "d": "A block copied out of a spreadsheet pastes in with Ctrl+V. However many cells it fills, a single Ctrl+Z undoes the whole thing."
  },
  {
-  "n": 82,
+  "n": 83,
   "no": "9-3",
   "file": "f082.html",
   "g": "9. Copy and export",
@@ -657,7 +665,7 @@ window.MG_ITEMS = [
   "d": "A paste steps over what it cannot write and tells you how many cells it filled. Values failing validation, editor:false columns, rows pending deletion and anything past the last column are all skipped, and the rest of the paste carries on."
  },
  {
-  "n": 83,
+  "n": 84,
   "no": "10-1",
   "file": "f083.html",
   "g": "10. Layout",
@@ -665,7 +673,7 @@ window.MG_ITEMS = [
   "d": "Drag the right-hand edge of a header to change its width. Widths can be saved with getLayout() and restored later."
  },
  {
-  "n": 84,
+  "n": 85,
   "no": "10-2",
   "file": "f084.html",
   "g": "10. Layout",
@@ -673,7 +681,7 @@ window.MG_ITEMS = [
   "d": "Double-click the edge of a header and the column is sized to its contents, exactly as a spreadsheet does. It measures what is on the screen rather than the raw value, so money with separators and coded names are not clipped."
  },
  {
-  "n": 85,
+  "n": 86,
   "no": "10-3",
   "file": "f085.html",
   "g": "10. Layout",
@@ -681,7 +689,7 @@ window.MG_ITEMS = [
   "d": "Drag a header by its text to move the column — sorting lives on the icons, so the two never collide. Columns you do not need can be unticked in the column panel."
  },
  {
-  "n": 86,
+  "n": 87,
   "no": "10-4",
   "file": "f086.html",
   "g": "10. Layout",
@@ -689,7 +697,7 @@ window.MG_ITEMS = [
   "d": "Pin the first few columns so they do not scroll away sideways. On a wide table it keeps you from losing track of which row you are reading. Mark the columns with freeze:1 and switch freezeOn on."
  },
  {
-  "n": 87,
+  "n": 88,
   "no": "10-5",
   "file": "f087.html",
   "g": "10. Layout",
@@ -697,7 +705,7 @@ window.MG_ITEMS = [
   "d": "Gather related columns under a shared caption and the header becomes two rows. Give the columns the same group name and that is all. On a wide table it tells you at a glance what kind of value each column holds."
  },
  {
-  "n": 88,
+  "n": 89,
   "no": "10-6",
   "file": "f088.html",
   "g": "10. Layout",
@@ -705,7 +713,7 @@ window.MG_ITEMS = [
   "d": "For headers too long to fit. A \\n in the label breaks the line exactly there; headerWrap:true lets the grid wrap it for you to suit the width."
  },
  {
-  "n": 89,
+  "n": 90,
   "no": "10-7",
   "file": "f089.html",
   "g": "10. Layout",
@@ -713,7 +721,7 @@ window.MG_ITEMS = [
   "d": "A label wider than its column is trimmed with .... Room is always kept for the sort arrows and the filter funnel, so a long caption can never push the controls out of reach."
  },
  {
-  "n": 90,
+  "n": 91,
   "no": "10-8",
   "file": "f090.html",
   "g": "10. Layout",
@@ -721,7 +729,7 @@ window.MG_ITEMS = [
   "d": "The Per page control offers 10, 25, 50, 100 and everything. Choose everything and the page buttons disappear, leaving one continuous list."
  },
  {
-  "n": 91,
+  "n": 92,
   "no": "10-9",
   "file": "f091.html",
   "g": "10. Layout",
@@ -729,7 +737,7 @@ window.MG_ITEMS = [
   "d": "Turn this on when you would rather scroll through thousands of rows than page through them. Only the part you can see is drawn, so five thousand rows scroll without stuttering."
  },
  {
-  "n": 92,
+  "n": 93,
   "no": "10-10",
   "file": "f092.html",
   "g": "10. Layout",
@@ -737,7 +745,15 @@ window.MG_ITEMS = [
   "d": "Everything the user arranged — column order, widths, hidden columns, sorting, filters and page size — can be lifted out in one object and put back next time. If the column set has changed in the meantime, anything that no longer exists is quietly skipped rather than breaking the screen."
  },
  {
-  "n": 93,
+  "n": 94,
+  "no": "10-11",
+  "file": "f115.html",
+  "g": "10. Layout",
+  "t": "Grid height — fixed, capped, or filling the window",
+  "d": "A grid holds a fixed 420px unless told otherwise, so it no longer shrinks when there are few rows. height sets that size, maxHeight caps how far it may grow instead, and height:&#39;fill&#39; stretches it to the bottom of the window."
+ },
+ {
+  "n": 95,
   "no": "11-1",
   "file": "f093.html",
   "g": "11. Modals",
@@ -745,7 +761,7 @@ window.MG_ITEMS = [
   "d": "These are the windows for viewing a row in full or editing it. There is no form to write — the fields come from the column definitions, so adding a column adds a field to the window as well."
  },
  {
-  "n": 94,
+  "n": 96,
   "no": "11-2",
   "file": "f094.html",
   "g": "11. Modals",
@@ -753,7 +769,7 @@ window.MG_ITEMS = [
   "d": "Each field gets an editor to suit its column type — a select for coded values, a multi-line box for long text, a date picker for dates and a number box for figures."
  },
  {
-  "n": 95,
+  "n": 97,
   "no": "11-3",
   "file": "f095.html",
   "g": "11. Modals",
@@ -761,7 +777,7 @@ window.MG_ITEMS = [
   "d": "A column marked editor:false appears in the window read-only. The value is not hidden — it is shown but cannot be changed — so reference details such as an employee number or a registration date stay in view."
  },
  {
-  "n": 96,
+  "n": 98,
   "no": "11-4",
   "file": "f096.html",
   "g": "11. Modals",
@@ -769,7 +785,7 @@ window.MG_ITEMS = [
   "d": "Save in the window runs the same validation as typing into the cell. A value that fails is not saved and the problem is pointed out."
  },
  {
-  "n": 97,
+  "n": 99,
   "no": "12.1-1",
   "file": "f097.html",
   "g": "12.1 Themes",
@@ -777,7 +793,7 @@ window.MG_ITEMS = [
   "d": "One call to setTheme() recolours the whole grid. Themes are applied per grid, so two tables on one page can look quite different, and nothing else on the page is touched."
  },
  {
-  "n": 98,
+  "n": 100,
   "no": "12.2-1",
   "file": "f098.html",
   "g": "12.2 Fonts",
@@ -785,7 +801,7 @@ window.MG_ITEMS = [
   "d": "Size, family, weight and slant can be set for the header and the body independently. Give only the parts you care about and the rest is left alone; pass null for one property to reset just that one."
  },
  {
-  "n": 99,
+  "n": 101,
   "no": "12.2-2",
   "file": "f099.html",
   "g": "12.2 Fonts",
@@ -793,7 +809,7 @@ window.MG_ITEMS = [
   "d": "Enlarge the body font and the row numbers and numeric cells grow with it. They are sized in proportion rather than fixed, so the table stays balanced at any size — handy for a zoom control or a per-user preference."
  },
  {
-  "n": 100,
+  "n": 102,
   "no": "12.3-1",
   "file": "f100.html",
   "g": "12.3 Display options",
@@ -801,7 +817,7 @@ window.MG_ITEMS = [
   "d": "The footer carries the row count, the page list and Per page, in that order. Any of them can be switched off, and turning all three off removes the footer altogether."
  },
  {
-  "n": 101,
+  "n": 103,
   "no": "12.3-2",
   "file": "f101.html",
   "g": "12.3 Display options",
@@ -809,7 +825,7 @@ window.MG_ITEMS = [
   "d": "Notices such as \"copied\" or \"nothing to undo\" appear in the middle of the grid concerned rather than in a corner of the page. With several grids about, there is no doubt which one is talking."
  },
  {
-  "n": 102,
+  "n": 104,
   "no": "13-1",
   "file": "f102.html",
   "g": "13. Server integration",
@@ -817,7 +833,7 @@ window.MG_ITEMS = [
   "d": "For sets too large to load in one go. Supply dataSource and the sorting, filtering, search and paging arrive as a single request object, ready to be turned into SQL."
  },
  {
-  "n": 103,
+  "n": 105,
   "no": "13-2",
   "file": "f103.html",
   "g": "13. Server integration",
@@ -825,7 +841,7 @@ window.MG_ITEMS = [
   "d": "A loading overlay covers the grid while a request is out. If it fails, dataError tells you and the previous rows stay on screen, so a momentary error does not blank the table. reload() repeats the request with the conditions unchanged."
  },
  {
-  "n": 104,
+  "n": 106,
   "no": "13-3",
   "file": "f104.html",
   "g": "13. Server integration",
@@ -833,7 +849,7 @@ window.MG_ITEMS = [
   "d": "Values for the filter popup (filterSource) and autocomplete candidates (acSource) are remembered once fetched. Ask for the same thing again and no request goes out, which keeps the chatter down."
  },
  {
-  "n": 105,
+  "n": 107,
   "no": "14-1",
   "file": "f105.html",
   "g": "14. Other",
@@ -841,7 +857,7 @@ window.MG_ITEMS = [
   "d": "Every change is recorded as you make it. Ctrl+Z steps back one at a time and Ctrl+Y steps forward again, and each step says which action it is undoing."
  },
  {
-  "n": 106,
+  "n": 108,
   "no": "14-2",
   "file": "f106.html",
   "g": "14. Other",
@@ -849,7 +865,7 @@ window.MG_ITEMS = [
   "d": "Rows arriving without an id, or sharing one, are sorted out as they load. A number once used is never handed out again, so deleting a row and adding another cannot leave you with two of the same. Supply genId to number them your own way."
  },
  {
-  "n": 107,
+  "n": 109,
   "no": "14-3",
   "file": "f107.html",
   "g": "14. Other",
@@ -857,7 +873,7 @@ window.MG_ITEMS = [
   "d": "A type:'images' column holds photos. Pick them with ＋ Add or drop the files onto the cell. Hover a file name for a larger preview, and remove one with ✕."
  },
  {
-  "n": 108,
+  "n": 110,
   "no": "14-4",
   "file": "f108.html",
   "g": "14. Other",
@@ -865,7 +881,7 @@ window.MG_ITEMS = [
   "d": "imageMode decides when a photo goes to the server and in what shape. The four modes and their server-side code are covered one by one under 8.1 Image transfer."
  },
  {
-  "n": 109,
+  "n": 111,
   "no": "14-5",
   "file": "f109.html",
   "g": "14. Other",
@@ -873,7 +889,7 @@ window.MG_ITEMS = [
   "d": "Entries you do not want can be dropped from the right-click menu. Anything you do not mention stays, and the setting sits on top of the permissions — turn something on here and it still will not appear without the right to use it."
  },
  {
-  "n": 110,
+  "n": 112,
   "no": "14-6",
   "file": "f110.html",
   "g": "14. Other",
@@ -881,7 +897,7 @@ window.MG_ITEMS = [
   "d": "Entries you do not mention stay visible — the setting lists what to hide rather than what to show. And because it sits on top of the permissions, switching something on here will not bring it back if the user has no right to it."
  },
  {
-  "n": 111,
+  "n": 113,
   "no": "14-7",
   "file": "f111.html",
   "g": "14. Other",
@@ -889,7 +905,7 @@ window.MG_ITEMS = [
   "d": "With contextMenu:false the grid menu is not shown at all and the browser's own menu appears as usual — useful when the page needs the browser features left alone."
  },
  {
-  "n": 112,
+  "n": 114,
   "no": "14-8",
   "file": "f112.html",
   "g": "14. Other",
@@ -897,7 +913,7 @@ window.MG_ITEMS = [
   "d": "The built-in wording is English. Pass options.i18n with just the entries you want changed and the rest stay as they are. A function value lets a message vary with the situation."
  },
  {
-  "n": 113,
+  "n": 115,
   "no": "14-9",
   "file": "f113.html",
   "g": "14. Other",

@@ -1,6 +1,6 @@
 **English** | [한국어](../ko/FEATURES.md)
 
-# ModuGrid v1.0.0 — full feature list
+# ModuGrid v1.1.0 — full feature list
 
 Compiled straight from the `modugrid.min.js` / `modugrid.min.css` source and grouped by feature.
 `☐` marks a checkbox for verifying the behaviour yourself.
@@ -78,9 +78,35 @@ G.setData(rows);
 | `acLimit` | number | number of suggestions shown (8 by default) |
 | `ac` | false | disable autocomplete for this column |
 | `validate` | (v,row)=>bool ǀ string | validation |
-| `render` | (v,row)=>html | custom cell renderer |
+| `render` | (v,row,ctx)=>html | custom cell renderer |
 | `textCase` | 'upper' ǀ 'lower' | force letter case |
 | `placeholder` | string | hint text for an empty cell |
+
+**Custom cells with `render`** — this is the equivalent of jqGrid's `formatter`.
+The returned markup is inserted without escaping, so a cell can hold a table,
+buttons, a chart, anything. Escaping untrusted values is the caller's job. ☐
+
+```javascript
+// ctx = { col, key, rowIndex } — so one function can serve several columns
+const money = (v, row, ctx) => `<b class="num" data-col="${ctx.key}">${v.toLocaleString()}</b>`;
+
+ModuGrid('#grid', {
+  cols: [
+    { key:'price', label:'Price', w:90, render: money },
+    { key:'cost',  label:'Cost',  w:90, render: money },
+    { key:'act',   label:'',      w:80,
+      render: () => `<button data-do="edit">edit</button><button data-do="del">del</button>` },
+  ],
+  options: {
+    on: {
+      // target is the element that was clicked, so the two buttons are distinct
+      cellClick: e => {
+        if (e.target.dataset.do === 'del') removeRow(e.id);
+      }
+    }
+  }
+});
+```
 
 ### 2.2 Cell types
 
@@ -588,7 +614,7 @@ options: { contextMenu: { copy:false, delete:false } } // per item
 
 ```javascript
 ModuGrid.about
-// { name:'ModuGrid', version:'1.0.0', author:'BongJun Park', license:'MIT',
+// { name:'ModuGrid', version:'1.1.0', author:'BongJun Park', license:'MIT',
 //   copyright:'© 2026 BongJun Park', homepage:'https://github.com/PulseKCode' }
 ```
 - Mapping app controls — `options.controls` ☐
@@ -693,7 +719,7 @@ options: {
 ## 18. Events
 
 ```javascript
-options: { on: { dataChange, cellEdit, selectionChange, rowClick, dataError, dirtyChange } }
+options: { on: { dataChange, cellEdit, selectionChange, rowClick, cellClick, dataError, dirtyChange } }
 ```
 
 | Event | Payload |
@@ -702,6 +728,7 @@ options: { on: { dataChange, cellEdit, selectionChange, rowClick, dataError, dir
 | `cellEdit` | `{id, key, value}` |
 | `selectionChange` | `{selected, checked}` |
 | `rowClick` | `{id, selected}` |
+| `cellClick` | `{id, key, target}` |
 | `dataError` | `{error}` |
 | `dirtyChange` | `{inserted, updated, deleted, total}` |
 

@@ -2,7 +2,7 @@
 
 # ModuGrid
 
-**v1.0.0** · A dependency-free vanilla JS data grid.
+**v1.1.0** · A dependency-free vanilla JS data grid.
 
 [![CI](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml/badge.svg)](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/modugrid.svg)](https://www.npmjs.com/package/modugrid)
@@ -11,7 +11,7 @@
 
 Two files — `modugrid.min.js` and `modugrid.min.css` — are all it takes. No build step, no framework, no third-party libraries.
 
-**[Live demo](https://pulsekcode.github.io/modugrid/samples/main.html)** · [113 samples](https://pulsekcode.github.io/modugrid/samples/index.html) · [한국어](https://pulsekcode.github.io/modugrid/samples_ko/index.html)
+**[Live demo — 115 samples](https://pulsekcode.github.io/modugrid/samples/index.html)** · [한국어](https://pulsekcode.github.io/modugrid/samples_ko/index.html)
 
 ---
 
@@ -42,8 +42,8 @@ Two files — `modugrid.min.js` and `modugrid.min.css` — are all it takes. No 
 Or straight from a CDN, with no download at all:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.css">
-<script src="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modugrid@1.1.0/dist/modugrid.min.css">
+<script src="https://cdn.jsdelivr.net/npm/modugrid@1.1.0/dist/modugrid.min.js"></script>
 ```
 
 From npm, if you have a bundler:
@@ -185,7 +185,7 @@ Sorting, filtering, search and paging state arrive in `req`, and responses that 
 |---|---|---|
 | `dist/modugrid.min.js` | O | the entire grid engine |
 | `dist/modugrid.min.css` | O | styles and theme variables |
-| `samples/main.html` | | demo page |
+| `samples/index.html` | | demo page |
 | `server/submit.jsp` | | server receiver sample (JSP + Oracle) |
 | `server/upload.jsp` | | image upload receiver sample (`imageMode:'upload'`) |
 | `modugrid.js` `modugrid.css` | | the sources the build is made from |
@@ -200,7 +200,7 @@ git clone https://github.com/PulseKCode/modugrid.git
 cd modugrid
 npm ci            # terser · clean-css · jsdom
 npm run build     # sources -> dist/ (5 files)
-npm test          # 131 tests, jsdom
+npm test          # 177 tests, jsdom
 npm run test:dist # the same suite against the minified build
 ```
 
@@ -233,12 +233,12 @@ MIT · © 2026 BongJun Park
 
 - **Author** — BongJun Park
 - **Homepage** — <https://github.com/PulseKCode>
-- **Version** — 1.0.0
+- **Version** — 1.1.0
 
 Authorship is readable through `ModuGrid.about`. It is frozen and non-configurable, so it cannot be altered at runtime.
 
 ```javascript
-ModuGrid.about.version;    // '1.0.0'
+ModuGrid.about.version;    // '1.1.0'
 ModuGrid.about.author;     // 'BongJun Park'
 ModuGrid.about.homepage;   // 'https://github.com/PulseKCode'
 ```

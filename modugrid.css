@@ -213,11 +213,17 @@ body{font-family:var(--F);font-size:13px;background:var(--bg);color:var(--tx);li
 /* border-collapse:separate - in collapse mode the borders detach from the sticky header,
    so the bottom edge of the header tears while scrolling (breaks as rows pass under it) */
 .gt{border-collapse:separate;border-spacing:0;table-layout:fixed}
+/* Close the table underneath. Rows carry a bottom border, but the last one sat on
+   empty space with nothing under it once the grid stopped shrinking to its content. */
+.gt tbody tr:last-child > .jtd{border-bottom:1px solid var(--bd)}
 
 /* ── Header ── */
 .gth{}
 .jth{height:var(--HDR);padding:0 9px;background:var(--bg-hd);border-bottom:2px solid var(--bd2);border-right:1px solid var(--bd);font-size:var(--fs-hd);font-weight:var(--fw-hd);font-family:var(--ff-hd);font-style:var(--fst-hd);color:var(--txh);text-align:left;white-space:nowrap;cursor:default;vertical-align:middle;text-transform:uppercase;letter-spacing:.4px;user-select:none;transition:background var(--tr);position:relative;overflow:visible}
-.jth:last-child{border-right:none}
+/* The last column used to drop its right border, which is right only when the table
+   fills the grid. With a fixed height and columns narrower than the box, the table
+   was left hanging open on the right. Keep the line and let it close the table. */
+.jth:last-child{border-right:1px solid var(--bd)}
 .jth:hover{background:var(--bg-hv)}
 .thi{display:flex;align-items:center;gap:4px;min-width:0}
 /* Header label ellipsis -
@@ -331,7 +337,7 @@ tr:hover td{background:var(--bg-hv)!important}
 .jst-u{background:var(--d-upd);color:var(--wn)}
 .jst-d{background:var(--d-del);color:var(--er)}
 .jtd {padding:0 8px;border-right:1px solid var(--bd);font-size:var(--fs-bd);font-weight:var(--fw-bd);font-family:var(--ff-bd);font-style:var(--fst-bd);color:var(--tx);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;cursor:default;transition:background var(--tr);user-select:none;box-sizing:border-box;overflow:hidden;line-height:1}
-.jtd:last-child{border-right:none}
+.jtd:last-child{border-right:1px solid var(--bd)}
 
 /* ── Select modes ── */
 /* Row select: highlight full row (handled by .rsel on tr) */

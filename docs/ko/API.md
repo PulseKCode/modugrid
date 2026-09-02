@@ -1,6 +1,6 @@
 [English](../en/API.md) | **한국어**
 
-# ModuGrid v1.0.0 — API 레퍼런스
+# ModuGrid v1.1.0 — API 레퍼런스
 
 `modugrid.min.js` 현재 코드 기준입니다. 기능 개요는 [FEATURES.md](FEATURES.md)를 참고하세요.
 
@@ -53,11 +53,11 @@ const G = ModuGrid('#grid', { cols: COLS, options: {...} });
 |---|---|
 | `ModuGrid.get(id)` | 인스턴스 조회 (내부 라우팅용) |
 | `ModuGrid.about` | 제작자 정보 (읽기 전용, frozen) |
-| `ModuGrid.version` | 버전 문자열 (`'1.0.0'`) |
+| `ModuGrid.version` | 버전 문자열 (`'1.1.0'`) |
 
 ```javascript
 ModuGrid.about
-// { name:'ModuGrid', version:'1.0.0', author:'BongJun Park', license:'MIT',
+// { name:'ModuGrid', version:'1.1.0', author:'BongJun Park', license:'MIT',
 //   copyright:'© 2026 BongJun Park', homepage:'https://github.com/PulseKCode', signature:'...' }
 ```
 
@@ -96,7 +96,7 @@ ModuGrid.about
 | `acLimit` | number | 8 | 자동완성 표시 개수 |
 | `ac` | false | — | 이 컬럼 자동완성 끄기 |
 | `validate` | fn | — | `(value, row) => true ǀ false ǀ '메시지'` |
-| `render` | fn | — | `(value, row) => HTML 문자열` |
+| `render` | fn | — | `(value, row, ctx) => HTML문자열`. 반환값을 그대로 삽입하므로 이스케이프는 호출자 책임. `ctx`는 `{col, key, rowIndex}` — 하나의 포매터를 여러 컬럼에 돌려 쓸 수 있다 |
 | `textCase` | string | — | `'upper'` ǀ `'lower'` |
 | `placeholder` | string | — | 빈 셀 안내 문구 |
 
@@ -151,6 +151,9 @@ optionFormat: (o, row) => `[${o.code}] ${o.name}`
 | `striped` | `true` | 줄무늬 |
 | `dirtyMark` | `true` | 변경 행 배경색 |
 | `rowHeight` | 25 | 행 높이(px) |
+| `height` | `420px` | 그리드 높이. 행 수와 무관하게 고정된다. 숫자=px, 문자열=그대로(`'50vh'`, `'80%'`). `'fill'`=창 바닥까지 확장 |
+| `maxHeight` | — | 이 높이까지 커지고 넘으면 스크롤. 값 형식은 `height`와 동일. 단독으로 주면 고정 기본값이 풀려 내용 높이에 맞춰진다 |
+| `fitLast` | `false` | 남는 폭을 마지막 컬럼이 흡수해 표가 그리드 오른쪽 끝까지 닿게 한다. 기본은 꺼짐 — 오른쪽 빈 공간을 그대로 둔다 |
 | `freezeOn` | `false` | 컬럼 고정 |
 | `headerWrap` | `false` | 헤더 라벨 자동 줄바꿈 |
 | `placeholderMode` | `'all'` | `'all'` ǀ `'first'` ǀ `'none'` |
@@ -236,6 +239,7 @@ options: {
     cellEdit:        e => {},
     selectionChange: e => {},
     rowClick:        e => {},
+    cellClick:       e => {},
     dataError:       e => {},
     dirtyChange:     e => {},
   }
@@ -248,6 +252,7 @@ options: {
 | `cellEdit` | `{id, key, value}` | 셀 편집 확정 |
 | `selectionChange` | `{selected, checked}` | 선택·체크 변경 (id 배열) |
 | `rowClick` | `{id, selected}` | 행 클릭 |
+| `cellClick` | `{id, key, target}` | 셀 클릭. `target`이 실제 클릭된 요소라 `render`로 그린 버튼을 구분할 수 있다. `rowClick` 다음에 발화 |
 | `dataError` | `{error}` | 서버 조회 실패 |
 | `dirtyChange` | `{inserted, updated, deleted, total}` | 변경 건수가 달라졌을 때만 |
 

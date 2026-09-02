@@ -1,6 +1,6 @@
 {
   "name": "modugrid",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dependency-free vanilla JS data grid for enterprise forms — inline editing, dirty tracking, frozen columns, grouped headers, IME-safe Korean input.",
   "keywords": [
     "grid",
@@ -68,6 +68,6 @@
     "node": ">=18"
   },
   "dependencies": {
-    "modugrid": "^1.0.0"
+    "modugrid": "^1.1.0"
   }
 }

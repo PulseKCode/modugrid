@@ -2,7 +2,7 @@
 
 # ModuGrid
 
-**v1.0.0** · 의존성 없는 Vanilla JS 데이터 그리드.
+**v1.1.0** · 의존성 없는 Vanilla JS 데이터 그리드.
 
 [![CI](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml/badge.svg)](https://github.com/PulseKCode/modugrid/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/modugrid.svg)](https://www.npmjs.com/package/modugrid)
@@ -11,7 +11,7 @@
 
 `modugrid.min.js` + `modugrid.min.css` 두 파일이면 동작합니다. 빌드 도구 · 프레임워크 · 외부 라이브러리가 필요 없습니다.
 
-**[데모 보기](https://pulsekcode.github.io/modugrid/samples_ko/main.html)** · [샘플 113개](https://pulsekcode.github.io/modugrid/samples_ko/index.html) · [English](https://pulsekcode.github.io/modugrid/samples/index.html)
+**[데모 보기 — 샘플 115개](https://pulsekcode.github.io/modugrid/samples_ko/index.html)** · [English](https://pulsekcode.github.io/modugrid/samples/index.html)
 
 ---
 
@@ -42,8 +42,8 @@
 파일을 내려받지 않고 CDN으로 바로 쓸 수도 있습니다.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.css">
-<script src="https://cdn.jsdelivr.net/npm/modugrid@1.0.0/dist/modugrid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modugrid@1.1.0/dist/modugrid.min.css">
+<script src="https://cdn.jsdelivr.net/npm/modugrid@1.1.0/dist/modugrid.min.js"></script>
 ```
 
 번들러를 쓰신다면 npm으로 설치할 수 있습니다.
@@ -185,7 +185,7 @@ options: {
 |---|---|---|
 | `dist/modugrid.min.js` | O | 그리드 엔진 전체 |
 | `dist/modugrid.min.css` | O | 스타일 · 테마 변수 |
-| `samples/main.html` | | 데모 페이지 |
+| `samples/index.html` | | 데모 페이지 |
 | `server/submit.jsp` | | 서버 수신 샘플 (JSP + Oracle) |
 | `server/upload.jsp` | | 이미지 업로드 수신 샘플 (`imageMode:'upload'`) |
 | `modugrid.js` `modugrid.css` | | 빌드의 원본이 되는 소스 |
@@ -200,7 +200,7 @@ git clone https://github.com/PulseKCode/modugrid.git
 cd modugrid
 npm ci            # terser · clean-css · jsdom
 npm run build     # 소스 -> dist/ (5개)
-npm test          # 131개 테스트, jsdom
+npm test          # 177개 테스트, jsdom
 npm run test:dist # 압축본 대상으로 같은 테스트
 ```
 
@@ -233,12 +233,12 @@ MIT · © 2026 BongJun Park
 
 - **Author** — BongJun Park
 - **Homepage** — <https://github.com/PulseKCode>
-- **Version** — 1.0.0
+- **Version** — 1.1.0
 
 제작자 정보는 `ModuGrid.about` 으로 확인할 수 있습니다. 동결된 읽기 전용 값이라 실행 중에 바꿀 수 없습니다.
 
 ```javascript
-ModuGrid.about.version;    // '1.0.0'
+ModuGrid.about.version;    // '1.1.0'
 ModuGrid.about.author;     // 'BongJun Park'
 ModuGrid.about.homepage;   // 'https://github.com/PulseKCode'
 ```

@@ -1,6 +1,6 @@
 [English](../en/FEATURES.md) | **한국어**
 
-# ModuGrid v1.0.0 — 기능 전체 목록
+# ModuGrid v1.1.0 — 기능 전체 목록
 
 `modugrid.min.js` / `modugrid.min.css` 코드에서 직접 추출해 기능별로 묶은 문서입니다.
 `☐` 는 동작 확인용 체크박스입니다.
@@ -78,9 +78,35 @@ G.setData(rows);
 | `acLimit` | number | 자동완성 표시 개수 (기본 8) |
 | `ac` | false | 이 컬럼 자동완성 끄기 |
 | `validate` | (v,row)=>bool ǀ string | 유효성 검사 |
-| `render` | (v,row)=>html | 커스텀 셀 렌더러 |
-| `textCase` | 'upper' ǀ 'lower' | 대/소문자 강제 |
+| `render` | (v,row,ctx)=>html | 커스텀 셀 렌더러 |
+| `textCase` | 'upper' ǀ 'lower' | 대소문자 강제 |
 | `placeholder` | string | 빈 셀 안내 문구 |
+
+**`render`로 셀 꾸미기** — jqGrid의 `formatter`에 해당한다. 반환한 마크업을
+이스케이프 없이 삽입하므로 셀 안에 표·버튼·차트 무엇이든 넣을 수 있다.
+신뢰할 수 없는 값의 이스케이프는 호출자 책임이다. ☐
+
+```javascript
+// ctx = { col, key, rowIndex } — 하나의 함수를 여러 컬럼에 돌려 쓸 수 있다
+const money = (v, row, ctx) => `<b class="num" data-col="${ctx.key}">${v.toLocaleString()}</b>`;
+
+ModuGrid('#grid', {
+  cols: [
+    { key:'price', label:'단가', w:90, render: money },
+    { key:'cost',  label:'원가', w:90, render: money },
+    { key:'act',   label:'',     w:80,
+      render: () => `<button data-do="edit">수정</button><button data-do="del">삭제</button>` },
+  ],
+  options: {
+    on: {
+      // target이 실제 클릭된 요소라 버튼 두 개가 구분된다
+      cellClick: e => {
+        if (e.target.dataset.do === 'del') removeRow(e.id);
+      }
+    }
+  }
+});
+```
 
 ### 2.2 셀 타입
 
@@ -588,7 +614,7 @@ options: { contextMenu: { copy:false, delete:false } } // 항목별
 
 ```javascript
 ModuGrid.about
-// { name:'ModuGrid', version:'1.0.0', author:'BongJun Park', license:'MIT',
+// { name:'ModuGrid', version:'1.1.0', author:'BongJun Park', license:'MIT',
 //   copyright:'© 2026 BongJun Park', homepage:'https://github.com/PulseKCode' }
 ```
 - 앱 컨트롤 매핑 — `options.controls` ☐
@@ -693,7 +719,7 @@ options: {
 ## 18. 이벤트
 
 ```javascript
-options: { on: { dataChange, cellEdit, selectionChange, rowClick, dataError, dirtyChange } }
+options: { on: { dataChange, cellEdit, selectionChange, rowClick, cellClick, dataError, dirtyChange } }
 ```
 
 | 이벤트 | payload |
@@ -702,6 +728,7 @@ options: { on: { dataChange, cellEdit, selectionChange, rowClick, dataError, dir
 | `cellEdit` | `{id, key, value}` |
 | `selectionChange` | `{selected, checked}` |
 | `rowClick` | `{id, selected}` |
+| `cellClick` | `{id, key, target}` |
 | `dataError` | `{error}` |
 | `dirtyChange` | `{inserted, updated, deleted, total}` |
 

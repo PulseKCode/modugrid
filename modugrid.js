@@ -1,5 +1,5 @@
 /* ====================================================================
-   ModuGrid v1.0.0 — Generic Grid Engine · Multi-Instance
+   ModuGrid v1.1.0 — Generic Grid Engine · Multi-Instance
    Author    : BongJun Park
    License   : MIT
    Copyright : © 2026 BongJun Park
@@ -960,11 +960,27 @@ function renderHeader(){
 
   // 각 테이블 너비 설정
   const fzW=getFzWidth();
-  const scW=scC.reduce((s,c)=>s+colW(c),0);
+  let   scW=scC.reduce((s,c)=>s+colW(c),0);
   [EL.gtLh,EL.gtLb].forEach(el=>{
     if(!el)return;
     el.style.width=fzW+'px'; el.style.minWidth=fzW+'px';
   });
+
+  /* fitLast — 컬럼 폭 합이 그리드보다 좁으면 오른쪽에 표가 없는 빈 띠가 남는다.
+     켜 두면 마지막 데이터 컬럼이 그 남는 폭을 흡수한다. 기본은 꺼짐(빈 공간 유지)이라
+     기존 화면의 컬럼 폭은 그대로다.
+
+     colgroup 의 <col> 만 늘린다 — CW 를 건드리면 사용자가 지정한 폭이 덮여
+     리사이즈하거나 컬럼을 껐다 켤 때 원래 값으로 못 돌아간다. */
+  if(S.fitLast && EL.gsc){
+    const avail=EL.gsc.clientWidth;
+    const last=[...scC].reverse().find(c=>colW(c)>0);
+    if(last && avail>scW){
+      const col=EL.gt.querySelector(`:scope > colgroup > col[data-c="${last.key}"]`);
+      if(col){ col.style.width=(colW(last)+(avail-scW))+'px'; scW=avail; }
+    }
+  }
+
   EL.gt.style.width=Math.max(scW,80)+'px';
   EL.gt.style.minWidth=Math.max(scW,80)+'px';
   // 왼쪽 패널 너비 동기화
@@ -1021,7 +1037,12 @@ function buildCells(row, num, depth, theCols, ciOff){
     if(canEdit) cls+=' editable';
 
     /* ── 셀 콘텐츠: col.render(커스텀) → 내장 type 렌더러 순 ──
-       render:(value,row)=>HTML문자열 — 반환값을 그대로 삽입(이스케이프는 호출자 책임) */
+       render:(value,row,ctx)=>HTML문자열 — 반환값을 그대로 삽입(이스케이프는 호출자 책임)
+
+       ctx 는 세 번째 인자로 나중에 붙었다. 그전에는 (value,row) 뿐이라 함수가
+       자기가 어느 컬럼을 그리는지 몰라서, 여러 컬럼에 공용 포매터를 돌려 쓰지 못하고
+       컬럼마다 클로저를 따로 만들어야 했다. 인자를 뒤에 더한 것이라 두 인자만 받던
+       기존 render 는 그대로 동작한다. */
     let content='';
     if(c.key==='_cb'){
       content=`<input type="checkbox" class="jcb" ${S.rowCheck.has(row.id)?'checked':''}/>`;
@@ -1036,7 +1057,7 @@ function buildCells(row, num, depth, theCols, ciOff){
       if(_showPh(c,row,localRi)){
         content=`<span class="cph">${esc(_phOf(c))}</span>`;   // 빈 셀 안내 문구
       } else if(typeof c.render==='function'){
-        content=c.render(v,row)??'';
+        content=c.render(v,row,{col:c,key:c.key,rowIndex:ri})??'';
       } else switch(c.type){
         case 'avatar':
           content=`<div class="cav"><div class="av">${esc(ini(vd))}</div><a class="clnk">${esc(vd)}</a></div>`;break;
@@ -4171,7 +4192,7 @@ function search(q) {
    렌더보다 먼저 호출해야 그 렌더가 최신 diff로 그려진다. */
 function _touchData(){ S._dataVer = (S._dataVer || 0) + 1; }
 
-const _cb = { dataChange:null, selectionChange:null, cellEdit:null, rowClick:null, dataError:null, dirtyChange:null };
+const _cb = { dataChange:null, selectionChange:null, cellEdit:null, rowClick:null, cellClick:null, dataError:null, dirtyChange:null };
 function _emit(ev, payload) {
   if (ev === 'dataChange') _touchData();
   if (typeof _cb[ev] === 'function') {
@@ -4350,6 +4371,105 @@ let _newRowDefaults = { name:'New Row', status:'active', role:'Developer',
 let _numericKeys = ['score','progress','salary'];
 let _searchKeys  = [];   // 비어있으면 COLS에서 자동 파생
 
+/* ── 그리드 높이 (options.height / options.maxHeight) ──
+   CSS 기본값은 .gsc-wrap { max-height:420px } 하나뿐이라, 옵션을 주지 않으면
+   데이터가 적을 때 내용 높이만큼 줄어든다. 아래 두 옵션으로 이를 제어한다.
+
+     height    : 데이터 양과 무관하게 이 높이로 고정. 'fill' 이면 창 하단까지 확장
+     maxHeight : 이 높이까지만 커지고 넘으면 스크롤 ('fill' 과 함께 쓰면 상한 역할)
+
+   주의 — height 만 준 경우 스타일시트의 max-height:420px 가 그대로 살아 있어
+   height:600 을 줘도 420 에서 잘린다(max-height 가 height 를 clamp 한다).
+   그래서 maxHeight 가 없으면 max-height:none 을 함께 걸어 상한을 해제한다. */
+function _hNorm(v){
+  if(v==null||v==='') return null;
+  if(typeof v==='number') return (isFinite(v)&&v>0) ? v+'px' : null;
+  const s=String(v).trim();
+  if(/^[0-9.]+$/.test(s)) return (+s>0) ? s+'px' : null;
+  return /^[0-9.]+(px|pt|em|rem|vh|vw|%)$/.test(s) ? s : null;
+}
+
+/* fill — 그리드 하단이 브라우저 창 바닥에 닿도록 표 영역을 늘린다.
+
+   height 는 표(.gsc-wrap)에만 걸리고 정렬바·푸터는 그 바깥에 따로 쌓이므로,
+   height:'100vh' 로는 푸터 40px 만큼 창을 넘긴다. 그래서 루트를 세로 flex 로 바꾸고
+   표에 flex:1 을 줘서 남는 공간을 표가 흡수하게 한다. 정렬바가 켜지거나 푸터를
+   숨겨도 배분이 알아서 맞는다.
+
+   루트 높이는 "그리드 상단부터 창 바닥까지"로 잡는다. 스크롤 위치에 따라 값이
+   흔들리지 않도록 rect.top 에 scrollY 를 더해 문서 기준 위치로 환산한다. */
+const FILL_MIN = 120;                    // 이 밑으로는 줄이지 않는다 (헤더도 안 보이는 높이)
+const DEF_H    = '420px';                // 옵션 미지정 시 기본 높이 — CSS 의 max-height 와 같은 값
+function _fillMeasure(){
+  if(!S._fill || !root.isConnected) return;
+  const de  = document.documentElement;
+  /* innerHeight 가 아니라 clientHeight — 가로 스크롤바가 있으면 innerHeight 에는
+     그 두께가 포함돼 있어서 그만큼 넘친다. */
+  const vh  = de.clientHeight || window.innerHeight;
+  const top = root.getBoundingClientRect().top + (window.scrollY || 0);
+  let h = Math.max(FILL_MIN, vh - top);
+  root.style.height = h + 'px';
+  /* 그리드 바닥을 창 바닥에 정확히 맞춰도, 조상 요소의 아래쪽 padding·margin 이나
+     그리드 뒤에 오는 요소가 있으면 그만큼 문서가 넘쳐 페이지 스크롤바가 하나 더 생긴다.
+     남는 양을 직접 재서 빼는 편이 조상을 일일이 뒤지는 것보다 정확하다.
+
+     보정은 한 번만 한다 — 넘치는 원인이 그리드가 아니라 페이지의 다른 요소일 수 있고,
+     그 경우 반복하면 그리드만 근거 없이 계속 줄어든다. */
+  const over = de.scrollHeight - de.clientHeight;
+  if(over>0) root.style.height = Math.max(FILL_MIN, h - over) + 'px';
+}
+function _fillOn(maxH){
+  S._fill = true;
+  root.style.display       = 'flex';
+  root.style.flexDirection = 'column';
+  EL.wrap.style.flex      = '1 1 auto';
+  EL.wrap.style.minHeight = '0px';       // flex 아이템 기본 min-height:auto 는 축소를 거부한다
+  EL.wrap.style.maxHeight = maxH || 'none';
+  _fillMeasure();
+  window.addEventListener('resize', _fillMeasure);
+}
+function _fillOff(){
+  if(!S._fill) return;
+  S._fill = false;
+  window.removeEventListener('resize', _fillMeasure);
+}
+/* fitLast 는 그리드의 실제 폭을 재서 마지막 컬럼에 남는 폭을 넘긴다. 창이 넓어지거나
+   좁아지면 그 값이 어긋나므로 다시 그려야 한다. 렌더는 비싸니 짧게 debounce 한다. */
+let _fitTmr = 0;
+function _fitOnResize(){
+  clearTimeout(_fitTmr);
+  _fitTmr = setTimeout(()=>{ if(S.fitLast) renderGrid(); }, 100);
+}
+function _fitLastOn(){
+  if(S._fitBound) return;
+  S._fitBound = true;
+  window.addEventListener('resize', _fitOnResize);
+}
+function _fitLastOff(){
+  if(!S._fitBound) return;
+  S._fitBound = false;
+  clearTimeout(_fitTmr);
+  window.removeEventListener('resize', _fitOnResize);
+}
+function _applyGridHeight(height, maxHeight){
+  if(!EL.wrap) return;
+  const mh = _hNorm(maxHeight);
+  if(typeof height === 'string' && height.trim().toLowerCase() === 'fill'){
+    _fillOn(mh);
+    return;
+  }
+  /* 기본값은 고정. 아무것도 안 주면 행 수와 무관하게 420px 을 유지한다.
+     maxHeight 만 준 경우는 "이 높이까지 자라라"는 뜻이므로 고정을 걸지 않는다
+     — 여기에 기본 높이까지 얹으면 maxHeight 가 아무 일도 못 하게 된다.
+     내용 높이만큼만 쓰던 예전 동작이 필요하면 maxHeight 로 상한만 주면 된다. */
+  const h = _hNorm(height) || (mh ? null : DEF_H);
+  if(h){
+    EL.wrap.style.height    = h;
+    EL.wrap.style.maxHeight = mh || 'none';   // 상한 해제 — 없으면 CSS 의 420px 에 잘린다
+  }else{
+    EL.wrap.style.maxHeight = mh;
+  }
+}
 function initGrid(config) {
   if (!config || !config.cols) throw new Error('initGrid: options.cols is required');
   // 컬럼 설정
@@ -4426,6 +4546,10 @@ function initGrid(config) {
   }
   S.ps       = (o.pageSize===0 || o.pageSize==='0') ? PS_ALL : (+o.pageSize || 100);
   S.defH     = o.rowHeight || 25;
+  /* 그리드 전체 높이 — 미지정이면 CSS 기본값(max-height:420px)을 그대로 쓴다 */
+  _applyGridHeight(o.height, o.maxHeight);
+  S.fitLast  = !!o.fitLast;   // 마지막 컬럼으로 남는 폭 흡수 (기본 꺼짐 = 빈 공간 유지)
+  if (S.fitLast) _fitLastOn();
   S.multiSort= !!o.multiSort;
   // 서버사이드 데이터 모드: dataSource(req) => Promise<{rows,total}>
   S._ds = o.dataSource;
@@ -4444,7 +4568,7 @@ function initGrid(config) {
   if (o.newRowDefaults) _newRowDefaults = { ..._newRowDefaults, ...o.newRowDefaults };
   if (o.numericKeys)    _numericKeys = [...o.numericKeys];
   if (o.searchKeys)     _searchKeys  = [...o.searchKeys];
-  // 이벤트 콜백 등록: options.on = { dataChange, selectionChange, cellEdit, rowClick }
+  // 이벤트 콜백 등록: options.on = { dataChange, selectionChange, cellEdit, rowClick, cellClick, ... }
   if (o.on) Object.keys(_cb).forEach(k => { if (typeof o.on[k]==='function') _cb[k]=o.on[k]; });
   // 페이지 크기 select UI 동기화
   if (EL.psz) EL.psz.value = String(S.ps);
@@ -4480,13 +4604,18 @@ function addRow(row) {
   if (row && (row.id === undefined || row.id === null || row.id === '')) row.id = _genId();
   S.data.push(row);
   snap('Add');
+  _touchData();                                     // ★ 렌더 전 diff 캐시 무효화.
+  /* _diff() 는 _dataVer 로 캐싱되는데 그 값을 올려 주는 곳은 아래 _emit('dataChange') 뿐이다.
+     여기서 미리 올리지 않으면 바로 이어지는 applyFilters() 의 렌더가 '추가 전' 캐시를 읽어,
+     방금 넣은 행이 ins 에 없는 상태로 그려진다 — _st 의 '+' 표시가 그 행에만 빠지고,
+     다음 추가 때 렌더가 다시 돌면서 한 박자 늦게 나타난다(N 번 추가에 N-1 개). */
+  applyFilters();                                   // S.filtered 갱신 (내부에서 renderGrid)
   /* ★ 페이지 계산은 반드시 applyFilters() '뒤에' 한다.
      예전에는 앞에서 ceil(S.data.length / _pageSize()) 로 계산했는데,
      'All'(Per page=All) 모드의 _pageSize() 는 아직 갱신되지 않은 S.filtered.length
      (= 추가하기 전 행 수)를 돌려준다. 8행에서 1행을 더하면 ceil(9/8)=2 가 되어
      2페이지로 넘어가는데, All 모드는 페이지가 1개뿐이라 2페이지는 언제나 비어 있다.
      → 새 행만 안 보이는 게 아니라 그리드 전체가 빈 화면이 됐다. */
-  applyFilters();                                   // S.filtered 갱신 (내부에서 renderGrid)
   const p = _pageOfRow(row);                        // 추가한 행이 실제로 보이는 페이지
   if (p !== S.page) { S.page = p; renderGrid(); }
   _emit('dataChange', { type:'add', row });
@@ -4787,6 +4916,8 @@ function _renderColPanel(){
     /** 그리드 정리: 스크롤 핸들러 해제, DOM 비움, window 전역 제거 */
     destroy() {
       if (EL.gsc) EL.gsc.onscroll = null;
+      _fillOff();                                  // height:'fill' 의 window resize 리스너 해제
+      _fitLastOff();                               // fitLast 의 window resize 리스너 해제
       document.removeEventListener('keydown', api._onKeydown);
       document.removeEventListener('paste', api._onPaste);
       document.removeEventListener('mouseup', _onDocMouseup);
@@ -5309,6 +5440,19 @@ function _wireDelegation(){
     if(el){ const fn=_ACT[el.dataset.act]; if(fn){ fn(el,e); return; } }
     /* 헤더 본문 클릭은 정렬하지 않는다 — 정렬은 ▲▼ 아이콘(data-act="sort")으로만.
        (라벨 클릭이 의도치 않은 정렬을 일으키는 것을 막는다) */
+
+    /* cellClick — render 로 그린 셀 안의 버튼을 받으려면 이게 필요하다.
+       rowClick 은 행 단위라 어느 셀인지, 셀 안 어느 요소인지 알 수 없어서
+       버튼을 여러 개 넣으면 구분할 방법이 없었다. target 을 그대로 넘기므로
+       호출자가 target.dataset 등으로 판별하면 된다.
+
+       그리드 내부 위젯(data-act)은 위에서 return 하므로 여기까지 오지 않는다.
+       mousedown 의 cellMD(선택/포커스)와는 별개 경로이고, 브라우저가 mousedown 을
+       먼저 보내므로 rowClick 이 cellClick 보다 앞선다. */
+    const td=e.target.closest('td[data-c][data-id]');
+    if(td && root.contains(td)){
+      _emit('cellClick', { id:+td.dataset.id, key:td.dataset.c, target:e.target });
+    }
   });
 
   /* dblclick — 셀 편집 진입 / 헤더 autoFit */
@@ -5465,7 +5609,7 @@ ModuGrid.get = id => ModuGrid._reg && ModuGrid._reg[id];
 (function(){
   var A = {
     name:      'ModuGrid',
-    version:   '1.0.0',
+    version:   '1.1.0',
     author:    'BongJun Park',
     license:   'MIT',
     copyright: '© 2026 BongJun Park',

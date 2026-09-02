@@ -1,6 +1,6 @@
 **English** | [한국어](../ko/API.md)
 
-# ModuGrid v1.0.0 — API reference
+# ModuGrid v1.1.0 — API reference
 
 Written against the current `modugrid.min.js`. For a feature overview see [FEATURES.md](FEATURES.md).
 
@@ -53,11 +53,11 @@ You can create several grids on one page; their state is entirely independent.
 |---|---|
 | `ModuGrid.get(id)` | look up an instance (used for internal routing) |
 | `ModuGrid.about` | authorship information (read-only, frozen) |
-| `ModuGrid.version` | version string (`'1.0.0'`) |
+| `ModuGrid.version` | version string (`'1.1.0'`) |
 
 ```javascript
 ModuGrid.about
-// { name:'ModuGrid', version:'1.0.0', author:'BongJun Park', license:'MIT',
+// { name:'ModuGrid', version:'1.1.0', author:'BongJun Park', license:'MIT',
 //   copyright:'© 2026 BongJun Park', homepage:'https://github.com/PulseKCode', signature:'...' }
 ```
 
@@ -96,7 +96,7 @@ Console and warning messages are all in English. UI wording can be overridden wi
 | `acLimit` | number | 8 | number of autocomplete suggestions shown |
 | `ac` | false | — | disable autocomplete for this column |
 | `validate` | fn | — | `(value, row) => true ǀ false ǀ 'message'` |
-| `render` | fn | — | `(value, row) => HTML string` |
+| `render` | fn | — | `(value, row, ctx) => HTML string`. Returned markup is inserted as-is, so escaping is the caller's job. `ctx` is `{col, key, rowIndex}` — it lets one formatter serve several columns |
 | `textCase` | string | — | `'upper'` ǀ `'lower'` |
 | `placeholder` | string | — | hint text shown in an empty cell |
 
@@ -151,6 +151,9 @@ Placeholders — `{code}` `{value}` = code / `{name}` `{label}` `{text}` = displ
 | `striped` | `true` | zebra striping |
 | `dirtyMark` | `true` | background colour for changed rows |
 | `rowHeight` | 25 | row height in px |
+| `height` | `420px` | grid height, held whatever the row count. Number = px, string = as given (`'50vh'`, `'80%'`). `'fill'` = stretch to the bottom of the window |
+| `maxHeight` | — | grid grows to this height, then scrolls. Same value formats as `height`. Given on its own it also drops the fixed default, so the grid sizes to its content |
+| `fitLast` | `false` | let the last column absorb any width left over, so the table closes flush with the grid. Off by default — the empty strip on the right is kept |
 | `freezeOn` | `false` | frozen columns |
 | `headerWrap` | `false` | wrap header labels automatically |
 | `placeholderMode` | `'all'` | `'all'` ǀ `'first'` ǀ `'none'` |
@@ -236,6 +239,7 @@ options: {
     cellEdit:        e => {},
     selectionChange: e => {},
     rowClick:        e => {},
+    cellClick:       e => {},
     dataError:       e => {},
     dirtyChange:     e => {},
   }
@@ -248,6 +252,7 @@ options: {
 | `cellEdit` | `{id, key, value}` | a cell edit is committed |
 | `selectionChange` | `{selected, checked}` | selection or checks change (arrays of ids) |
 | `rowClick` | `{id, selected}` | a row is clicked |
+| `cellClick` | `{id, key, target}` | a cell is clicked. `target` is the clicked element, so buttons drawn by `render` can be told apart. Fires after `rowClick` |
 | `dataError` | `{error}` | a server fetch fails |
 | `dirtyChange` | `{inserted, updated, deleted, total}` | only when the change counts differ |
 
